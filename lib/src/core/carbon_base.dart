@@ -242,6 +242,34 @@ abstract class CarbonBase implements CarbonInterface {
       _wrap(DateTime.utc(_dateTime.year + 1, 1, 0, 23, 59, 59, 999, 999));
 
   @override
+  int get year => _dateTime.year;
+
+  @override
+  CarbonInterface setYear(int year) =>
+      _duplicate(dateTime: _copyWith(year: year));
+
+  @override
+  CarbonInterface years(int year) => setYear(year);
+
+  @override
+  int get yearOfCentury => _wrapModulo(_dateTime.year - 1, 100) + 1;
+
+  @override
+  int get yearOfDecade => _wrapModulo(_dateTime.year - 1, 10) + 1;
+
+  @override
+  int get yearOfMillennium => _wrapModulo(_dateTime.year - 1, 1000) + 1;
+
+  @override
+  int get yearsInCentury => 100;
+
+  @override
+  int get yearsInDecade => 10;
+
+  @override
+  int get yearsInMillennium => 1000;
+
+  @override
   bool isBefore(CarbonInterface other) => _dateTime.isBefore(other.dateTime);
 
   @override
@@ -473,5 +501,30 @@ abstract class CarbonBase implements CarbonInterface {
         .replaceAll('Symbol(\'', '')
         .replaceAll('")', '')
         .replaceAll("')", '');
+  }
+
+  DateTime _copyWith({
+    int? year,
+    int? month,
+    int? day,
+    int? hour,
+    int? minute,
+    int? second,
+    int? millisecond,
+    int? microsecond,
+  }) => DateTime.utc(
+    year ?? _dateTime.year,
+    month ?? _dateTime.month,
+    day ?? _dateTime.day,
+    hour ?? _dateTime.hour,
+    minute ?? _dateTime.minute,
+    second ?? _dateTime.second,
+    millisecond ?? _dateTime.millisecond,
+    microsecond ?? _dateTime.microsecond,
+  );
+
+  int _wrapModulo(int value, int modulus) {
+    final result = value % modulus;
+    return result < 0 ? result + modulus : result;
   }
 }

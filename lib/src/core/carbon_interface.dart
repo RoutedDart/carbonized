@@ -53,6 +53,16 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   String diffForHumans({CarbonInterface? reference, String? locale});
   int toEpochMilliseconds();
 
+  int get year;
+  CarbonInterface setYear(int year);
+  CarbonInterface years(int year);
+  int get yearOfCentury;
+  int get yearOfDecade;
+  int get yearOfMillennium;
+  int get yearsInCentury;
+  int get yearsInDecade;
+  int get yearsInMillennium;
+
   Map<String, dynamic> toJson();
   CarbonImmutable toImmutable();
   Carbon toMutable();
