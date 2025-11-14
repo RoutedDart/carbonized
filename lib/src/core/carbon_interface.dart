@@ -1,4 +1,4 @@
-part of carbon_internal;
+part of '../carbon.dart';
 
 abstract class CarbonInterface implements Comparable<CarbonInterface> {
   DateTime get dateTime;
@@ -42,15 +42,114 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     CarbonInterface end, {
     bool inclusive = true,
   });
+  bool isCurrentMicro();
+  bool isCurrentMicrosecond();
+  bool isCurrentMilli();
+  bool isCurrentMillisecond();
+  bool isCurrentSecond();
+  bool isCurrentMinute();
+  bool isCurrentHour();
+  bool isCurrentDay();
+  bool isCurrentWeek();
+  bool isCurrentMonth();
+  bool isCurrentQuarter();
+  bool isCurrentYear();
+  bool isCurrentDecade();
+  bool isCurrentCentury();
+  bool isCurrentMillennium();
+  bool isNextMicro();
+  bool isNextMicrosecond();
+  bool isNextMilli();
+  bool isNextMillisecond();
+  bool isNextSecond();
+  bool isNextMinute();
+  bool isNextHour();
+  bool isNextDay();
+  bool isNextWeek();
+  bool isNextMonth();
+  bool isNextQuarter();
+  bool isNextYear();
+  bool isNextDecade();
+  bool isNextCentury();
+  bool isNextMillennium();
+  bool isLastMicro();
+  bool isLastMicrosecond();
+  bool isLastMilli();
+  bool isLastMillisecond();
+  bool isLastSecond();
+  bool isLastMinute();
+  bool isLastHour();
+  bool isLastDay();
+  bool isLastWeek();
+  bool isLastMonth();
+  bool isLastQuarter();
+  bool isLastYear();
+  bool isLastDecade();
+  bool isLastCentury();
+  bool isLastMillennium();
+  bool isSameMicro([CarbonInterface? other]);
+  bool isSameMicrosecond([CarbonInterface? other]);
+  bool isSameMilli([CarbonInterface? other]);
+  bool isSameMillisecond([CarbonInterface? other]);
+  bool isSameSecond([CarbonInterface? other]);
+  bool isSameMinute([CarbonInterface? other]);
+  bool isSameHour([CarbonInterface? other]);
+  bool isSameWeek([CarbonInterface? other]);
+  bool isSameMonth([CarbonInterface? other]);
+  bool isSameQuarter([CarbonInterface? other]);
+  bool isSameYear([CarbonInterface? other]);
+  bool isSameDecade([CarbonInterface? other]);
+  bool isSameCentury([CarbonInterface? other]);
+  bool isSameMillennium([CarbonInterface? other]);
+  bool isMonday();
+  bool isTuesday();
+  bool isWednesday();
+  bool isThursday();
+  bool isFriday();
+  bool isSaturday();
+  bool isSunday();
+  bool isDST();
+  bool get isLocal;
+  bool get isUtc;
+  bool get isValid;
+  bool get isMutable;
 
   Duration diff(CarbonInterface other);
   int diffInDays(CarbonInterface other, {bool absolute = true});
   int diffInHours(CarbonInterface other, {bool absolute = true});
   int diffInMinutes(CarbonInterface other, {bool absolute = true});
+  int diffInSeconds(CarbonInterface other, {bool absolute = true});
+  int diffInWeeks(CarbonInterface other, {bool absolute = true});
+  int diffInMonths(CarbonInterface other, {bool absolute = true});
+  int diffInQuarters(CarbonInterface other, {bool absolute = true});
+  int diffInYears(CarbonInterface other, {bool absolute = true});
+  int diffInDecades(CarbonInterface other, {bool absolute = true});
+  int diffInCenturies(CarbonInterface other, {bool absolute = true});
+  int diffInMillennia(CarbonInterface other, {bool absolute = true});
+  int diffInDaysFloored(CarbonInterface other);
+  double diffInUTCMicros([dynamic date, bool absolute = true]);
+  double diffInUTCMicroseconds([dynamic date, bool absolute = true]);
+  double diffInUTCMillis([dynamic date, bool absolute = true]);
+  double diffInUTCMilliseconds([dynamic date, bool absolute = true]);
+  double diffInUTCSeconds([dynamic date, bool absolute = true]);
+  double diffInUTCMinutes([dynamic date, bool absolute = true]);
+  double diffInUTCHours([dynamic date, bool absolute = true]);
+  double diffInUTCDays([dynamic date, bool absolute = true]);
+  double diffInUTCWeeks([dynamic date, bool absolute = true]);
+  double diffInUTCMonths([dynamic date, bool absolute = true]);
+  double diffInUTCQuarters([dynamic date, bool absolute = true]);
+  double diffInUTCYears([dynamic date, bool absolute = true]);
+  double diffInUTCDecades([dynamic date, bool absolute = true]);
+  double diffInUTCCenturies([dynamic date, bool absolute = true]);
+  double diffInUTCMillennia([dynamic date, bool absolute = true]);
 
   String format(String pattern, {String? locale});
   String toIso8601String();
   String diffForHumans({CarbonInterface? reference, String? locale});
+  String longAbsoluteDiffForHumans([CarbonInterface? other]);
+  String longRelativeDiffForHumans([CarbonInterface? other]);
+  String longRelativeToNowDiffForHumans();
+  String longRelativeToOtherDiffForHumans(CarbonInterface other);
   int toEpochMilliseconds();
 
   int get year;
@@ -60,6 +159,21 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setMonth(int month);
   CarbonInterface setDay(int day);
   CarbonInterface setDays(int day);
+  int get day;
+  int get days;
+  int get dayOfWeek;
+  int get dayOfMonth;
+  int get dayOfQuarter;
+  int get dayOfDecade;
+  int get dayOfCentury;
+  int get dayOfMillennium;
+  int get daysInWeek;
+  int get daysInMonth;
+  int get daysInQuarter;
+  int get daysInYear;
+  int get daysInDecade;
+  int get daysInCentury;
+  int get daysInMillennium;
   CarbonInterface setMinutes(int minute);
   CarbonInterface setMinute(int minute);
   CarbonInterface setSeconds(int second);
@@ -67,6 +181,24 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setYears(int year);
   CarbonInterface setHour(int hour);
   CarbonInterface setHours(int hour);
+  int get hour;
+  int get hours;
+  int get hourOfDay;
+  int get hourOfWeek;
+  int get hourOfMonth;
+  int get hourOfQuarter;
+  int get hourOfYear;
+  int get hourOfDecade;
+  int get hourOfCentury;
+  int get hourOfMillennium;
+  int get hoursInDay;
+  int get hoursInWeek;
+  int get hoursInMonth;
+  int get hoursInQuarter;
+  int get hoursInYear;
+  int get hoursInDecade;
+  int get hoursInCentury;
+  int get hoursInMillennium;
   CarbonInterface setMicro(int microsecond);
   CarbonInterface setMicros(int microsecond);
   CarbonInterface setMicrosecond(int microsecond);
@@ -75,12 +207,79 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setMillis(int millisecond);
   CarbonInterface setMillisecond(int millisecond);
   CarbonInterface setMilliseconds(int millisecond);
+  int get micro;
+  int get micros;
+  int get microsecond;
+  int get microseconds;
+  int get microsecondOfMillisecond;
+  int get microsecondOfSecond;
+  int get microsecondOfMinute;
+  int get microsecondOfHour;
+  int get microsecondOfDay;
+  int get microsecondOfWeek;
+  int get microsecondOfMonth;
+  int get microsecondOfQuarter;
+  int get microsecondOfYear;
+  int get microsecondOfDecade;
+  int get microsecondOfCentury;
+  int get microsecondOfMillennium;
+  int get microsecondsInMillisecond;
+  int get microsecondsInSecond;
+  int get microsecondsInMinute;
+  int get microsecondsInHour;
+  int get microsecondsInDay;
+  int get microsecondsInWeek;
+  int get microsecondsInMonth;
+  int get microsecondsInQuarter;
+  int get microsecondsInYear;
+  int get microsecondsInDecade;
+  int get microsecondsInCentury;
+  int get microsecondsInMillennium;
+  CarbonPeriod microsecondsUntil([dynamic endDate, num factor = 1]);
+  CarbonPeriod microsUntil([dynamic endDate, num factor = 1]);
+  int get milli;
+  int get millis;
+  int get millisecond;
+  int get milliseconds;
+  int get millisecondOfSecond;
+  int get millisecondOfMinute;
+  int get millisecondOfHour;
+  int get millisecondOfDay;
+  int get millisecondOfWeek;
+  int get millisecondOfMonth;
+  int get millisecondOfQuarter;
+  int get millisecondOfYear;
+  int get millisecondOfDecade;
+  int get millisecondOfCentury;
+  int get millisecondOfMillennium;
+  int get millisecondsInSecond;
+  int get millisecondsInMinute;
+  int get millisecondsInHour;
+  int get millisecondsInDay;
+  int get millisecondsInWeek;
+  int get millisecondsInMonth;
+  int get millisecondsInQuarter;
+  int get millisecondsInYear;
+  int get millisecondsInDecade;
+  int get millisecondsInCentury;
+  int get millisecondsInMillennium;
+  CarbonPeriod millisecondsUntil([dynamic endDate, num factor = 1]);
+  CarbonPeriod millisUntil([dynamic endDate, num factor = 1]);
   int get yearOfCentury;
   int get yearOfDecade;
   int get yearOfMillennium;
   int get yearsInCentury;
   int get yearsInDecade;
   int get yearsInMillennium;
+  int get centuryOfMillennium;
+  int get centuriesInMillennium;
+  CarbonPeriod centuriesUntil([dynamic endDate, num factor = 1]);
+  int get decadeOfCentury;
+  int get decadeOfMillennium;
+  int get decadesInCentury;
+  int get decadesInMillennium;
+  CarbonPeriod decadesUntil([dynamic endDate, num factor = 1]);
+  CarbonPeriod millenniaUntil([dynamic endDate, num factor = 1]);
   CarbonPeriod yearsUntil([dynamic endDate, num factor = 1]);
   CarbonPeriod monthsUntil([dynamic endDate, num factor = 1]);
   int get months;
@@ -94,6 +293,7 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   int get monthsInDecade;
   int get monthsInCentury;
   int get monthsInMillennium;
+  int get monthsInQuarter;
   int get weekOfYear;
   int get weekOfMonth;
   int get weekOfQuarter;
@@ -127,12 +327,20 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   int get secondsInCentury;
   int get secondsInMillennium;
   CarbonPeriod secondsUntil([dynamic endDate, num factor = 1]);
+  CarbonPeriod daysUntil([dynamic endDate, num factor = 1]);
+  CarbonPeriod hoursUntil([dynamic endDate, num factor = 1]);
+  int get second;
+  int get minute;
   int get minutes;
   int get minuteOfHour;
   int get minuteOfDay;
   int get minuteOfWeek;
   int get minuteOfMonth;
+  int get minuteOfQuarter;
   int get minuteOfYear;
+  int get minuteOfDecade;
+  int get minuteOfCentury;
+  int get minuteOfMillennium;
   int get minutesInHour;
   int get minutesInDay;
   int get minutesInWeek;
@@ -166,6 +374,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilSeconds({double precision = 1});
+  CarbonInterface ceilSecond({double precision = 1});
+  CarbonInterface floorSeconds({double precision = 1});
+  CarbonInterface floorSecond({double precision = 1});
   CarbonInterface roundMinutes({
     double precision = 1,
     String function = 'round',
@@ -174,11 +386,19 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilMinutes({double precision = 1});
+  CarbonInterface ceilMinute({double precision = 1});
+  CarbonInterface floorMinutes({double precision = 1});
+  CarbonInterface floorMinute({double precision = 1});
   CarbonInterface roundMonths({
     double precision = 1,
     String function = 'round',
   });
   CarbonInterface roundMonth({double precision = 1, String function = 'round'});
+  CarbonInterface ceilMonths({double precision = 1});
+  CarbonInterface ceilMonth({double precision = 1});
+  CarbonInterface floorMonths({double precision = 1});
+  CarbonInterface floorMonth({double precision = 1});
   CarbonInterface roundQuarters({
     double precision = 1,
     String function = 'round',
@@ -187,10 +407,22 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilQuarters({double precision = 1});
+  CarbonInterface ceilQuarter({double precision = 1});
+  CarbonInterface floorQuarters({double precision = 1});
+  CarbonInterface floorQuarter({double precision = 1});
   CarbonInterface roundYears({double precision = 1, String function = 'round'});
   CarbonInterface roundYear({double precision = 1, String function = 'round'});
+  CarbonInterface ceilYears({double precision = 1});
+  CarbonInterface ceilYear({double precision = 1});
+  CarbonInterface floorYears({double precision = 1});
+  CarbonInterface floorYear({double precision = 1});
   CarbonInterface roundHours({double precision = 1, String function = 'round'});
   CarbonInterface roundHour({double precision = 1, String function = 'round'});
+  CarbonInterface ceilHours({double precision = 1});
+  CarbonInterface ceilHour({double precision = 1});
+  CarbonInterface floorHours({double precision = 1});
+  CarbonInterface floorHour({double precision = 1});
   CarbonInterface roundDecades({
     double precision = 1,
     String function = 'round',
@@ -199,6 +431,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilDecades({double precision = 1});
+  CarbonInterface ceilDecade({double precision = 1});
+  CarbonInterface floorDecades({double precision = 1});
+  CarbonInterface floorDecade({double precision = 1});
   CarbonInterface roundMillennia({
     double precision = 1,
     String function = 'round',
@@ -207,6 +443,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilMillennia({double precision = 1});
+  CarbonInterface ceilMillennium({double precision = 1});
+  CarbonInterface floorMillennia({double precision = 1});
+  CarbonInterface floorMillennium({double precision = 1});
   CarbonInterface roundMilliseconds({
     double precision = 1,
     String function = 'round',
@@ -215,6 +455,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilMilliseconds({double precision = 1});
+  CarbonInterface ceilMillisecond({double precision = 1});
+  CarbonInterface floorMilliseconds({double precision = 1});
+  CarbonInterface floorMillisecond({double precision = 1});
   CarbonInterface roundMicroseconds({
     double precision = 1,
     String function = 'round',
@@ -223,8 +467,16 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilMicroseconds({double precision = 1});
+  CarbonInterface ceilMicrosecond({double precision = 1});
+  CarbonInterface floorMicroseconds({double precision = 1});
+  CarbonInterface floorMicrosecond({double precision = 1});
   CarbonInterface roundDays({double precision = 1, String function = 'round'});
   CarbonInterface roundDay({double precision = 1, String function = 'round'});
+  CarbonInterface ceilDays({double precision = 1});
+  CarbonInterface ceilDay({double precision = 1});
+  CarbonInterface floorDays({double precision = 1});
+  CarbonInterface floorDay({double precision = 1});
   CarbonInterface roundCenturies({
     double precision = 1,
     String function = 'round',
@@ -233,6 +485,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     double precision = 1,
     String function = 'round',
   });
+  CarbonInterface ceilCenturies({double precision = 1});
+  CarbonInterface ceilCentury({double precision = 1});
+  CarbonInterface floorCenturies({double precision = 1});
+  CarbonInterface floorCentury({double precision = 1});
 
   Map<String, dynamic> toJson();
   CarbonImmutable toImmutable();

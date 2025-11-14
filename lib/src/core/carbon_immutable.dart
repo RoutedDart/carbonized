@@ -1,4 +1,4 @@
-part of carbon_internal;
+part of '../carbon.dart';
 
 class CarbonImmutable extends CarbonBase {
   CarbonImmutable._internal({

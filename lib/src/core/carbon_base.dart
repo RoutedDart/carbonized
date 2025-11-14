@@ -1,4 +1,4 @@
-part of carbon_internal;
+part of '../carbon.dart';
 
 abstract class CarbonBase implements CarbonInterface {
   CarbonBase({
@@ -299,6 +299,9 @@ abstract class CarbonBase implements CarbonInterface {
   int get monthsInMillennium => 12000;
 
   @override
+  int get monthsInQuarter => 3;
+
+  @override
   CarbonInterface setMonth(int month) =>
       _duplicate(dateTime: _copyWith(month: month));
 
@@ -310,6 +313,83 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   CarbonInterface setDays(int day) => setDay(day);
+
+  @override
+  int get day => _dateTime.day;
+
+  @override
+  int get days => day;
+
+  @override
+  int get dayOfMonth => day;
+
+  @override
+  int get dayOfWeek {
+    final weekday = _dateTime.weekday % 7;
+    return weekday;
+  }
+
+  @override
+  int get dayOfQuarter => _daysSince(_quarterStart(_dateTime)) + 1;
+
+  @override
+  int get dayOfDecade => _daysSince(_decadeStart(_dateTime)) + 1;
+
+  @override
+  int get dayOfCentury => _daysSince(_centuryStart(_dateTime)) + 1;
+
+  @override
+  int get dayOfMillennium => _daysSince(_millenniumStart(_dateTime)) + 1;
+
+  @override
+  int get daysInWeek => 7;
+
+  @override
+  int get daysInMonth => _daysBetween(
+    DateTime.utc(_dateTime.year, _dateTime.month, 1),
+    DateTime.utc(_dateTime.year, _dateTime.month + 1, 1),
+  );
+
+  @override
+  int get daysInQuarter => _daysBetween(
+    _quarterStart(_dateTime),
+    DateTime.utc(
+      _quarterStart(_dateTime).year,
+      _quarterStart(_dateTime).month + 3,
+      1,
+    ),
+  );
+
+  @override
+  int get daysInYear => _daysBetween(
+    DateTime.utc(_dateTime.year, 1, 1),
+    DateTime.utc(_dateTime.year + 1, 1, 1),
+  );
+
+  @override
+  int get daysInDecade => _daysBetween(
+    _decadeStart(_dateTime),
+    DateTime.utc(_decadeStart(_dateTime).year + 10, 1, 1),
+  );
+
+  @override
+  int get daysInCentury => _daysBetween(
+    _centuryStart(_dateTime),
+    DateTime.utc(_centuryStart(_dateTime).year + 100, 1, 1),
+  );
+
+  @override
+  int get daysInMillennium => _daysBetween(
+    _millenniumStart(_dateTime),
+    DateTime.utc(_millenniumStart(_dateTime).year + 1000, 1, 1),
+  );
+
+  @override
+  CarbonPeriod daysUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final stepDays = (factor == 0 ? 1 : factor.abs()).ceil();
+    return _buildPeriod(target, durationStep: Duration(days: stepDays));
+  }
 
   @override
   CarbonInterface setMinute(int minute) =>
@@ -333,6 +413,69 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface setHours(int hour) => setHour(hour);
 
   @override
+  int get hour => _dateTime.hour;
+
+  @override
+  int get hours => hour;
+
+  @override
+  int get hourOfDay => _dateTime.hour + 1;
+
+  @override
+  int get hourOfWeek => _hoursSince(_weekStart(_dateTime)) + 1;
+
+  @override
+  int get hourOfMonth =>
+      _hoursSince(DateTime.utc(_dateTime.year, _dateTime.month, 1)) + 1;
+
+  @override
+  int get hourOfQuarter => _hoursSince(_quarterStart(_dateTime)) + 1;
+
+  @override
+  int get hourOfYear =>
+      _hoursSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+
+  @override
+  int get hourOfDecade => _hoursSince(_decadeStart(_dateTime)) + 1;
+
+  @override
+  int get hourOfCentury => _hoursSince(_centuryStart(_dateTime)) + 1;
+
+  @override
+  int get hourOfMillennium => _hoursSince(_millenniumStart(_dateTime)) + 1;
+
+  @override
+  int get hoursInDay => 24;
+
+  @override
+  int get hoursInWeek => hoursInDay * daysInWeek;
+
+  @override
+  int get hoursInMonth => daysInMonth * hoursInDay;
+
+  @override
+  int get hoursInQuarter => daysInQuarter * hoursInDay;
+
+  @override
+  int get hoursInYear => daysInYear * hoursInDay;
+
+  @override
+  int get hoursInDecade => daysInDecade * hoursInDay;
+
+  @override
+  int get hoursInCentury => daysInCentury * hoursInDay;
+
+  @override
+  int get hoursInMillennium => daysInMillennium * hoursInDay;
+
+  @override
+  CarbonPeriod hoursUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final stepHours = (factor == 0 ? 1 : factor.abs()).ceil();
+    return _buildPeriod(target, durationStep: Duration(hours: stepHours));
+  }
+
+  @override
   CarbonInterface setMilli(int millisecond) =>
       _duplicate(dateTime: _copyWith(millisecond: millisecond));
 
@@ -346,6 +489,127 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface setMilliseconds(int millisecond) => setMilli(millisecond);
 
   @override
+  int get millisecond => _dateTime.millisecond;
+
+  @override
+  int get milliseconds => millisecond;
+
+  @override
+  int get milli => millisecond;
+
+  @override
+  int get millis => millisecond;
+
+  @override
+  int get millisecondOfSecond => millisecond + 1;
+
+  @override
+  int get millisecondOfMinute => _millisecondsSince(
+        DateTime.utc(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          _dateTime.hour,
+          _dateTime.minute,
+        ),
+      ) +
+      1;
+
+  @override
+  int get millisecondOfHour => _millisecondsSince(
+        DateTime.utc(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          _dateTime.hour,
+        ),
+      ) +
+      1;
+
+  @override
+  int get millisecondOfDay => _millisecondsSince(
+        DateTime.utc(_dateTime.year, _dateTime.month, _dateTime.day),
+      ) +
+      1;
+
+  @override
+  int get millisecondOfWeek =>
+      _millisecondsSince(_weekStart(_dateTime)) + 1;
+
+  @override
+  int get millisecondOfMonth =>
+      _millisecondsSince(DateTime.utc(_dateTime.year, _dateTime.month, 1)) + 1;
+
+  @override
+  int get millisecondOfQuarter =>
+      _millisecondsSince(_quarterStart(_dateTime)) + 1;
+
+  @override
+  int get millisecondOfYear =>
+      _millisecondsSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+
+  @override
+  int get millisecondOfDecade =>
+      _millisecondsSince(_decadeStart(_dateTime)) + 1;
+
+  @override
+  int get millisecondOfCentury =>
+      _millisecondsSince(_centuryStart(_dateTime)) + 1;
+
+  @override
+  int get millisecondOfMillennium =>
+      _millisecondsSince(_millenniumStart(_dateTime)) + 1;
+
+  @override
+  int get millisecondsInSecond => Duration.millisecondsPerSecond;
+
+  @override
+  int get millisecondsInMinute => Duration.millisecondsPerMinute;
+
+  @override
+  int get millisecondsInHour => Duration.millisecondsPerHour;
+
+  @override
+  int get millisecondsInDay => Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInWeek => millisecondsInDay * daysInWeek;
+
+  @override
+  int get millisecondsInMonth => daysInMonth * Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInQuarter =>
+      daysInQuarter * Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInYear =>
+      daysInYear * Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInDecade =>
+      daysInDecade * Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInCentury =>
+      daysInCentury * Duration.millisecondsPerDay;
+
+  @override
+  int get millisecondsInMillennium =>
+      daysInMillennium * Duration.millisecondsPerDay;
+
+  @override
+  CarbonPeriod millisecondsUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final step = (factor == 0 ? 1 : factor.abs()).ceil();
+    return _buildPeriod(target, durationStep: Duration(milliseconds: step));
+  }
+
+  @override
+  CarbonPeriod millisUntil([dynamic endDate, num factor = 1]) =>
+      millisecondsUntil(endDate, factor);
+
+  @override
   CarbonInterface setMicro(int microsecond) =>
       _duplicate(dateTime: _copyWith(microsecond: microsecond));
 
@@ -357,6 +621,137 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   CarbonInterface setMicroseconds(int microsecond) => setMicro(microsecond);
+
+  @override
+  int get microsecond => _dateTime.microsecond;
+
+  @override
+  int get microseconds => microsecond;
+
+  @override
+  int get micro => microsecond;
+
+  @override
+  int get micros => microsecond;
+
+  @override
+  int get microsecondOfMillisecond => microsecond + 1;
+
+  @override
+  int get microsecondOfSecond =>
+      _dateTime.millisecond * Duration.microsecondsPerMillisecond +
+      microsecond +
+      1;
+
+  @override
+  int get microsecondOfMinute => _microsecondsSince(
+        DateTime.utc(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          _dateTime.hour,
+          _dateTime.minute,
+        ),
+      ) +
+      1;
+
+  @override
+  int get microsecondOfHour => _microsecondsSince(
+        DateTime.utc(
+          _dateTime.year,
+          _dateTime.month,
+          _dateTime.day,
+          _dateTime.hour,
+        ),
+      ) +
+      1;
+
+  @override
+  int get microsecondOfDay => _microsecondsSince(
+        DateTime.utc(_dateTime.year, _dateTime.month, _dateTime.day),
+      ) +
+      1;
+
+  @override
+  int get microsecondOfWeek =>
+      _microsecondsSince(_weekStart(_dateTime)) + 1;
+
+  @override
+  int get microsecondOfMonth =>
+      _microsecondsSince(DateTime.utc(_dateTime.year, _dateTime.month, 1)) + 1;
+
+  @override
+  int get microsecondOfQuarter =>
+      _microsecondsSince(_quarterStart(_dateTime)) + 1;
+
+  @override
+  int get microsecondOfYear =>
+      _microsecondsSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+
+  @override
+  int get microsecondOfDecade => _microsecondsSince(_decadeStart(_dateTime)) + 1;
+
+  @override
+  int get microsecondOfCentury =>
+      _microsecondsSince(_centuryStart(_dateTime)) + 1;
+
+  @override
+  int get microsecondOfMillennium =>
+      _microsecondsSince(_millenniumStart(_dateTime)) + 1;
+
+  @override
+  int get microsecondsInMillisecond =>
+      Duration.microsecondsPerMillisecond;
+
+  @override
+  int get microsecondsInSecond => Duration.microsecondsPerSecond;
+
+  @override
+  int get microsecondsInMinute => Duration.microsecondsPerMinute;
+
+  @override
+  int get microsecondsInHour => Duration.microsecondsPerHour;
+
+  @override
+  int get microsecondsInDay => Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInWeek => microsecondsInDay * daysInWeek;
+
+  @override
+  int get microsecondsInMonth =>
+      daysInMonth * Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInQuarter =>
+      daysInQuarter * Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInYear =>
+      daysInYear * Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInDecade =>
+      daysInDecade * Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInCentury =>
+      daysInCentury * Duration.microsecondsPerDay;
+
+  @override
+  int get microsecondsInMillennium =>
+      daysInMillennium * Duration.microsecondsPerDay;
+
+  @override
+  CarbonPeriod microsecondsUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final step = (factor == 0 ? 1 : factor.abs()).ceil();
+    return _buildPeriod(target, durationStep: Duration(microseconds: step));
+  }
+
+  @override
+  CarbonPeriod microsUntil([dynamic endDate, num factor = 1]) =>
+      microsecondsUntil(endDate, factor);
 
   @override
   int get yearOfCentury => _wrapModulo(_dateTime.year - 1, 100) + 1;
@@ -377,9 +772,51 @@ abstract class CarbonBase implements CarbonInterface {
   int get yearsInMillennium => 1000;
 
   @override
+  int get centuryOfMillennium =>
+      ((_dateTime.year - _millenniumStart(_dateTime).year) ~/ 100) + 1;
+
+  @override
+  int get centuriesInMillennium => 10;
+
+  @override
+  CarbonPeriod centuriesUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final stepMonths = (factor == 0 ? 1 : factor.abs()).ceil() * 1200;
+    return _buildPeriod(target, monthStep: stepMonths);
+  }
+
+  @override
+  int get decadeOfCentury =>
+      ((_dateTime.year - _centuryStart(_dateTime).year) ~/ 10) + 1;
+
+  @override
+  int get decadeOfMillennium =>
+      ((_dateTime.year - _millenniumStart(_dateTime).year) ~/ 10) + 1;
+
+  @override
+  int get decadesInCentury => 10;
+
+  @override
+  int get decadesInMillennium => 100;
+
+  @override
+  CarbonPeriod decadesUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final stepMonths = (factor == 0 ? 1 : factor.abs()).ceil() * 120;
+    return _buildPeriod(target, monthStep: stepMonths);
+  }
+
+  @override
   CarbonPeriod yearsUntil([dynamic endDate, num factor = 1]) {
     final target = _coerceToDateTime(endDate);
     final stepMonths = (factor == 0 ? 1 : factor.abs()).ceil() * 12;
+    return _buildPeriod(target, monthStep: stepMonths);
+  }
+
+  @override
+  CarbonPeriod millenniaUntil([dynamic endDate, num factor = 1]) {
+    final target = _coerceToDateTime(endDate);
+    final stepMonths = (factor == 0 ? 1 : factor.abs()).ceil() * 12000;
     return _buildPeriod(target, monthStep: stepMonths);
   }
 
@@ -536,10 +973,45 @@ abstract class CarbonBase implements CarbonInterface {
   }
 
   @override
-  int get minutesInWeek => secondsInWeek ~/ 60;
+  int get minutesInHour => 60;
+
+  @override
+  int get minutesInDay => minutesInHour * 24;
+
+  @override
+  int get minutesInWeek => minutesInDay * 7;
+
+  @override
+  int get minutesInMonth =>
+      _secondsBetween(
+        DateTime.utc(_dateTime.year, _dateTime.month, 1),
+        DateTime.utc(_dateTime.year, _dateTime.month + 1, 1),
+      ) ~/
+      60;
+
+  @override
+  int get minutesInQuarter =>
+      _secondsBetween(
+        _quarterStart(_dateTime),
+        DateTime.utc(
+          _quarterStart(_dateTime).year,
+          _quarterStart(_dateTime).month + 3,
+          1,
+        ),
+      ) ~/
+      60;
 
   @override
   int get minutesInYear => secondsInYear ~/ 60;
+
+  @override
+  int get minutesInDecade => minutesInYear * 10;
+
+  @override
+  int get minutesInCentury => minutesInYear * 100;
+
+  @override
+  int get minutesInMillennium => minutesInYear * 1000;
 
   @override
   CarbonPeriod minutesUntil([dynamic endDate, num factor = 1]) {
@@ -598,10 +1070,51 @@ abstract class CarbonBase implements CarbonInterface {
   int get secondOfMillennium => _secondsSince(_millenniumStart(_dateTime)) + 1;
 
   @override
+  int get minute => _dateTime.minute;
+
+  @override
+  int get minutes => minute;
+
+  @override
+  int get minuteOfHour => _dateTime.minute + 1;
+
+  @override
+  int get minuteOfDay => _dateTime.hour * 60 + minuteOfHour;
+
+  @override
+  int get minuteOfWeek => _minutesSince(_weekStart(_dateTime)) + 1;
+
+  @override
+  int get minuteOfMonth =>
+      (_dateTime.day - 1) * 24 * 60 + _dateTime.hour * 60 + minuteOfHour;
+
+  @override
+  int get minuteOfQuarter => _minutesSince(_quarterStart(_dateTime)) + 1;
+
+  @override
+  int get minuteOfYear =>
+      (_secondsSince(DateTime.utc(_dateTime.year, 1, 1)) ~/ 60) + 1;
+
+  @override
+  int get minuteOfDecade => (_secondsSince(_decadeStart(_dateTime)) ~/ 60) + 1;
+
+  @override
+  int get minuteOfCentury =>
+      (_secondsSince(_centuryStart(_dateTime)) ~/ 60) + 1;
+
+  @override
+  int get minuteOfMillennium =>
+      (_secondsSince(_millenniumStart(_dateTime)) ~/ 60) + 1;
+
+  @override
   CarbonInterface roundSeconds({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(seconds: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundSecond({
@@ -610,10 +1123,30 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundSeconds(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilSeconds({double precision = 1}) =>
+      roundSeconds(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilSecond({double precision = 1}) =>
+      ceilSeconds(precision: precision);
+
+  @override
+  CarbonInterface floorSeconds({double precision = 1}) =>
+      roundSeconds(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorSecond({double precision = 1}) =>
+      floorSeconds(precision: precision);
+
+  @override
   CarbonInterface roundMinutes({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(minutes: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundMinute({
@@ -622,10 +1155,26 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundMinutes(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilMinutes({double precision = 1}) =>
+      roundMinutes(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilMinute({double precision = 1}) =>
+      ceilMinutes(precision: precision);
+
+  @override
+  CarbonInterface floorMinutes({double precision = 1}) =>
+      roundMinutes(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorMinute({double precision = 1}) =>
+      floorMinutes(precision: precision);
+
+  @override
   CarbonInterface roundMonths({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision, function);
 
   @override
   CarbonInterface roundMonth({
@@ -634,10 +1183,26 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundMonths(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilMonths({double precision = 1}) =>
+      roundMonths(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilMonth({double precision = 1}) =>
+      ceilMonths(precision: precision);
+
+  @override
+  CarbonInterface floorMonths({double precision = 1}) =>
+      roundMonths(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorMonth({double precision = 1}) =>
+      floorMonths(precision: precision);
+
+  @override
   CarbonInterface roundQuarters({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision * 3, function);
 
   @override
   CarbonInterface roundQuarter({
@@ -646,10 +1211,26 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundQuarters(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilQuarters({double precision = 1}) =>
+      roundQuarters(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilQuarter({double precision = 1}) =>
+      ceilQuarters(precision: precision);
+
+  @override
+  CarbonInterface floorQuarters({double precision = 1}) =>
+      roundQuarters(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorQuarter({double precision = 1}) =>
+      floorQuarters(precision: precision);
+
+  @override
   CarbonInterface roundYears({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision * 12, function);
 
   @override
   CarbonInterface roundYear({
@@ -658,10 +1239,30 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundYears(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilYears({double precision = 1}) =>
+      roundYears(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilYear({double precision = 1}) =>
+      ceilYears(precision: precision);
+
+  @override
+  CarbonInterface floorYears({double precision = 1}) =>
+      roundYears(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorYear({double precision = 1}) =>
+      floorYears(precision: precision);
+
+  @override
   CarbonInterface roundHours({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(hours: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundHour({
@@ -670,10 +1271,26 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundHours(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilHours({double precision = 1}) =>
+      roundHours(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilHour({double precision = 1}) =>
+      ceilHours(precision: precision);
+
+  @override
+  CarbonInterface floorHours({double precision = 1}) =>
+      roundHours(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorHour({double precision = 1}) =>
+      floorHours(precision: precision);
+
+  @override
   CarbonInterface roundDecades({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision * 120, function);
 
   @override
   CarbonInterface roundDecade({
@@ -682,10 +1299,26 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundDecades(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilDecades({double precision = 1}) =>
+      roundDecades(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilDecade({double precision = 1}) =>
+      ceilDecades(precision: precision);
+
+  @override
+  CarbonInterface floorDecades({double precision = 1}) =>
+      roundDecades(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorDecade({double precision = 1}) =>
+      floorDecades(precision: precision);
+
+  @override
   CarbonInterface roundMillennia({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision * 12000, function);
 
   @override
   CarbonInterface roundMillennium({
@@ -694,10 +1327,30 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundMillennia(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilMillennia({double precision = 1}) =>
+      roundMillennia(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilMillennium({double precision = 1}) =>
+      ceilMillennia(precision: precision);
+
+  @override
+  CarbonInterface floorMillennia({double precision = 1}) =>
+      roundMillennia(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorMillennium({double precision = 1}) =>
+      floorMillennia(precision: precision);
+
+  @override
   CarbonInterface roundMilliseconds({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(milliseconds: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundMillisecond({
@@ -706,10 +1359,30 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundMilliseconds(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilMilliseconds({double precision = 1}) =>
+      roundMilliseconds(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilMillisecond({double precision = 1}) =>
+      ceilMilliseconds(precision: precision);
+
+  @override
+  CarbonInterface floorMilliseconds({double precision = 1}) =>
+      roundMilliseconds(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorMillisecond({double precision = 1}) =>
+      floorMilliseconds(precision: precision);
+
+  @override
   CarbonInterface roundMicroseconds({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(microseconds: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundMicrosecond({
@@ -718,26 +1391,78 @@ abstract class CarbonBase implements CarbonInterface {
   }) => roundMicroseconds(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilMicroseconds({double precision = 1}) =>
+      roundMicroseconds(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilMicrosecond({double precision = 1}) =>
+      ceilMicroseconds(precision: precision);
+
+  @override
+  CarbonInterface floorMicroseconds({double precision = 1}) =>
+      roundMicroseconds(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorMicrosecond({double precision = 1}) =>
+      floorMicroseconds(precision: precision);
+
+  @override
   CarbonInterface roundDays({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundDurationUnit(
+        const Duration(days: 1),
+        precision,
+        function,
+      );
 
   @override
   CarbonInterface roundDay({double precision = 1, String function = 'round'}) =>
       roundDays(precision: precision, function: function);
 
   @override
+  CarbonInterface ceilDays({double precision = 1}) =>
+      roundDays(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilDay({double precision = 1}) =>
+      ceilDays(precision: precision);
+
+  @override
+  CarbonInterface floorDays({double precision = 1}) =>
+      roundDays(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorDay({double precision = 1}) =>
+      floorDays(precision: precision);
+
+  @override
   CarbonInterface roundCenturies({
     double precision = 1,
     String function = 'round',
-  }) => this;
+  }) => _roundMonthUnit(precision * 1200, function);
 
   @override
   CarbonInterface roundCentury({
     double precision = 1,
     String function = 'round',
   }) => roundCenturies(precision: precision, function: function);
+
+  @override
+  CarbonInterface ceilCenturies({double precision = 1}) =>
+      roundCenturies(precision: precision, function: 'ceil');
+
+  @override
+  CarbonInterface ceilCentury({double precision = 1}) =>
+      ceilCenturies(precision: precision);
+
+  @override
+  CarbonInterface floorCenturies({double precision = 1}) =>
+      roundCenturies(precision: precision, function: 'floor');
+
+  @override
+  CarbonInterface floorCentury({double precision = 1}) =>
+      floorCenturies(precision: precision);
 
   @override
   bool isBefore(CarbonInterface other) => _dateTime.isBefore(other.dateTime);
@@ -766,6 +1491,197 @@ abstract class CarbonBase implements CarbonInterface {
   }
 
   @override
+  bool isCurrentMicrosecond() => _isCurrentUnit(_ComparisonUnit.microsecond);
+
+  @override
+  bool isCurrentMicro() => isCurrentMicrosecond();
+
+  @override
+  bool isNextMicrosecond() => _isNextUnit(_ComparisonUnit.microsecond);
+
+  @override
+  bool isNextMicro() => isNextMicrosecond();
+
+  @override
+  bool isLastMicrosecond() => _isLastUnit(_ComparisonUnit.microsecond);
+
+  @override
+  bool isLastMicro() => isLastMicrosecond();
+
+  @override
+  bool isSameMicrosecond([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.microsecond, other);
+
+  @override
+  bool isSameMicro([CarbonInterface? other]) => isSameMicrosecond(other);
+
+  @override
+  bool isCurrentMillisecond() =>
+      _isCurrentUnit(_ComparisonUnit.millisecond);
+
+  @override
+  bool isCurrentMilli() => isCurrentMillisecond();
+
+  @override
+  bool isNextMillisecond() => _isNextUnit(_ComparisonUnit.millisecond);
+
+  @override
+  bool isNextMilli() => isNextMillisecond();
+
+  @override
+  bool isLastMillisecond() => _isLastUnit(_ComparisonUnit.millisecond);
+
+  @override
+  bool isLastMilli() => isLastMillisecond();
+
+  @override
+  bool isSameMillisecond([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.millisecond, other);
+
+  @override
+  bool isSameMilli([CarbonInterface? other]) => isSameMillisecond(other);
+
+  @override
+  bool isCurrentSecond() => _isCurrentUnit(_ComparisonUnit.second);
+
+  @override
+  bool isNextSecond() => _isNextUnit(_ComparisonUnit.second);
+
+  @override
+  bool isLastSecond() => _isLastUnit(_ComparisonUnit.second);
+
+  @override
+  bool isSameSecond([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.second, other);
+
+  @override
+  bool isCurrentMinute() => _isCurrentUnit(_ComparisonUnit.minute);
+
+  @override
+  bool isNextMinute() => _isNextUnit(_ComparisonUnit.minute);
+
+  @override
+  bool isLastMinute() => _isLastUnit(_ComparisonUnit.minute);
+
+  @override
+  bool isSameMinute([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.minute, other);
+
+  @override
+  bool isCurrentHour() => _isCurrentUnit(_ComparisonUnit.hour);
+
+  @override
+  bool isNextHour() => _isNextUnit(_ComparisonUnit.hour);
+
+  @override
+  bool isLastHour() => _isLastUnit(_ComparisonUnit.hour);
+
+  @override
+  bool isSameHour([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.hour, other);
+
+  @override
+  bool isCurrentDay() => _isCurrentUnit(_ComparisonUnit.day);
+
+  @override
+  bool isNextDay() => _isNextUnit(_ComparisonUnit.day);
+
+  @override
+  bool isLastDay() => _isLastUnit(_ComparisonUnit.day);
+
+  @override
+  bool isCurrentWeek() => _isCurrentUnit(_ComparisonUnit.week);
+
+  @override
+  bool isNextWeek() => _isNextUnit(_ComparisonUnit.week);
+
+  @override
+  bool isLastWeek() => _isLastUnit(_ComparisonUnit.week);
+
+  @override
+  bool isSameWeek([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.week, other);
+
+  @override
+  bool isCurrentMonth() => _isCurrentUnit(_ComparisonUnit.month);
+
+  @override
+  bool isNextMonth() => _isNextUnit(_ComparisonUnit.month);
+
+  @override
+  bool isLastMonth() => _isLastUnit(_ComparisonUnit.month);
+
+  @override
+  bool isSameMonth([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.month, other);
+
+  @override
+  bool isCurrentQuarter() => _isCurrentUnit(_ComparisonUnit.quarter);
+
+  @override
+  bool isNextQuarter() => _isNextUnit(_ComparisonUnit.quarter);
+
+  @override
+  bool isLastQuarter() => _isLastUnit(_ComparisonUnit.quarter);
+
+  @override
+  bool isSameQuarter([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.quarter, other);
+
+  @override
+  bool isCurrentYear() => _isCurrentUnit(_ComparisonUnit.year);
+
+  @override
+  bool isNextYear() => _isNextUnit(_ComparisonUnit.year);
+
+  @override
+  bool isLastYear() => _isLastUnit(_ComparisonUnit.year);
+
+  @override
+  bool isSameYear([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.year, other);
+
+  @override
+  bool isCurrentDecade() => _isCurrentUnit(_ComparisonUnit.decade);
+
+  @override
+  bool isNextDecade() => _isNextUnit(_ComparisonUnit.decade);
+
+  @override
+  bool isLastDecade() => _isLastUnit(_ComparisonUnit.decade);
+
+  @override
+  bool isSameDecade([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.decade, other);
+
+  @override
+  bool isCurrentCentury() => _isCurrentUnit(_ComparisonUnit.century);
+
+  @override
+  bool isNextCentury() => _isNextUnit(_ComparisonUnit.century);
+
+  @override
+  bool isLastCentury() => _isLastUnit(_ComparisonUnit.century);
+
+  @override
+  bool isSameCentury([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.century, other);
+
+  @override
+  bool isCurrentMillennium() =>
+      _isCurrentUnit(_ComparisonUnit.millennium);
+
+  @override
+  bool isNextMillennium() => _isNextUnit(_ComparisonUnit.millennium);
+
+  @override
+  bool isLastMillennium() => _isLastUnit(_ComparisonUnit.millennium);
+
+  @override
+  bool isSameMillennium([CarbonInterface? other]) =>
+      _isSameUnitWithTarget(_ComparisonUnit.millennium, other);
+
+  @override
   Duration diff(CarbonInterface other) => _dateTime.difference(other.dateTime);
 
   int _diffIn(Duration portion, CarbonInterface other, {bool absolute = true}) {
@@ -785,6 +1701,109 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   int diffInMinutes(CarbonInterface other, {bool absolute = true}) =>
       _diffIn(const Duration(minutes: 1), other, absolute: absolute);
+
+  @override
+  int diffInSeconds(CarbonInterface other, {bool absolute = true}) =>
+      _diffIn(const Duration(seconds: 1), other, absolute: absolute);
+
+  @override
+  int diffInWeeks(CarbonInterface other, {bool absolute = true}) =>
+      _diffIn(const Duration(days: 7), other, absolute: absolute);
+
+  @override
+  int diffInMonths(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 1, absolute: absolute);
+
+  @override
+  int diffInQuarters(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 3, absolute: absolute);
+
+  @override
+  int diffInYears(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 12, absolute: absolute);
+
+  @override
+  int diffInDecades(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 120, absolute: absolute);
+
+  @override
+  int diffInCenturies(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 1200, absolute: absolute);
+
+  @override
+  int diffInMillennia(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsUnit(other, monthsPerUnit: 12000, absolute: absolute);
+
+  @override
+  int diffInDaysFloored(CarbonInterface other) =>
+      _dateTime.difference(other.dateTime).inDays;
+
+  @override
+  double diffInUTCMicros([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(microseconds: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCMicroseconds([dynamic date, bool absolute = true]) =>
+      diffInUTCMicros(date, absolute);
+
+  @override
+  double diffInUTCMillis([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(milliseconds: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCMilliseconds([dynamic date, bool absolute = true]) =>
+      diffInUTCMillis(date, absolute);
+
+  @override
+  double diffInUTCSeconds([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(seconds: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCMinutes([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(minutes: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCHours([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(hours: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCDays([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(days: 1), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCWeeks([dynamic date, bool absolute = true]) =>
+      _diffInUTCByDuration(const Duration(days: 7), date,
+          absolute: absolute);
+
+  @override
+  double diffInUTCMonths([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, absolute: absolute);
+
+  @override
+  double diffInUTCQuarters([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, monthsPerUnit: 3, absolute: absolute);
+
+  @override
+  double diffInUTCYears([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, monthsPerUnit: 12, absolute: absolute);
+
+  @override
+  double diffInUTCDecades([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, monthsPerUnit: 120, absolute: absolute);
+
+  @override
+  double diffInUTCCenturies([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, monthsPerUnit: 1200, absolute: absolute);
+
+  @override
+  double diffInUTCMillennia([dynamic date, bool absolute = true]) =>
+      _diffInUTCByMonths(date, monthsPerUnit: 12000, absolute: absolute);
 
   @override
   String format(String pattern, {String? locale}) {
@@ -811,6 +1830,21 @@ abstract class CarbonBase implements CarbonInterface {
   }
 
   @override
+  String longAbsoluteDiffForHumans([CarbonInterface? other]) =>
+      diffForHumans(reference: other);
+
+  @override
+  String longRelativeDiffForHumans([CarbonInterface? other]) =>
+      diffForHumans(reference: other);
+
+  @override
+  String longRelativeToNowDiffForHumans() => diffForHumans();
+
+  @override
+  String longRelativeToOtherDiffForHumans(CarbonInterface other) =>
+      diffForHumans(reference: other);
+
+  @override
   String shortAbsoluteDiffForHumans([CarbonInterface? other]) =>
       diffForHumans(reference: other);
 
@@ -824,6 +1858,45 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   String shortRelativeToOtherDiffForHumans(CarbonInterface other) =>
       diffForHumans(reference: other);
+
+  @override
+  bool get isMutable => _isMutable;
+
+  @override
+  bool get isLocal => _timeZone == null;
+
+  @override
+  bool get isUtc => _timeZone == 'UTC';
+
+  @override
+  bool get isValid => true;
+
+  @override
+  bool isDST() {
+    final snapshot = _zoneSnapshot();
+    return snapshot?.isDst ?? false;
+  }
+
+  @override
+  bool isMonday() => _dateTime.weekday == DateTime.monday;
+
+  @override
+  bool isTuesday() => _dateTime.weekday == DateTime.tuesday;
+
+  @override
+  bool isWednesday() => _dateTime.weekday == DateTime.wednesday;
+
+  @override
+  bool isThursday() => _dateTime.weekday == DateTime.thursday;
+
+  @override
+  bool isFriday() => _dateTime.weekday == DateTime.friday;
+
+  @override
+  bool isSaturday() => _dateTime.weekday == DateTime.saturday;
+
+  @override
+  bool isSunday() => _dateTime.weekday == DateTime.sunday;
 
   @override
   int toEpochMilliseconds() => _dateTime.toUtc().millisecondsSinceEpoch;
@@ -889,6 +1962,7 @@ abstract class CarbonBase implements CarbonInterface {
         localDateTime: _dateTime.toUtc(),
         abbreviation: 'UTC',
         offset: Duration.zero,
+        isDst: false,
       );
     }
     if (_zoneProvider == null) {
@@ -900,8 +1974,10 @@ abstract class CarbonBase implements CarbonInterface {
     final zoneInterval = zone.getZoneInterval(instant);
     return CarbonTimeZoneSnapshot(
       localDateTime: zoned.localDateTime.toDateTimeLocal(),
-      abbreviation: zoneInterval.name ?? zone.id,
+      abbreviation:
+          zoneInterval.name.isNotEmpty ? zoneInterval.name : zone.id,
       offset: Duration(seconds: zoned.offset.inSeconds),
+      isDst: zoneInterval.savings != tm.Offset.zero,
     );
   }
 
@@ -1077,9 +2153,278 @@ abstract class CarbonBase implements CarbonInterface {
 
   int _secondsSince(DateTime anchor) => _dateTime.difference(anchor).inSeconds;
 
+  int _minutesSince(DateTime anchor) => _dateTime.difference(anchor).inMinutes;
+
+  int _hoursSince(DateTime anchor) => _dateTime.difference(anchor).inHours;
+
+  int _daysSince(DateTime anchor) => _dateTime.difference(anchor).inDays;
+
+  int _millisecondsSince(DateTime anchor) =>
+      _dateTime.difference(anchor).inMilliseconds;
+
+  int _microsecondsSince(DateTime anchor) =>
+      _dateTime.difference(anchor).inMicroseconds;
+
+  int _daysBetween(DateTime start, DateTime endExclusive) =>
+      endExclusive.difference(start).inDays;
+
+  CarbonInterface _roundDurationUnit(
+    Duration unit,
+    double precision,
+    String function,
+  ) {
+    final normalized = _normalizePrecision(precision);
+    if (normalized == null) {
+      return this;
+    }
+    final stepMicros = unit.inMicroseconds * normalized;
+    if (stepMicros == 0) {
+      return this;
+    }
+    final current = _dateTime.microsecondsSinceEpoch.toDouble();
+    final quotient = current / stepMicros;
+    final rounded = _applyRoundFunction(quotient, function) * stepMicros;
+    final micros = rounded.round();
+    final roundedDate = DateTime.fromMicrosecondsSinceEpoch(
+      micros,
+      isUtc: true,
+    );
+    return _wrap(roundedDate);
+  }
+
+  CarbonInterface _roundMonthUnit(double precisionInMonths, String function) {
+    final normalized = _normalizePrecision(precisionInMonths);
+    if (normalized == null) {
+      return this;
+    }
+    final value = _monthPosition(_dateTime);
+    final quotient = value / normalized;
+    final rounded = _applyRoundFunction(quotient, function) * normalized;
+    final date = _dateFromMonthPosition(rounded);
+    return _wrap(date);
+  }
+
+  double? _normalizePrecision(double precision) {
+    if (precision.isNaN) {
+      return 1.0;
+    }
+    if (!precision.isFinite) {
+      return null;
+    }
+    final normalized = precision == 0 ? 1.0 : precision.abs();
+    return normalized;
+  }
+
+  double _applyRoundFunction(double value, String function) {
+    switch (function.toLowerCase()) {
+      case 'ceil':
+        return value.ceilToDouble();
+      case 'floor':
+        return value.floorToDouble();
+      default:
+        return value.roundToDouble();
+    }
+  }
+
+  DateTime _dateFromMonthPosition(double position) {
+    final floorValue = position.floor();
+    final fraction = position - floorValue;
+    final monthIndex = floorValue.toInt();
+    var year = monthIndex ~/ 12;
+    var monthWithinYear = monthIndex % 12;
+    if (monthWithinYear < 0) {
+      monthWithinYear += 12;
+      year -= 1;
+    }
+    final monthNumber = monthWithinYear + 1;
+    final monthStart = DateTime.utc(year, monthNumber, 1);
+    final nextMonth = DateTime.utc(year, monthNumber + 1, 1);
+    final span = nextMonth.difference(monthStart).inMicroseconds;
+    final offset = (fraction * span).round();
+    return monthStart.add(Duration(microseconds: offset));
+  }
+
+  double _diffInUTCByDuration(
+    Duration unit,
+    dynamic other, {
+    bool absolute = true,
+  }) {
+    final target = _coerceToDateTime(other);
+    final diff = _dateTime.difference(target);
+    final value = diff.inMicroseconds / unit.inMicroseconds;
+    return absolute ? value.abs() : value;
+  }
+
+  double _diffInUTCByMonths(
+    dynamic other, {
+    int monthsPerUnit = 1,
+    bool absolute = true,
+  }) {
+    final target = _coerceToDateTime(other);
+    final months = _monthPosition(_dateTime) - _monthPosition(target);
+    final value = months / monthsPerUnit;
+    return absolute ? value.abs() : value;
+  }
+
+  int _diffInMonthsUnit(
+    CarbonInterface other, {
+    int monthsPerUnit = 1,
+    bool absolute = true,
+  }) {
+    final months = (_monthPosition(_dateTime) - _monthPosition(other.dateTime)) /
+        monthsPerUnit;
+    final truncated = months.truncate();
+    return absolute ? truncated.abs() : truncated;
+  }
+
+  double _monthPosition(DateTime value) {
+    final start = DateTime.utc(value.year, value.month, 1);
+    final end = DateTime.utc(value.year, value.month + 1, 1);
+    final span = end.difference(start).inMicroseconds;
+    if (span == 0) {
+      return (value.year * 12 + (value.month - 1)).toDouble();
+    }
+    final offset = value.difference(start).inMicroseconds;
+    return (value.year * 12 + (value.month - 1)) + offset / span;
+  }
+
+  bool _isSameUnit(
+    DateTime first,
+    DateTime second,
+    _ComparisonUnit unit,
+  ) =>
+      _startOfUnit(first, unit).isAtSameMomentAs(
+        _startOfUnit(second, unit),
+      );
+
+  bool _isCurrentUnit(_ComparisonUnit unit) =>
+      _isSameUnit(_dateTime, _nowUtc(), unit);
+
+  bool _isNextUnit(_ComparisonUnit unit) => _isSameUnit(
+        _dateTime,
+        _addComparisonUnit(_nowUtc(), unit, 1),
+        unit,
+      );
+
+  bool _isLastUnit(_ComparisonUnit unit) => _isSameUnit(
+        _dateTime,
+        _addComparisonUnit(_nowUtc(), unit, -1),
+        unit,
+      );
+
+  bool _isSameUnitWithTarget(
+    _ComparisonUnit unit,
+    CarbonInterface? other,
+  ) => _isSameUnit(_dateTime, _resolveComparisonTarget(other), unit);
+
+  DateTime _resolveComparisonTarget(CarbonInterface? other) =>
+      other?.dateTime ?? _nowUtc();
+
+  DateTime _nowUtc() => clock.now().toUtc();
+
+  DateTime _startOfUnit(DateTime value, _ComparisonUnit unit) {
+    switch (unit) {
+      case _ComparisonUnit.microsecond:
+        return value;
+      case _ComparisonUnit.millisecond:
+        return DateTime.utc(
+          value.year,
+          value.month,
+          value.day,
+          value.hour,
+          value.minute,
+          value.second,
+          value.millisecond,
+        );
+      case _ComparisonUnit.second:
+        return DateTime.utc(
+          value.year,
+          value.month,
+          value.day,
+          value.hour,
+          value.minute,
+          value.second,
+        );
+      case _ComparisonUnit.minute:
+        return DateTime.utc(
+          value.year,
+          value.month,
+          value.day,
+          value.hour,
+          value.minute,
+        );
+      case _ComparisonUnit.hour:
+        return DateTime.utc(value.year, value.month, value.day, value.hour);
+      case _ComparisonUnit.day:
+        return DateTime.utc(value.year, value.month, value.day);
+      case _ComparisonUnit.week:
+        return _weekStart(value);
+      case _ComparisonUnit.month:
+        return DateTime.utc(value.year, value.month, 1);
+      case _ComparisonUnit.quarter:
+        return _quarterStart(value);
+      case _ComparisonUnit.year:
+        return DateTime.utc(value.year, 1, 1);
+      case _ComparisonUnit.decade:
+        return _decadeStart(value);
+      case _ComparisonUnit.century:
+        return _centuryStart(value);
+      case _ComparisonUnit.millennium:
+        return _millenniumStart(value);
+    }
+  }
+
+  DateTime _addComparisonUnit(
+    DateTime value,
+    _ComparisonUnit unit,
+    int amount,
+  ) {
+    if (amount == 0) {
+      return value;
+    }
+    switch (unit) {
+      case _ComparisonUnit.microsecond:
+        return value.add(Duration(microseconds: amount));
+      case _ComparisonUnit.millisecond:
+        return value.add(Duration(milliseconds: amount));
+      case _ComparisonUnit.second:
+        return value.add(Duration(seconds: amount));
+      case _ComparisonUnit.minute:
+        return value.add(Duration(minutes: amount));
+      case _ComparisonUnit.hour:
+        return value.add(Duration(hours: amount));
+      case _ComparisonUnit.day:
+        return value.add(Duration(days: amount));
+      case _ComparisonUnit.week:
+        return value.add(Duration(days: amount * 7));
+      case _ComparisonUnit.month:
+        return _addMonths(value, amount);
+      case _ComparisonUnit.quarter:
+        return _addMonths(value, amount * 3);
+      case _ComparisonUnit.year:
+        return _addMonths(value, amount * 12);
+      case _ComparisonUnit.decade:
+        return _addMonths(value, amount * 120);
+      case _ComparisonUnit.century:
+        return _addMonths(value, amount * 1200);
+      case _ComparisonUnit.millennium:
+        return _addMonths(value, amount * 12000);
+    }
+  }
+
   DateTime _quarterStart(DateTime dateTime) {
     final quarter = ((dateTime.month - 1) ~/ 3) * 3 + 1;
     return DateTime.utc(dateTime.year, quarter, 1);
+  }
+
+  DateTime _weekStart(DateTime dateTime) {
+    final startOfWeek = _settings.startOfWeek;
+    final normalized = ((dateTime.weekday - startOfWeek) + 7) % 7;
+    return DateTime.utc(
+      dateTime.year,
+      dateTime.month,
+      dateTime.day,
+    ).subtract(Duration(days: normalized));
   }
 
   DateTime _decadeStart(DateTime dateTime) {
@@ -1096,4 +2441,20 @@ abstract class CarbonBase implements CarbonInterface {
     final millennium = ((dateTime.year - 1) ~/ 1000) * 1000 + 1;
     return DateTime.utc(millennium, 1, 1);
   }
+}
+
+enum _ComparisonUnit {
+  microsecond,
+  millisecond,
+  second,
+  minute,
+  hour,
+  day,
+  week,
+  month,
+  quarter,
+  year,
+  decade,
+  century,
+  millennium,
 }
