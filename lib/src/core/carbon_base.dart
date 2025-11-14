@@ -155,13 +155,9 @@ abstract class CarbonBase implements CarbonInterface {
   DateTime _addMonths(DateTime value, int months, {bool? monthOverflow}) {
     final overflow = monthOverflow ?? _settings.monthOverflow;
     final monthIndex = value.month - 1 + months;
-    var targetYear = value.year + monthIndex ~/ 12;
-    var targetMonth = monthIndex % 12;
-    if (targetMonth < 0) {
-      targetMonth += 12;
-      targetYear -= 1;
-    }
-    targetMonth += 1;
+    final yearDelta = _floorDiv(monthIndex, 12);
+    final targetYear = value.year + yearDelta;
+    final targetMonth = (monthIndex - yearDelta * 12) + 1;
 
     if (overflow) {
       return DateTime.utc(
@@ -190,6 +186,14 @@ abstract class CarbonBase implements CarbonInterface {
       value.millisecond,
       value.microsecond,
     );
+  }
+
+  int _floorDiv(int a, int b) {
+    final q = a ~/ b;
+    if ((a ^ b) < 0 && a % b != 0) {
+      return q - 1;
+    }
+    return q;
   }
 
   @override
@@ -302,17 +306,65 @@ abstract class CarbonBase implements CarbonInterface {
   int get monthsInQuarter => 3;
 
   @override
-  CarbonInterface setMonth(int month) =>
-      _duplicate(dateTime: _copyWith(month: month));
+  CarbonInterface setMonth(int month) {
+    if (month == _dateTime.month) {
+      return this;
+    }
+    final zeroIndexed = month - 1;
+    var normalized = zeroIndexed % 12;
+    if (normalized < 0) {
+      normalized += 12;
+    }
+    final normalizedMonth = normalized + 1;
+    final yearShift = (zeroIndexed - normalized) ~/ 12;
+    final monthsDiff = yearShift * 12 + (normalizedMonth - _dateTime.month);
+    return _wrap(
+      _addMonths(
+        _dateTime,
+        monthsDiff,
+        monthOverflow: _settings.monthOverflow,
+      ),
+    );
+  }
 
   @override
   CarbonInterface setMonths(int month) => setMonth(month);
+
+  @override
+  CarbonInterface setQuarter(int quarter) {
+    if (quarter < 1 || quarter > 4) {
+      throw RangeError.range(quarter, 1, 4, 'quarter');
+    }
+    final targetMonth = (quarter - 1) * 3 + 1;
+    final lastDayOfTarget = DateTime.utc(
+      _dateTime.year,
+      targetMonth + 1,
+      0,
+    ).day;
+    final clampedDay = _dateTime.day.clamp(1, lastDayOfTarget);
+    return _duplicate(
+      dateTime: _copyWith(
+        month: targetMonth,
+        day: clampedDay,
+      ),
+    );
+  }
 
   @override
   CarbonInterface setDay(int day) => _duplicate(dateTime: _copyWith(day: day));
 
   @override
   CarbonInterface setDays(int day) => setDay(day);
+
+  @override
+  CarbonInterface setDayOfWeek(int weekday) {
+    if (weekday < 1 || weekday > 7) {
+      throw RangeError.range(weekday, 1, 7, 'weekday');
+    }
+    final targetIso = weekday == 7 ? DateTime.sunday : weekday;
+    final delta = targetIso - _dateTime.weekday;
+    return _wrap(_dateTime.add(Duration(days: delta)));
+  }
 
   @override
   int get day => _dateTime.day;
@@ -322,6 +374,10 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   int get dayOfMonth => day;
+
+  @override
+  int get dayOfYear =>
+      _daysSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
 
   @override
   int get dayOfWeek {
@@ -340,6 +396,18 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   int get dayOfMillennium => _daysSince(_millenniumStart(_dateTime)) + 1;
+
+  @override
+  int get quarter => ((_dateTime.month - 1) ~/ 3) + 1;
+
+  @override
+  int get decade => _dateTime.year ~/ 10;
+
+  @override
+  int get century => ((_dateTime.year - 1) ~/ 100) + 1;
+
+  @override
+  int get millennium => ((_dateTime.year - 1) ~/ 1000) + 1;
 
   @override
   int get daysInWeek => 7;
@@ -489,6 +557,50 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface setMilliseconds(int millisecond) => setMilli(millisecond);
 
   @override
+  CarbonInterface setDate(int year, [int? month, int? day]) {
+    final resolvedMonth = month ?? _dateTime.month;
+    final resolvedDay = day ?? _dateTime.day;
+    return _duplicate(
+      dateTime: DateTime.utc(
+        year,
+        resolvedMonth,
+        resolvedDay,
+        _dateTime.hour,
+        _dateTime.minute,
+        _dateTime.second,
+        _dateTime.millisecond,
+        _dateTime.microsecond,
+      ),
+    );
+  }
+
+  @override
+  CarbonInterface setTime(
+    int hour, [
+      int? minute,
+      int? second,
+      int? millisecond,
+      int? microsecond,
+    ]) {
+    final resolvedMinute = minute ?? _dateTime.minute;
+    final resolvedSecond = second ?? _dateTime.second;
+    final resolvedMillisecond = millisecond ?? _dateTime.millisecond;
+    final resolvedMicrosecond = microsecond ?? _dateTime.microsecond;
+    return _duplicate(
+      dateTime: DateTime.utc(
+        _dateTime.year,
+        _dateTime.month,
+        _dateTime.day,
+        hour,
+        resolvedMinute,
+        resolvedSecond,
+        resolvedMillisecond,
+        resolvedMicrosecond,
+      ),
+    );
+  }
+
+  @override
   int get millisecond => _dateTime.millisecond;
 
   @override
@@ -610,8 +722,18 @@ abstract class CarbonBase implements CarbonInterface {
       millisecondsUntil(endDate, factor);
 
   @override
-  CarbonInterface setMicro(int microsecond) =>
-      _duplicate(dateTime: _copyWith(microsecond: microsecond));
+  CarbonInterface setMicro(int microsecond) {
+    final milliPortion =
+        microsecond ~/ Duration.microsecondsPerMillisecond;
+    final microPortion =
+        microsecond % Duration.microsecondsPerMillisecond;
+    return _duplicate(
+      dateTime: _copyWith(
+        millisecond: milliPortion,
+        microsecond: microPortion,
+      ),
+    );
+  }
 
   @override
   CarbonInterface setMicros(int microsecond) => setMicro(microsecond);
@@ -623,7 +745,9 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface setMicroseconds(int microsecond) => setMicro(microsecond);
 
   @override
-  int get microsecond => _dateTime.microsecond;
+  int get microsecond =>
+      _dateTime.millisecond * Duration.microsecondsPerMillisecond +
+      _dateTime.microsecond;
 
   @override
   int get microseconds => microsecond;
@@ -635,13 +759,10 @@ abstract class CarbonBase implements CarbonInterface {
   int get micros => microsecond;
 
   @override
-  int get microsecondOfMillisecond => microsecond + 1;
+  int get microsecondOfMillisecond => _dateTime.microsecond + 1;
 
   @override
-  int get microsecondOfSecond =>
-      _dateTime.millisecond * Duration.microsecondsPerMillisecond +
-      microsecond +
-      1;
+  int get microsecondOfSecond => microsecond + 1;
 
   @override
   int get microsecondOfMinute => _microsecondsSince(
@@ -1174,7 +1295,11 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMonths({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(precision, function);
+  }) => _roundMonthUnit(
+        precision,
+        function,
+        useOneBasedRounding: true,
+      );
 
   @override
   CarbonInterface roundMonth({
@@ -1202,7 +1327,11 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundQuarters({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(precision * 3, function);
+  }) => _roundMonthUnit(
+        precision * 3,
+        function,
+        useOneBasedRounding: true,
+      );
 
   @override
   CarbonInterface roundQuarter({
@@ -1230,7 +1359,11 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundYears({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(precision * 12, function);
+  }) => _roundMonthUnit(
+        precision * 12,
+        function,
+        useOneBasedRounding: true,
+      );
 
   @override
   CarbonInterface roundYear({
@@ -1318,7 +1451,11 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMillennia({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(precision * 12000, function);
+  }) => _roundMonthUnit(
+        precision * 12000,
+        function,
+        monthOffset: 12,
+      );
 
   @override
   CarbonInterface roundMillennium({
@@ -1440,7 +1577,11 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundCenturies({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(precision * 1200, function);
+  }) => _roundMonthUnit(
+        precision * 1200,
+        function,
+        monthOffset: 12,
+      );
 
   @override
   CarbonInterface roundCentury({
@@ -2183,7 +2324,11 @@ abstract class CarbonBase implements CarbonInterface {
     }
     final current = _dateTime.microsecondsSinceEpoch.toDouble();
     final quotient = current / stepMicros;
-    final rounded = _applyRoundFunction(quotient, function) * stepMicros;
+    final lowered = function.toLowerCase();
+    var rounded = _applyRoundFunction(quotient, function) * stepMicros;
+    if (lowered == 'ceil' && rounded <= current) {
+      rounded = current + stepMicros;
+    }
     final micros = rounded.round();
     final roundedDate = DateTime.fromMicrosecondsSinceEpoch(
       micros,
@@ -2192,15 +2337,25 @@ abstract class CarbonBase implements CarbonInterface {
     return _wrap(roundedDate);
   }
 
-  CarbonInterface _roundMonthUnit(double precisionInMonths, String function) {
+  CarbonInterface _roundMonthUnit(
+    double precisionInMonths,
+    String function, {
+    int monthOffset = 0,
+    bool useOneBasedRounding = false,
+  }) {
     final normalized = _normalizePrecision(precisionInMonths);
     if (normalized == null) {
       return this;
     }
-    final value = _monthPosition(_dateTime);
+    final lowered = function.toLowerCase();
+    final value = _monthPosition(_dateTime) - monthOffset +
+        ((useOneBasedRounding && lowered == 'round') ? 1 : 0);
     final quotient = value / normalized;
-    final rounded = _applyRoundFunction(quotient, function) * normalized;
-    final date = _dateFromMonthPosition(rounded);
+    var rounded = _applyRoundFunction(quotient, function) * normalized;
+    if (lowered == 'ceil' && rounded <= value) {
+      rounded = value + normalized;
+    }
+    final date = _dateFromMonthPosition(rounded + monthOffset);
     return _wrap(date);
   }
 

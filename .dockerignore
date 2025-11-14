@@ -1,0 +1,11 @@
+.dockerignore
+.git
+.gitignore
+.dart_tool
+build
+coverage
+php_app/vendor
+composer.lock
+pubspec.lock
+.openspec
+**/.DS_Store

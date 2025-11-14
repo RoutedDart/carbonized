@@ -159,14 +159,21 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setMonth(int month);
   CarbonInterface setDay(int day);
   CarbonInterface setDays(int day);
+  CarbonInterface setQuarter(int quarter);
+  CarbonInterface setDayOfWeek(int weekday);
   int get day;
   int get days;
   int get dayOfWeek;
   int get dayOfMonth;
+  int get dayOfYear;
   int get dayOfQuarter;
   int get dayOfDecade;
   int get dayOfCentury;
   int get dayOfMillennium;
+  int get quarter;
+  int get decade;
+  int get century;
+  int get millennium;
   int get daysInWeek;
   int get daysInMonth;
   int get daysInQuarter;
@@ -207,6 +214,14 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setMillis(int millisecond);
   CarbonInterface setMillisecond(int millisecond);
   CarbonInterface setMilliseconds(int millisecond);
+  CarbonInterface setDate(int year, [int? month, int? day]);
+  CarbonInterface setTime(
+    int hour, [
+      int? minute,
+      int? second,
+      int? millisecond,
+      int? microsecond,
+    ]);
   int get micro;
   int get micros;
   int get microsecond;
