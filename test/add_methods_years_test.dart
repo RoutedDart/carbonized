@@ -19,20 +19,20 @@ void main() {
     });
 
     test('addYear adds one year', () {
-      final dynamic carbon = Carbon.create(year: 1975, month: 1, day: 1);
+      final CarbonInterface carbon = Carbon.create(year: 1975, month: 1, day: 1);
       final result = carbon.addYear();
       expect(result.year, 1976);
     });
 
     test('addYear with explicit count', () {
-      final dynamic carbon = Carbon.create(year: 1975, month: 1, day: 1);
+      final CarbonInterface carbon = Carbon.create(year: 1975, month: 1, day: 1);
       final result = carbon.addYear(2);
       expect(result.year, 1977);
     });
 
     group('year overflow handling', () {
       test('addYearNoOverflow preserves day on leap year boundary', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.addYearNoOverflow();
         expect(result.year, 2017);
         expect(result.month, 2);
@@ -40,7 +40,7 @@ void main() {
       });
 
       test('addYearWithOverflow overflows day on leap year boundary', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.addYearWithOverflow();
         expect(result.year, 2017);
         expect(result.month, 3);
@@ -48,7 +48,7 @@ void main() {
       });
 
       test('addYearsNoOverflow with multiple years', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.addYearsNoOverflow(2);
         expect(result.year, 2018);
         expect(result.month, 2);
@@ -56,7 +56,7 @@ void main() {
       });
 
       test('addYearsWithOverflow with multiple years', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.addYearsWithOverflow(2);
         expect(result.year, 2018);
         expect(result.month, 3);
@@ -82,14 +82,14 @@ void main() {
     });
 
     test('subYear subtracts one year', () {
-      final dynamic carbon = Carbon.create(year: 1975, month: 1, day: 1);
+      final CarbonInterface carbon = Carbon.create(year: 1975, month: 1, day: 1);
       final result = carbon.subYear();
       expect(result.year, 1974);
     });
 
     group('year overflow handling', () {
       test('subYearNoOverflow preserves day on leap year boundary', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.subYearNoOverflow();
         expect(result.year, 2015);
         expect(result.month, 2);
@@ -97,7 +97,7 @@ void main() {
       });
 
       test('subYearWithOverflow overflows day on leap year boundary', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.subYearWithOverflow();
         expect(result.year, 2015);
         expect(result.month, 3);
@@ -105,7 +105,7 @@ void main() {
       });
 
       test('subYearsNoOverflow with multiple years', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.subYearsNoOverflow(2);
         expect(result.year, 2014);
         expect(result.month, 2);
@@ -113,7 +113,7 @@ void main() {
       });
 
       test('subYearsWithOverflow with multiple years', () {
-        final dynamic carbon = Carbon.create(year: 2016, month: 2, day: 29);
+        final CarbonInterface carbon = Carbon.create(year: 2016, month: 2, day: 29);
         final result = carbon.subYearsWithOverflow(2);
         expect(result.year, 2014);
         expect(result.month, 3);

@@ -22,7 +22,7 @@ void main() {
     });
 
     test('addMonth adds one month', () {
-      final dynamic carbon = Carbon.create(year: 1975, month: 1, day: 31);
+      final CarbonInterface carbon = Carbon.create(year: 1975, month: 1, day: 31);
       final date = carbon.addMonth();
       expect(date.month, 3);
       expect(date.day, 3);
@@ -30,14 +30,14 @@ void main() {
 
     group('month overflow handling - no overflow', () {
       test('addMonthNoOverflow preserves last day when target month is shorter', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthNoOverflow(1);
         expect(result.month, 2);
         expect(result.day, 29); // 2016 is a leap year
       });
 
       test('addMonthNoOverflow with -2', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthNoOverflow(-2);
         expect(result.year, 2015);
         expect(result.month, 11);
@@ -45,7 +45,7 @@ void main() {
       });
 
       test('addMonthsNoOverflow with multiple months', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthsNoOverflow(2);
         expect(result.month, 3);
         expect(result.day, 31);
@@ -54,14 +54,14 @@ void main() {
 
     group('month overflow handling - with overflow', () {
       test('addMonthWithOverflow carries over when target month is shorter', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthWithOverflow(1);
         expect(result.month, 3);
         expect(result.day, 2); // Overflow from Feb 31 -> Mar 2
       });
 
       test('addMonthWithOverflow with -2', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthWithOverflow(-2);
         expect(result.year, 2015);
         expect(result.month, 12);
@@ -69,7 +69,7 @@ void main() {
       });
 
       test('addMonthsWithOverflow with multiple months', () {
-        final dynamic date = Carbon.create(year: 2016, month: 1, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 1, day: 31);
         final result = date.addMonthsWithOverflow(2);
         expect(result.month, 3);
         expect(result.day, 31);
@@ -97,7 +97,7 @@ void main() {
     });
 
     test('subMonth subtracts one month', () {
-      final dynamic carbon = Carbon.create(year: 1975, month: 3, day: 31);
+      final CarbonInterface carbon = Carbon.create(year: 1975, month: 3, day: 31);
       final date = carbon.subMonth();
       expect(date.month, 3);
       expect(date.day, 3);
@@ -105,14 +105,14 @@ void main() {
 
     group('month overflow handling - no overflow', () {
       test('subMonthNoOverflow preserves last day when target month is shorter', () {
-        final dynamic date = Carbon.create(year: 2016, month: 3, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 3, day: 31);
         final result = date.subMonthNoOverflow(1);
         expect(result.month, 2);
         expect(result.day, 29); // 2016 is a leap year
       });
 
       test('subMonthsNoOverflow with multiple months', () {
-        final dynamic date = Carbon.create(year: 2016, month: 3, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 3, day: 31);
         final result = date.subMonthsNoOverflow(2);
         expect(result.month, 1);
         expect(result.day, 31);
@@ -121,14 +121,14 @@ void main() {
 
     group('month overflow handling - with overflow', () {
       test('subMonthWithOverflow carries over when target month is shorter', () {
-        final dynamic date = Carbon.create(year: 2016, month: 3, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 3, day: 31);
         final result = date.subMonthWithOverflow(1);
         expect(result.month, 3);
         expect(result.day, 2); // Overflow from Feb 31 -> Mar 2
       });
 
       test('subMonthsWithOverflow with multiple months', () {
-        final dynamic date = Carbon.create(year: 2016, month: 3, day: 31);
+        final CarbonInterface date = Carbon.create(year: 2016, month: 3, day: 31);
         final result = date.subMonthsWithOverflow(2);
         expect(result.month, 1);
         expect(result.day, 31);

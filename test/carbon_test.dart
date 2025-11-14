@@ -156,7 +156,7 @@ void main() {
         return remaining < 0 ? 0 : remaining;
       });
 
-      final midWeek = Carbon.fromDateTime(DateTime.utc(2025, 6, 4));
+      final CarbonInterface midWeek = Carbon.fromDateTime(DateTime.utc(2025, 6, 4));
       final dynamic dynamicCarbon = midWeek;
       expect(dynamicCarbon.daysUntilWeekend(), 3);
 
