@@ -5,6 +5,7 @@ export 'src/carbon.dart'
         Carbon,
         CarbonImmutable,
         CarbonInterface,
+        CarbonPeriod,
         CarbonMacro,
         CarbonSettings,
         CarbonUnit,
