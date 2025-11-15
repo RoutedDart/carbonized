@@ -241,15 +241,23 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   String format(String pattern, {String? locale});
   String toIso8601String({bool keepOffset = false});
   String toIso8601ZuluString();
+  String toISOString({bool keepOffset = false});
+  String toJsonString();
   String toDateString();
   String toTimeString();
   String toDateTimeString();
   String toDateTimeLocalString([String precision = 'second']);
+  DateTime toDateTime();
+  DateTime toDate();
+  DateTime toDateTimeImmutable();
   String toFormattedDateString();
   String toDayDateTimeString();
   String toFormattedDayDateString();
   String toAtomString();
   String toCookieString();
+  String isoFormat(String pattern);
+  String translatedFormat(String pattern);
+  Map<String, Object?> toDebugMap();
   String toRfc822String();
   String toRfc850String();
   String toRfc1036String();
@@ -622,6 +630,8 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface floorCentury({double precision = 1});
 
   Map<String, dynamic> toJson();
+  Map<String, dynamic> toArray();
+  CarbonComponents toObject();
   CarbonImmutable toImmutable();
   Carbon toMutable();
 }

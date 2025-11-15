@@ -8,6 +8,7 @@ export 'src/carbon.dart'
         CarbonPeriod,
         CarbonMacro,
         CarbonSettings,
+        CarbonComponents,
         CarbonInterval,
         CarbonUnit,
         CarbonAliasShims,

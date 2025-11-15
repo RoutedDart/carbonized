@@ -3238,6 +3238,13 @@ abstract class CarbonBase implements CarbonInterface {
   String toIso8601ZuluString() => _formatIso(_dateTime.toUtc(), suffix: true);
 
   @override
+  String toISOString({bool keepOffset = false}) =>
+      toIso8601String(keepOffset: keepOffset);
+
+  @override
+  String toJsonString() => toIso8601String();
+
+  @override
   String toDateString() => _formatDatePart(_localDateTimeForFormatting());
 
   @override
@@ -3247,6 +3254,18 @@ abstract class CarbonBase implements CarbonInterface {
   String toDateTimeString() {
     final local = _localDateTimeForFormatting();
     return '${_formatDatePart(local)} ${_formatTimePart(local)}';
+  }
+
+  @override
+  DateTime toDateTime() => _localSnapshot();
+
+  @override
+  DateTime toDateTimeImmutable() => toDateTime();
+
+  @override
+  DateTime toDate() {
+    final local = _localDateTimeForFormatting();
+    return DateTime.utc(local.year, local.month, local.day);
   }
 
   @override
@@ -3304,6 +3323,13 @@ abstract class CarbonBase implements CarbonInterface {
         '$weekday, $day-$month-${_padYear(local.year)} ${_formatTimePart(local)}';
     return '$base GMT${_formatOffset(_currentOffset())}';
   }
+
+  @override
+  String isoFormat(String pattern) => _IsoFormatter(this).format(pattern);
+
+  @override
+  String translatedFormat(String pattern) =>
+      isoFormat(_TranslatedFormatConverter(pattern).toIsoPattern());
 
   @override
   String toRfc822String() => _formatRfcFamily(shortYear: true);
@@ -3460,6 +3486,63 @@ abstract class CarbonBase implements CarbonInterface {
     'locale': _locale,
     if (_timeZone != null) 'timeZone': _timeZone,
   };
+
+  @override
+  Map<String, dynamic> toArray() =>
+      Map<String, dynamic>.unmodifiable(_componentSnapshot());
+
+  @override
+  CarbonComponents toObject() => CarbonComponents.fromMap(_componentSnapshot());
+
+  @override
+  Map<String, Object?> toDebugMap() {
+    final map = <String, Object?>{
+      'date': DateFormat(
+        'yyyy-MM-dd HH:mm:ss.SSSSSS',
+      ).format(_localDateTimeForFormatting()),
+      'timezone': _timeZone ?? 'UTC',
+    };
+    if (_locale != _defaultLocale) {
+      map['locale'] = _locale;
+      map['translator'] = _locale;
+    }
+    return map;
+  }
+
+  Map<String, dynamic> _componentSnapshot() => <String, dynamic>{
+    'year': year,
+    'month': month,
+    'day': day,
+    'dayOfWeek': dayOfWeek,
+    'dayOfYear': dayOfYear,
+    'hour': hour,
+    'minute': minute,
+    'second': second,
+    'micro': microsecond,
+    'timestamp':
+        _dateTime.microsecondsSinceEpoch ~/ Duration.microsecondsPerSecond,
+    'timezone': _timeZone ?? 'UTC',
+    'formatted': toDateTimeString(),
+  };
+
+  DateTime _localSnapshot() {
+    final local = _localDateTimeForFormatting();
+    var micros =
+        _dateTime.microsecondsSinceEpoch % Duration.microsecondsPerSecond;
+    if (micros < 0) {
+      micros += Duration.microsecondsPerSecond;
+    }
+    return DateTime.utc(
+      local.year,
+      local.month,
+      local.day,
+      local.hour,
+      local.minute,
+      local.second,
+      micros ~/ 1000,
+      micros % 1000,
+    );
+  }
 
   @override
   CarbonImmutable toImmutable() => this is CarbonImmutable

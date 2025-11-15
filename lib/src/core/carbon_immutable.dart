@@ -11,6 +11,11 @@ class CarbonImmutable extends CarbonBase {
   factory CarbonImmutable.now({String? locale}) =>
       Carbon.now(locale: locale).toImmutable();
 
+  static void setToStringFormat(dynamic formatter) =>
+      Carbon.setToStringFormat(formatter);
+
+  static void resetToStringFormat() => Carbon.resetToStringFormat();
+
   factory CarbonImmutable.parse(
     dynamic input, {
     String? format,

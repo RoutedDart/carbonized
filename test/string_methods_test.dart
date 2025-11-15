@@ -6,6 +6,8 @@ void main() {
   setUpAll(() async {
     await initializeDateFormatting('en');
     await initializeDateFormatting('fr');
+    await initializeDateFormatting('fr_FR');
+    await initializeDateFormatting('ru');
   });
 
   setUp(() {
@@ -63,6 +65,10 @@ void main() {
       expect(value.toFormattedDateString(), 'Dec 25, 1975');
       expect(value.toDayDateTimeString(), 'Thu, Dec 25, 1975 7:15 PM');
       expect(value.toFormattedDayDateString(), 'Thu, Dec 25, 1975');
+      expect(
+        value.isoFormat('MMMM Do YYYY, h:mm:ss a'),
+        'December 25th 1975, 7:15:16 pm',
+      );
     });
 
     test('formatted date helpers honor non-English locales', () {
@@ -71,6 +77,76 @@ void main() {
       expect(value.toFormattedDateString(), 'déc. 25, 1975');
       expect(value.toDayDateTimeString(), 'jeu., déc. 25, 1975 7:15 PM');
       expect(value.toFormattedDayDateString(), 'jeu., déc. 25, 1975');
+      expect(
+        value.isoFormat('MMMM Do YYYY, h:mm:ss a'),
+        'décembre 25e 1975, 7:15:16 pm',
+      );
+    });
+
+    test('isoFormat advanced tokens', () {
+      Carbon.setLocale('en');
+      final value = Carbon.parse('2017-01-01T22:25:24.182937Z');
+      expect(value.isoFormat('Q Qo'), '1 1st');
+      expect(value.isoFormat('k kk'), '22 22');
+      expect(value.isoFormat('S SS SSS SSSSSS'), '1 18 182 182937');
+      final epochSeconds =
+          value.dateTime.millisecondsSinceEpoch ~/
+          Duration.millisecondsPerSecond;
+      expect(
+        value.isoFormat('X x'),
+        '$epochSeconds ${value.dateTime.millisecondsSinceEpoch}',
+      );
+      final isoWeekSample = Carbon.parse('2017-01-01T00:00:00Z');
+      expect(isoWeekSample.isoFormat('WW GGGG'), '52 2016');
+    });
+
+    test('translatedFormat mirrors PHP semantics', () {
+      Carbon.setLocale('en');
+      final value = Carbon.parse('1975-12-25T19:15:16Z');
+      expect(
+        value.translatedFormat('jS \\o\\f F, Y g:i A'),
+        '25th of December, 1975 7:15 PM',
+      );
+      Carbon.setLocale('fr');
+      final french = Carbon.parse('1975-12-25T19:15:16Z');
+      expect(french.translatedFormat('jS \\d\\e F Y'), '25e de décembre 1975');
+      Carbon.setLocale('ru');
+      final russian = Carbon.parse('2019-05-15T12:00:00Z');
+      expect(russian.translatedFormat('jS'), '15th');
+      expect(russian.translatedFormat('t F'), '31 май');
+      expect(russian.translatedFormat('n F'), '5 май');
+    });
+
+    test('toDebugMap surfaces date/timezone metadata', () {
+      Carbon.setLocale('en');
+      final value = Carbon.parse('2019-04-09T11:10:10.667Z').tz('-04:00');
+      final debug = value.toDebugMap();
+      expect(debug['date'], '2019-04-09 07:10:10.667000');
+      expect(debug['timezone'], '-04:00');
+    });
+
+    test('toDebugMap includes locale hint when non-default', () {
+      Carbon.setLocale('en');
+      final value = Carbon.parse('2000-01-01T00:00:00Z').locale('fr');
+      final debug = value.toDebugMap();
+      expect(debug['locale'], 'fr');
+      expect(debug['translator'], 'fr');
+    });
+
+    test('formatted helpers support region-specific locales', () {
+      Carbon.setLocale('fr_FR');
+      final value = Carbon.parse('1975-12-25T19:15:16Z');
+      expect(value.toFormattedDateString(), 'déc. 25, 1975');
+      expect(value.toDayDateTimeString(), 'jeu., déc. 25, 1975 7:15 PM');
+      expect(value.toFormattedDayDateString(), 'jeu., déc. 25, 1975');
+    });
+
+    test('formatted helpers fall back for unsupported locales', () {
+      Carbon.setLocale('xx_YY.UTF-8@calendar=gregorian');
+      final value = Carbon.parse('1975-12-25T19:15:16Z');
+      expect(value.toFormattedDateString(), 'Dec 25, 1975');
+      expect(value.toDayDateTimeString(), 'Thu, Dec 25, 1975 7:15 PM');
+      expect(value.toFormattedDayDateString(), 'Thu, Dec 25, 1975');
     });
 
     test('ISO and Atom strings honor offsets', () {
@@ -82,6 +158,12 @@ void main() {
       );
       expect(base.toIso8601ZuluString(), '1975-12-25T19:15:16.000Z');
       expect(base.toAtomString(), '1975-12-25T14:15:16-05:00');
+      expect(base.toJsonString(), '1975-12-25T19:15:16.000Z');
+      expect(base.toISOString(), '1975-12-25T19:15:16.000Z');
+      expect(
+        base.toISOString(keepOffset: true),
+        '1975-12-25T14:15:16.000-05:00',
+      );
     });
 
     test('toIso8601String supports expanded years', () {
@@ -175,6 +257,71 @@ void main() {
       expect(json['epochMs'], value.toEpochMilliseconds());
       expect(json['locale'], 'en');
       expect(json['timeZone'], '-05:00');
+    });
+
+    test('toArray exposes individual components', () {
+      final value = Carbon.parse('1975-12-25T19:15:16Z').tz('-05:00');
+      final snapshot = value.toArray();
+      expect(snapshot['year'], value.year);
+      expect(snapshot['month'], value.month);
+      expect(snapshot['day'], value.day);
+      expect(snapshot['dayOfWeek'], value.dayOfWeek);
+      expect(snapshot['dayOfYear'], value.dayOfYear);
+      expect(snapshot['hour'], value.hour);
+      expect(snapshot['minute'], value.minute);
+      expect(snapshot['second'], value.second);
+      expect(snapshot['micro'], value.microsecond);
+      expect(
+        snapshot['timestamp'],
+        value.dateTime.microsecondsSinceEpoch ~/ Duration.microsecondsPerSecond,
+      );
+      expect(snapshot['timezone'], '-05:00');
+      expect(snapshot['formatted'], '1975-12-25 14:15:16');
+    });
+
+    test('toObject mirrors toArray output', () {
+      final value = Carbon.parse('1975-12-25T19:15:16Z');
+      final asObject = value.toObject();
+      expect(asObject.year, value.year);
+      expect(asObject.month, value.month);
+      expect(asObject.day, value.day);
+      expect(asObject.dayOfWeek, value.dayOfWeek);
+      expect(asObject.dayOfYear, value.dayOfYear);
+      expect(asObject.hour, value.hour);
+      expect(asObject.minute, value.minute);
+      expect(asObject.second, value.second);
+      expect(asObject.micro, value.microsecond);
+      expect(
+        asObject.timestamp,
+        value.dateTime.microsecondsSinceEpoch ~/ Duration.microsecondsPerSecond,
+      );
+      expect(asObject.timezone, 'UTC');
+      expect(asObject.formatted, '1975-12-25 19:15:16');
+      expect(asObject.toMap(), value.toArray());
+    });
+
+    test('toDateTime/toDate honor timezone snapshots', () async {
+      await Carbon.configureTimeMachine(testing: true);
+      addTearDown(Carbon.resetTimeMachineSupport);
+      final value = Carbon.parse(
+        '2019-11-02T23:10:10.888480Z',
+      ).tz('America/Toronto');
+      final dt = value.toDateTime();
+      expect(dt.year, 2019);
+      expect(dt.month, 11);
+      expect(dt.day, 2);
+      expect(dt.hour, 19); // Toronto is UTC-4 before fallback
+      expect(dt.minute, 10);
+      expect(dt.second, 10);
+      expect(dt.millisecond, value.millisecond);
+      expect(dt.millisecond * 1000 + dt.microsecond, value.microsecond);
+      final dateOnly = value.toDate();
+      expect(dateOnly.hour, 0);
+      expect(dateOnly.minute, 0);
+      expect(dateOnly.second, 0);
+      expect(dateOnly.year, 2019);
+      expect(dateOnly.month, 11);
+      expect(dateOnly.day, 2);
     });
   });
 }
