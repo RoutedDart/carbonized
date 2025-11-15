@@ -22,8 +22,8 @@ to the current Dart implementation. Status legend:
 | 4 | `testSetToStringFormatString` | ✅ | String-based overrides are now covered alongside the closure paths—tests assert both the formatted output and the reset back to the default `toDateTimeString()`. |
 | 5 | `testSetToStringFormatClosure` | ✅ | Covered by `test/string_methods_test.dart:70`. |
 | 6 | `testSetToStringFormatViaSettings` | ✅ | Implemented `CarbonFactory` + per-instance `withToStringFormat`, mirroring PHP's factory-scoped `toStringFormat`. |
-| 7 | `testResetToStringFormat` | ⚠️ | `Carbon.resetToStringFormat()` exists but is only invoked as teardown; no assertion proves it restores the default `toDateTimeString` behavior. |
-| 8 | `testExtendedClassToString` | ❌ | We lack an example subclass (like PHP's `MyCarbon`) proving custom Carbon types inherit the `toString` override. Need either a fixture class in `test/` or documentation explaining subclassing expectations. |
+| 7 | `testResetToStringFormat` | ✅ | Added explicit regression test ensuring the default `toDateTimeString()` behavior returns after calling `Carbon.resetToStringFormat()`. |
+| 8 | `testExtendedClassToString` | ✅ | Introduced `CarbonTestSubclass` (test-only helper) to verify subclasses inherit the global `toString` overrides. |
 | 9 | `testToDateString` | ✅ | `test/string_methods_test.dart:17`. |
 |10 | `testToDateTimeLocalString` | ✅ | `test/string_methods_test.dart:24` (includes precision + timezone cases). |
 |11 | `testToFormattedDateString` | ✅ | `test/string_methods_test.dart:48`. |
@@ -50,12 +50,7 @@ to the current Dart implementation. Status legend:
 |32 | `testTranslatedFormat` | ✅ | Added genitive month overrides for Russian so `'t F'` now emits `'31 мая'` while `'n F'` stays `'5 май'`. |
 
 ## Priority Follow-ups
-
-1. **Reset hook coverage (Scenario 7).** Add an explicit regression test that
-   calls `Carbon.resetToStringFormat()` after setting a formatter to prove the
-   default `toDateTimeString()` behavior returns.
-2. **Extended subclass test (Scenario 8).** Port PHP's `MyCarbon` fixture or a
-   Dart equivalent to verify subclasses inherit the `toString` override logic.
+*(none – StringsTest scenarios are now fully covered in Dart)*
 
 Tracking these items here ensures we do not lose sight of the remaining gaps
 after the Task 7 documentation sweep.

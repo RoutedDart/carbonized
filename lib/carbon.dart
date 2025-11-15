@@ -16,4 +16,5 @@ export 'src/carbon.dart'
         CarbonUnit,
         CarbonAliasShims,
         CarbonInvalidDateException,
-        CarbonFactory;
+        CarbonFactory,
+        CarbonTestSubclass;

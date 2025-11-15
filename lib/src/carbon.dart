@@ -28,4 +28,5 @@ part 'core/locale_defaults.dart';
 part 'core/locale_first_week_min_days.dart';
 part 'core/locale_genitive_months.dart';
 part 'core/carbon_factory.dart';
+part 'core/carbon_test_support.dart';
 part 'core/iso_format.dart';

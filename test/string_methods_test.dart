@@ -325,6 +325,23 @@ void main() {
       expect(value.toString(), value.toDateTimeString());
     });
 
+    test('resetToStringFormat restores default behavior', () {
+      final value = Carbon.parse('1999-12-31T23:59:59Z');
+      Carbon.setToStringFormat('yyyy');
+      expect(value.toString(), '1999');
+      Carbon.resetToStringFormat();
+      expect(value.toString(), '1999-12-31 23:59:59');
+    });
+
+    test('Carbon subclasses inherit toString overrides', () {
+      final base = Carbon.parse('1975-12-25T14:15:16');
+      final subclass = CarbonTestSubclass.from(base);
+      expect(subclass.toString(), base.toDateTimeString());
+      Carbon.setToStringFormat('yyyy');
+      expect(subclass.toString(), '1975');
+      Carbon.resetToStringFormat();
+    });
+
     test('setToStringFormat accepts callbacks', () {
       Carbon.setToStringFormat((carbon) => carbon.toDateString());
       final value = Carbon.parse('1975-12-25T14:15:16');
