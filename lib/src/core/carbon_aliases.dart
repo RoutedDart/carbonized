@@ -1,3 +1,7 @@
+/// Resolves PHP-style `add*`/`sub*` alias invocations for [Carbon].
+///
+/// These helpers back methods such as `addMonthsNoOverflow()` so callers can
+/// use the same fluent API that exists in PHP Carbon.
 part of '../carbon.dart';
 
 const Object _aliasNotHandled = Object();

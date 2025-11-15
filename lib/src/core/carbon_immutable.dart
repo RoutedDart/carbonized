@@ -1,5 +1,15 @@
+/// Declares the immutable Carbon variant and factory helpers.
+///
+/// ```dart
+/// final frozen = CarbonImmutable.now();
+/// ```
 part of '../carbon.dart';
 
+/// Immutable Carbon implementation.
+///
+/// Instances share the same fluent surface area as [Carbon] but every mutating
+/// helper returns a new object. Convert from a mutable instance with
+/// [Carbon.toImmutable] or build directly via the factory constructors below.
 class CarbonImmutable extends CarbonBase {
   CarbonImmutable._internal({
     required super.dateTime,

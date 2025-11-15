@@ -1,3 +1,7 @@
+/// Generated locale metadata describing week-start days per locale code.
+///
+/// The map feeds [CarbonBase.setDefaultLocale] so localized presets stay in
+/// sync with PHP Carbon and CLDR data.
 part of '../carbon.dart';
 
 // Generated from PHP Carbon locale data (first_day_of_week + weekend arrays).

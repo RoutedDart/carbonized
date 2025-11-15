@@ -1,5 +1,14 @@
+/// Supplies extension-based alias wrappers so any [CarbonInterface] instance
+/// can call the PHP-style helpers such as `addDay()` and `subYear()`.
+///
+/// ```dart
+/// final payday = Carbon.now().addDay();
+/// ```
 part of '../carbon.dart';
 
+/// Adds the PHP-style alias methods (`addDay`, `subMonth`, etc.) to any
+/// [CarbonInterface]. Each alias simply forwards to the canonical method so
+/// mixin users get the familiar Carbon API surface.
 extension CarbonAliasShims on CarbonInterface {
   CarbonInterface addDay([int amount = 1]) => addDays(amount);
 
@@ -69,7 +78,8 @@ extension CarbonAliasShims on CarbonInterface {
 
   CarbonInterface addMinutes(int amount) => add(Duration(minutes: amount));
 
-  CarbonInterface subMinute([int amount = 1]) => add(Duration(minutes: -amount));
+  CarbonInterface subMinute([int amount = 1]) =>
+      add(Duration(minutes: -amount));
 
   CarbonInterface subMinutes(int amount) => add(Duration(minutes: -amount));
 
@@ -77,7 +87,8 @@ extension CarbonAliasShims on CarbonInterface {
 
   CarbonInterface addSeconds(int amount) => add(Duration(seconds: amount));
 
-  CarbonInterface subSecond([int amount = 1]) => add(Duration(seconds: -amount));
+  CarbonInterface subSecond([int amount = 1]) =>
+      add(Duration(seconds: -amount));
 
   CarbonInterface subSeconds(int amount) => add(Duration(seconds: -amount));
 
@@ -597,5 +608,4 @@ extension CarbonAliasShims on CarbonInterface {
 
   CarbonInterface subYearsWithoutOverflow([int amount = 1]) =>
       (this as dynamic).subYearsWithoutOverflow(amount);
-
 }
