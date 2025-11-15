@@ -17,9 +17,10 @@ void main() {
 
   group('createFromTime', () {
     test('uses the mocked clock when components are null', () {
-      Carbon.setTestNow(Carbon.parse('2011-01-01 12:13:14'));
-      final value = Carbon.createFromTime(null, null, null);
-      expect(value.toIso8601String(), '2011-01-01T12:13:14.000Z');
+      withClock(Clock.fixed(DateTime.utc(2011, 1, 1, 12, 13, 14)), () {
+        final value = Carbon.createFromTime(null, null, null);
+        expect(value.toIso8601String(), '2011-01-01T12:13:14.000Z');
+      });
     });
 
     test('applies provided hour/minute/second on today\'s date', () {
@@ -41,7 +42,7 @@ void main() {
         expect(value.timeZoneName, '+04:00');
         expect(
           value.toIso8601String(keepOffset: true),
-          '2024-01-02T02:00:00+04:00',
+          '2024-01-02T02:00:00.000+04:00',
         );
       });
     });

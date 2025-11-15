@@ -527,6 +527,131 @@ class Carbon extends CarbonBase {
     );
   }
 
+  static DateTime _contextBaseToUtc(
+    ({DateTime localBase, String? zoneName, String? locale}) context, {
+    bool resetClock = false,
+  }) {
+    var local = context.localBase;
+    if (resetClock) {
+      local = DateTime(local.year, local.month, local.day);
+    }
+    final micro = local.microsecond + local.millisecond * 1000;
+    if (context.zoneName == null) {
+      return local.isUtc
+          ? local
+          : DateTime.utc(
+              local.year,
+              local.month,
+              local.day,
+              local.hour,
+              local.minute,
+              local.second,
+              micro ~/ 1000,
+              micro % 1000,
+            );
+    }
+    return CarbonBase._localToUtc(
+      year: local.year,
+      month: local.month,
+      day: local.day,
+      hour: local.hour,
+      minute: local.minute,
+      second: local.second,
+      microsecond: micro,
+      timeZone: context.zoneName,
+    );
+  }
+
+  static const Map<String, String> _phpTokenToIso = <String, String>{
+    'Y': 'YYYY',
+    'y': 'YY',
+    'm': 'MM',
+    'n': 'M',
+    'F': 'MMMM',
+    'M': 'MMM',
+    'd': 'DD',
+    'j': 'D',
+    'D': 'ddd',
+    'l': 'dddd',
+    'H': 'HH',
+    'G': 'H',
+    'h': 'hh',
+    'g': 'h',
+    'i': 'mm',
+    's': 'ss',
+    'u': 'SSSSSS',
+    'v': 'SSS',
+    'A': 'A',
+    'a': 'a',
+    'e': 'zz',
+    'O': 'ZZ',
+    'P': 'P',
+    'W': 'WW',
+    'o': 'GGGG',
+    'N': 'N',
+    'w': 'w',
+    'z': 'z',
+    't': 't',
+    'L': 'L',
+    'U': 'X',
+    'c': 'YYYY-MM-DD[T]HH:mm:ssZ',
+    'r': 'ddd, DD MMM YYYY HH:mm:ss ZZ',
+  };
+
+  static _PhpFormatTranslation _translatePhpFormat(String format) {
+    final buffer = StringBuffer();
+    var escape = false;
+    var resetClock = false;
+    var capturesFraction = false;
+    for (var i = 0; i < format.length; i++) {
+      final char = format[i];
+      if (escape) {
+        buffer
+          ..write('[')
+          ..write(char)
+          ..write(']');
+        escape = false;
+        continue;
+      }
+      if (char == '\\') {
+        escape = true;
+        continue;
+      }
+      if (char == '|') {
+        resetClock = true;
+        continue;
+      }
+      if (char == '!') {
+        buffer.write('!');
+        continue;
+      }
+      final replacement = _phpTokenToIso[char];
+      if (replacement != null) {
+        if (char == 'u' || char == 'v') {
+          capturesFraction = true;
+        }
+        buffer.write(replacement);
+        continue;
+      }
+      if (_isAsciiLetter(char)) {
+        buffer
+          ..write('[')
+          ..write(char)
+          ..write(']');
+      } else {
+        buffer.write(char);
+      }
+    }
+    if (escape) {
+      buffer.write('[\\]');
+    }
+    return _PhpFormatTranslation(
+      buffer.toString(),
+      resetClock: resetClock,
+      capturesFraction: capturesFraction,
+    );
+  }
+
   static CarbonInterface createFromDate([
     int? year,
     int? month,
@@ -584,7 +709,7 @@ class Carbon extends CarbonBase {
     final resolvedSecond = second ?? base.second;
     validateRange(resolvedHour, 23, 'hour');
     validateRange(resolvedMinute, 59, 'minute');
-    validateRange(resolvedSecond, 99, 'second');
+    validateRange(resolvedSecond, 59, 'second');
     validateRange(microsecond, 999999, 'microsecond');
     final utcDate = CarbonBase._localToUtc(
       year: base.year,
@@ -631,7 +756,7 @@ class Carbon extends CarbonBase {
 
     final hours = parsePart(match.group(1), 23);
     final minutes = parsePart(match.group(2), 59);
-    final seconds = parsePart(match.group(3), 99);
+    final seconds = parsePart(match.group(3), 59);
     final micro = (() {
       final raw = match.group(4);
       if (raw == null) return 0;
@@ -714,29 +839,32 @@ class Carbon extends CarbonBase {
     String? timeZone,
     CarbonSettings settings = const CarbonSettings(),
   }) {
-    final formatter = DateFormat(format, locale);
-    final parsed = formatter.parse(input, timeZone == null);
-    if (timeZone == null) {
-      final resolved = parsed.isUtc ? parsed : parsed.toUtc();
-      return _fromUtc(resolved, locale: locale, settings: settings);
-    }
-    final totalMicro = _microsecondsOf(parsed);
-    final utcDate = CarbonBase._localToUtc(
-      year: parsed.year,
-      month: parsed.month,
-      day: parsed.day,
-      hour: parsed.hour,
-      minute: parsed.minute,
-      second: parsed.second,
-      microsecond: totalMicro,
-      timeZone: timeZone,
+    final translation = _translatePhpFormat(format);
+    final context = _resolveCreationBase(timeZone: timeZone, locale: locale);
+    final baseUtc = _contextBaseToUtc(
+      context,
+      resetClock: translation.resetClock,
     );
-    return _fromUtc(
-      utcDate,
+    final parsed = createFromIsoFormat(
+      translation.pattern,
+      input,
       locale: locale,
       timeZone: timeZone,
-      settings: settings,
+      base: baseUtc,
+      defaultTimeZone: context.zoneName,
     );
+    final sanitized = translation.capturesFraction
+        ? parsed
+        : parsed.copyWith(
+            dateTime: parsed.dateTime.subtract(
+              Duration(
+                microseconds:
+                    parsed.dateTime.microsecond +
+                    parsed.dateTime.millisecond * 1000,
+              ),
+            ),
+          );
+    return sanitized.copyWith(settings: settings);
   }
 
   static CarbonInterface _fromUtc(
@@ -864,13 +992,16 @@ class Carbon extends CarbonBase {
     String input, {
     String? locale,
     String? timeZone,
+    DateTime? base,
+    String? defaultTimeZone,
   }) {
     final parser = _IsoInputParser(
       format: format,
       locale: locale ?? CarbonBase.defaultLocale,
+      base: base,
     );
     final components = parser.parse(input);
-    final resolvedZone = timeZone ?? components.timeZone;
+    final resolvedZone = timeZone ?? components.timeZone ?? defaultTimeZone;
     final utc = components.toUtc(resolvedZone);
     return Carbon._internal(
       dateTime: utc,
@@ -890,7 +1021,16 @@ class Carbon extends CarbonBase {
     String locale,
     String input, {
     String? timeZone,
-  }) => createFromIsoFormat(format, input, locale: locale, timeZone: timeZone);
+    DateTime? base,
+    String? defaultTimeZone,
+  }) => createFromIsoFormat(
+    format,
+    input,
+    locale: locale,
+    timeZone: timeZone,
+    base: base,
+    defaultTimeZone: defaultTimeZone,
+  );
 
   static DateTime _buildSafeDate({
     int? year,
@@ -936,4 +1076,24 @@ class Carbon extends CarbonBase {
 
   static int _microsecondsOf(DateTime value) =>
       value.millisecond * 1000 + value.microsecond;
+}
+
+class _PhpFormatTranslation {
+  const _PhpFormatTranslation(
+    this.pattern, {
+    this.resetClock = false,
+    this.capturesFraction = false,
+  });
+
+  final String pattern;
+  final bool resetClock;
+  final bool capturesFraction;
+}
+
+bool _isAsciiLetter(String value) {
+  if (value.isEmpty) {
+    return false;
+  }
+  final code = value.codeUnitAt(0);
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
 }

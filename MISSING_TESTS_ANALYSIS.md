@@ -1,12 +1,12 @@
 # Missing Test Coverage Analysis
 
 ## Summary
-Out of 48 PHP Carbon tests, the Dart Carbon implementation has **24 test files** covering partial functionality.
-There are **24 missing test files** that represent unimplemented features.
+Out of 48 PHP Carbon tests, the Dart Carbon implementation has **25 test files** covering partial functionality.
+There are **23 missing test files** that represent unimplemented features.
 
 ## Test Coverage Status
 
-### ✓ Implemented Tests (24)
+### ✓ Implemented Tests (25)
 - `add_methods_years_test.dart` - Year addition
 - `add_methods_months_test.dart` - Month addition  
 - `add_methods_days_weeks_test.dart` - Day/week addition
@@ -31,15 +31,16 @@ There are **24 missing test files** that represent unimplemented features.
 - `create_from_date_test.dart` - Parity for `CreateFromDateTest.php`
 - `create_from_time_test.dart` - Parity for `CreateFromTimeTest.php`
 - `create_from_timestamp_test.dart` - Parity for `CreateFromTimestampTest.php`
+- `create_from_format_test.dart` - Parity for `CreateFromFormatTest.php`
 
 ### ✗ Missing Test Categories (29)
 
 #### Critical Core Functionality (5 tests)
 - ~~**CreateFromDateTest.php** - `createFromDate()` constructor variant~~ ✅ Covered by `test/create_from_date_test.dart`.
-- **CreateFromFormatTest.php** - `createFromFormat()` for parsing strings
+- ~~**CreateFromFormatTest.php** - `createFromFormat()` for parsing strings~~ ✅ Covered by `test/create_from_format_test.dart`.
 - ~~**CreateFromTimeTest.php** - `createFromTime(hour, minute, second)` constructor~~ ✅ Covered by `test/create_from_time_test.dart`.
 - ~~**CreateFromTimestampTest.php** - `createFromTimestamp()` from Unix timestamps~~ ✅ Covered by `test/create_from_timestamp_test.dart`.
-- **IssetTest.php** - Magic method `__isset()` support
+- **IssetTest.php** - Magic method `__isset()` support (Dart relies on explicit getters; no dynamic magic planned)
 
 #### String Parsing & Construction (6 tests)
 - **CreateTest.php** - `create()` method variants and options
@@ -89,9 +90,9 @@ There are **24 missing test files** that represent unimplemented features.
 
 ### Phase 1: Core Functionality (Essential)
 1. ~~**CreateFromDateTest** - Common constructor pattern~~ ✅ Covered by `test/create_from_date_test.dart`.
-2. **CreateFromFormatTest** - Parsing via explicit formats
+2. ~~**CreateFromFormatTest** - Parsing via explicit formats~~ ✅ Covered by `test/create_from_format_test.dart`.
 3. ~~**CreateFromTimeTest / CreateFromTimestampTest** - Time-focused constructors~~ ✅ Covered by `test/create_from_time_test.dart` + `test/create_from_timestamp_test.dart`.
-4. **IssetTest** - Magic property access for core getters
+4. **IssetTest** - Magic property access for core getters (handled via documented Dart getters rather than `__get` magic)
 
 ### Phase 2: String Parsing (High Value)
 5. **ModifyTest** - String-based date modification
@@ -112,7 +113,8 @@ There are **24 missing test files** that represent unimplemented features.
 
 - Constructor and parsing helpers remain the biggest parity gaps; the math/comparison surface is now mostly covered.
 - Macro coverage is complete and serialization now round-trips locale/timezone data; the outstanding scaffolding work lives in `createFromFormat`, `Isset`, and DST bug reproductions.
-- `create_from_date_test.dart`, `create_from_time_test.dart`, and `create_from_timestamp_test.dart` now mirror PHP coverage, so the remaining blockers in this bucket are `CreateFromFormatTest.php` and `IssetTest.php`.
+- `create_from_date_test.dart`, `create_from_time_test.dart`, `create_from_timestamp_test.dart`, and `create_from_format_test.dart` now mirror the PHP suite; the only outstanding critical gap is `IssetTest.php`.
+- Dynamic magic like `__isset` is intentionally excluded; Dart callers should rely on the explicit getters already exposed on `CarbonInterface`.
 - Serialization, copy semantics, and testing aids now mirror PHP coverage thanks to `test/serialization_test.dart`, `test/copy_methods_test.dart`, and `test/testing_aids_test.dart`, so the remaining focus shifts to creation/parsing helpers and DST regressions.
 
 ## Next Steps

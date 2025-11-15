@@ -24,15 +24,18 @@ void main() {
     });
 
     test('fills missing components from the active test clock', () {
-      Carbon.setTestNow(
-        Carbon.parse('2024-04-05 10:20:30').locale('fr').tz('+02:00'),
-      );
+      Carbon.setTestNow(Carbon.parse('2024-04-05 10:20:30').locale('fr'));
       final onlyYear = Carbon.createFromDate(1975);
       expect(onlyYear.year, 1975);
       expect(onlyYear.month, 4);
       expect(onlyYear.day, 5);
-      expect(onlyYear.timeZoneName, '+02:00');
       expect(onlyYear.localeCode, 'fr');
+    });
+
+    test('inherits timezone from the mocked clock when none supplied', () {
+      Carbon.setTestNow(Carbon.parse('2024-04-05 10:20:30').tz('+02:00'));
+      final value = Carbon.createFromDate();
+      expect(value.timeZoneName, '+02:00');
     });
 
     test('allows overriding null fields independently', () {
@@ -53,7 +56,7 @@ void main() {
       expect(value.timeZoneName, 'Europe/London');
       expect(
         value.toIso8601String(keepOffset: true),
-        '2016-12-31T00:00:00+00:00',
+        '2016-12-31T00:00:00.000+00:00',
       );
     });
   });

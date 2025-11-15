@@ -71,9 +71,9 @@ void main() {
       });
     });
 
-    test('createFromFormat delegates to Carbon.parse', () {
+    test('createFromFormat parses numeric input with PHP tokens', () {
       final result = Carbon.createFromFormat(
-        'yyyy-MM-dd HH:mm',
+        'Y-m-d H:i',
         '2026-03-15 12:45',
         timeZone: 'UTC',
       );
@@ -87,8 +87,8 @@ void main() {
 
     test('createFromFormat parses locale month names within named zones', () {
       final result = Carbon.createFromFormat(
-        'd MMMM yyyy HH:mm',
-        '5 mars 2025 21:10',
+        'j F Y H:i:s',
+        '5 mars 2025 21:10:00',
         locale: 'fr',
         timeZone: 'Europe/Paris',
       );

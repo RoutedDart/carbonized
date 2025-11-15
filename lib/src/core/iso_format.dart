@@ -930,6 +930,16 @@ class _IsoCapture {
             builder.month = month;
           },
         );
+      case 'ddd':
+        return _IsoCapture(
+          pattern: names.shortWeekdayPattern,
+          apply: (unusedValue, unusedBuilder) {},
+        );
+      case 'dddd':
+        return _IsoCapture(
+          pattern: names.longWeekdayPattern,
+          apply: (unusedValue, unusedBuilder) {},
+        );
       case 'D':
       case 'DD':
         return _IsoCapture(
@@ -967,6 +977,25 @@ class _IsoCapture {
         return _IsoCapture(
           pattern: r'(\d{1,2})',
           apply: (value, builder) => builder.second = int.parse(value),
+        );
+      case 'S':
+      case 'SS':
+      case 'SSS':
+      case 'SSSS':
+      case 'SSSSS':
+      case 'SSSSSS':
+      case 'SSSSSSS':
+      case 'SSSSSSSS':
+      case 'SSSSSSSSS':
+        final length = token.length;
+        return _IsoCapture(
+          pattern: '([0-9]{$length})',
+          apply: (value, builder) {
+            final normalized = value.length >= 6
+                ? value.substring(0, 6)
+                : value.padRight(6, '0');
+            builder.microsecond = int.parse(normalized);
+          },
         );
       case 'A':
       case 'a':
@@ -1096,7 +1125,7 @@ class _IsoParsedComponents {
 class _LocaleNameIndex {
   _LocaleNameIndex(this.locale) {
     _ingestLocale(locale);
-    if (_longMonthForms.isEmpty) {
+    if (_longMonthForms.isEmpty || _longWeekdayForms.isEmpty) {
       _ingestLocale('en');
     }
     if (_meridiemLookup.isEmpty) {
@@ -1108,12 +1137,18 @@ class _LocaleNameIndex {
   final String locale;
   final Map<String, int> _longMonthLookup = <String, int>{};
   final Map<String, int> _shortMonthLookup = <String, int>{};
+  final Map<String, int> _longWeekdayLookup = <String, int>{};
+  final Map<String, int> _shortWeekdayLookup = <String, int>{};
   final Map<String, bool> _meridiemLookup = <String, bool>{};
   final Set<String> _longMonthForms = <String>{};
   final Set<String> _shortMonthForms = <String>{};
+  final Set<String> _longWeekdayForms = <String>{};
+  final Set<String> _shortWeekdayForms = <String>{};
 
   String get longMonthPattern => _patternFor(_longMonthForms);
   String get shortMonthPattern => _patternFor(_shortMonthForms);
+  String get longWeekdayPattern => _patternFor(_longWeekdayForms);
+  String get shortWeekdayPattern => _patternFor(_shortWeekdayForms);
   String get meridiemPattern =>
       _patternFor(_meridiemLookup.keys.toSet(), fallback: r'([AaPp]\.?M\.?)');
 
@@ -1133,6 +1168,12 @@ class _LocaleNameIndex {
       final symbols = formatter.dateSymbols;
       _ingestList(symbols.MONTHS, _longMonthLookup, _longMonthForms);
       _ingestList(symbols.SHORTMONTHS, _shortMonthLookup, _shortMonthForms);
+      _ingestList(symbols.WEEKDAYS, _longWeekdayLookup, _longWeekdayForms);
+      _ingestList(
+        symbols.SHORTWEEKDAYS,
+        _shortWeekdayLookup,
+        _shortWeekdayForms,
+      );
       final ampms = symbols.AMPMS;
       if (ampms.isNotEmpty) {
         if (ampms.isNotEmpty) {

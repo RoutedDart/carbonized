@@ -14,7 +14,7 @@ void main() {
     });
 
     test('clone mirrors copy semantics', () {
-      final original = Carbon.parse('2024-03-15 00:00:00');
+      final original = Carbon.parse('2024-03-15T00:00:00Z');
       final clone = original.clone();
       expect(clone, isNot(same(original)));
 
