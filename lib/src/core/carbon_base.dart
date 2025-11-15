@@ -3727,6 +3727,38 @@ abstract class CarbonBase implements CarbonInterface {
   bool isSunday() => _dateTime.weekday == DateTime.sunday;
 
   @override
+  CarbonInterface setDateFrom(CarbonInterface source) {
+    final other = source.dateTime;
+    return _duplicate(
+      dateTime: _copyWith(
+        year: other.year,
+        month: other.month,
+        day: other.day,
+      ),
+    );
+  }
+
+  @override
+  CarbonInterface setTimeFrom(CarbonInterface source) {
+    final other = source.dateTime;
+    return _duplicate(
+      dateTime: _copyWith(
+        hour: other.hour,
+        minute: other.minute,
+        second: other.second,
+        millisecond: other.millisecond,
+        microsecond: other.microsecond,
+      ),
+    );
+  }
+
+  @override
+  CarbonInterface setDateTimeFrom(CarbonInterface source) {
+    final other = source.dateTime;
+    return _duplicate(dateTime: other);
+  }
+
+  @override
   int get isoWeek => _isoWeekSnapshot.$1;
 
   @override

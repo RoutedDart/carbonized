@@ -594,6 +594,15 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   /// Checks if this is a Sunday.
   bool isSunday();
 
+  /// Copies date components (year/month/day) from [source].
+  CarbonInterface setDateFrom(CarbonInterface source);
+
+  /// Copies time components (hour/minute/second/microsecond) from [source].
+  CarbonInterface setTimeFrom(CarbonInterface source);
+
+  /// Copies both date and time components from [source].
+  CarbonInterface setDateTimeFrom(CarbonInterface source);
+
   /// ISO 8601 week number (1-53).
   int get isoWeek;
 

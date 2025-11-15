@@ -65,7 +65,7 @@ There are **29 missing test files** that represent unimplemented features.
 - ~~**JsonSerializationTest.php** - JSON serialization methods~~ ✅ Exercised via `test/serialization_test.dart`.
 - **SerializationTest.php** - PHP serialization support (still pending; Dart lacks `__set_state` equivalent).
 - ~~**WeekTest.php** - Week-related queries and operations~~ ✅ `test/week_math_test.dart` covers ISO + locale week numbers and week-year calculations.
-- **SetDateAndTimeFromTest.php** - `setDateFrom()`, `setTimeFrom()` methods.
+- ~~**SetDateAndTimeFromTest.php** - `setDateFrom()`, `setTimeFrom()` methods.~~ ✅ Covered via `test/set_date_time_from_test.dart`.
 
 #### Settings & Global State (3 tests)
 - **SettingsTest.php** - Global settings for locale, start of week, etc.
