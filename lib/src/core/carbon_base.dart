@@ -1,15 +1,18 @@
 part of '../carbon.dart';
 
+typedef CarbonTestNowGenerator =
+    CarbonInterface Function(CarbonInterface current);
+
 abstract class CarbonBase implements CarbonInterface {
   CarbonBase({
     required DateTime dateTime,
     String? locale,
     String? timeZone,
-    CarbonSettings settings = const CarbonSettings(),
+    CarbonSettings? settings,
   }) : _dateTime = dateTime.toUtc(),
-       _locale = locale ?? 'en',
+       _locale = locale ?? _defaultLocale,
        _timeZone = timeZone,
-       _settings = settings;
+       _settings = settings ?? _defaultSettings;
   DateTime _dateTime;
   String _locale;
   String? _timeZone;
@@ -20,6 +23,15 @@ abstract class CarbonBase implements CarbonInterface {
   static final Map<String, tm.DateTimeZone> _zoneCache =
       <String, tm.DateTimeZone>{};
   static bool _timeMachineInitialized = false;
+  static bool _strictMode = true;
+  static final RegExp _fixedOffsetPattern = RegExp(
+    r'^[+-](\d{2})(?::?(\d{2}))?$',
+  );
+  static String _defaultLocale = 'en';
+  static CarbonSettings _defaultSettings = const CarbonSettings();
+  static CarbonInterface? _testNow;
+  static List<int> _weekendDays = <int>[DateTime.saturday, DateTime.sunday];
+  static CarbonTestNowGenerator? _testNowGenerator;
 
   bool get _isMutable => this is Carbon;
 
@@ -39,6 +51,16 @@ abstract class CarbonBase implements CarbonInterface {
       _macros[name] = macro;
   static void unregisterMacro(String name) => _macros.remove(name);
 
+  static void resetDefaults() {
+    _defaultLocale = 'en';
+    _defaultSettings = const CarbonSettings();
+    _testNow = null;
+    _weekendDays = <int>[DateTime.saturday, DateTime.sunday];
+    _weekendOverridden = false;
+    _startOfWeekOverridden = false;
+    _applyLocaleDefaults(_defaultLocale);
+  }
+
   static Future<void> configureTimeMachine({
     tm.DateTimeZoneProvider? provider,
     bool testing = true,
@@ -54,6 +76,372 @@ abstract class CarbonBase implements CarbonInterface {
   static void resetTimeMachine() {
     _zoneProvider = null;
     _zoneCache.clear();
+  }
+
+  static void useStrictMode(bool enabled) => _strictMode = enabled;
+
+  static bool get strictMode => _strictMode;
+
+  static void setDefaultLocale(String locale) {
+    _defaultLocale = locale;
+    _applyLocaleDefaults(locale);
+  }
+
+  static String get defaultLocale => _defaultLocale;
+
+  static void setWeekStartsAt(int day) {
+    _startOfWeekOverridden = true;
+    final normalized = _normalizeWeekday(day);
+    _defaultSettings = _defaultSettings.copyWith(startOfWeek: normalized);
+  }
+
+  static CarbonSettings get defaultSettings => _defaultSettings;
+
+  static List<int> get weekendDays => List.unmodifiable(_weekendDays);
+
+  static void setWeekendDays(List<int> days) {
+    if (days.isEmpty) {
+      throw ArgumentError('Weekend days cannot be empty');
+    }
+    _weekendDays = days.map(_normalizeWeekday).toSet().toList()..sort();
+    _weekendOverridden = true;
+  }
+
+  static void resetWeekendDays() {
+    _weekendOverridden = false;
+    _applyLocaleDefaults(_defaultLocale);
+  }
+
+  static bool _weekendOverridden = false;
+  static bool _startOfWeekOverridden = false;
+
+  static bool hasTestNow() => _testNow != null || _testNowGenerator != null;
+
+  static CarbonInterface? get testNow => _resolveTestNow();
+
+  static void setTestNow([dynamic value]) {
+    if (value == null || value == false) {
+      _testNow = null;
+      _testNowGenerator = null;
+      return;
+    }
+    if (value is CarbonInterface Function(CarbonInterface)) {
+      _testNowGenerator = value;
+      _testNow = null;
+      return;
+    }
+    if (value is CarbonInterface Function(Carbon)) {
+      _testNowGenerator = (current) => value(current.toMutable());
+      _testNow = null;
+      return;
+    }
+    if (value is CarbonInterface Function()) {
+      _testNowGenerator = (_) => value();
+      _testNow = null;
+      return;
+    }
+    _testNowGenerator = null;
+    _testNow = _coerceTestNow(value).toImmutable();
+  }
+
+  static void setTestNowAndTimezone(dynamic value, {String? timeZone}) {
+    if (value == null || value == false) {
+      setTestNow(null);
+      return;
+    }
+    final resolved = _coerceTestNow(value);
+    final targetZone = timeZone ?? resolved.timeZoneName;
+    if (targetZone != null && resolved.timeZoneName != targetZone) {
+      _testNow = resolved.copyWith(timeZone: targetZone).toImmutable();
+    } else {
+      _testNow = resolved.toImmutable();
+    }
+    _testNowGenerator = null;
+  }
+
+  static T withTestNow<T>(dynamic value, T Function() callback) {
+    final previous = _testNow;
+    final previousGenerator = _testNowGenerator;
+    setTestNow(value);
+    try {
+      return callback();
+    } finally {
+      _testNow = previous;
+      _testNowGenerator = previousGenerator;
+    }
+  }
+
+  static CarbonInterface? _resolveTestNow({String? timeZone}) {
+    CarbonInterface? reference;
+    if (_testNowGenerator != null) {
+      final base = _buildNowInstance(timeZone: timeZone);
+      reference = _testNowGenerator!(base);
+    } else {
+      reference = _testNow;
+    }
+    if (reference == null) {
+      return null;
+    }
+    var snapshot = reference.toImmutable();
+    if (timeZone != null && snapshot.timeZoneName != timeZone) {
+      snapshot = snapshot.copyWith(timeZone: timeZone).toImmutable();
+    }
+    return snapshot;
+  }
+
+  static CarbonInterface _coerceTestNow(dynamic value) {
+    if (value is CarbonInterface) {
+      return value;
+    }
+    if (value is DateTime) {
+      return Carbon.fromDateTime(value);
+    }
+    if (value is String) {
+      return Carbon.parse(value);
+    }
+    if (value is num) {
+      return Carbon.createFromTimestamp(value);
+    }
+    throw ArgumentError('Unsupported testNow type `${value.runtimeType}`');
+  }
+
+  static Carbon _buildNowInstance({String? timeZone}) => Carbon._internal(
+    dateTime: clock.now().toUtc(),
+    locale: _defaultLocale,
+    timeZone: timeZone,
+    settings: _defaultSettings,
+  );
+
+  static bool hasRelativeKeywords(String? input) {
+    if (input == null) {
+      return false;
+    }
+    final trimmed = input.trim();
+    if (trimmed.isEmpty) {
+      return false;
+    }
+    final baselineA = Carbon._fromUtc(DateTime.utc(2000, 1, 1));
+    final parsedA = Carbon._parseRelativeString(trimmed, base: baselineA);
+    if (parsedA == null) {
+      return false;
+    }
+    final baselineB = Carbon._fromUtc(DateTime.utc(2001, 12, 25));
+    final parsedB = Carbon._parseRelativeString(trimmed, base: baselineB);
+    if (parsedB == null) {
+      return false;
+    }
+    return !parsedA.dateTime.isAtSameMomentAs(parsedB.dateTime);
+  }
+
+  static Duration? _parseFixedOffset(String zone) {
+    final match = _fixedOffsetPattern.firstMatch(zone);
+    if (match == null) {
+      return null;
+    }
+    final hours = int.parse(match.group(1)!);
+    final minutes = match.group(2) == null ? 0 : int.parse(match.group(2)!);
+    Duration offset = Duration(hours: hours, minutes: minutes);
+    if (zone.startsWith('-')) {
+      offset = -offset;
+    }
+    return offset;
+  }
+
+  static DateTime _localDateTimeUtc(DateTime local, {String? timeZone}) {
+    if (timeZone == null || timeZone == 'UTC') {
+      return DateTime.utc(
+        local.year,
+        local.month,
+        local.day,
+        local.hour,
+        local.minute,
+        local.second,
+        local.millisecond,
+        local.microsecond,
+      );
+    }
+    return _localToUtc(
+      year: local.year,
+      month: local.month,
+      day: local.day,
+      hour: local.hour,
+      minute: local.minute,
+      second: local.second,
+      microsecond: local.microsecond,
+      timeZone: timeZone,
+    );
+  }
+
+  static void _applyLocaleDefaults(String? locale) {
+    if (locale == null) {
+      return;
+    }
+    final segments = _localeCandidates(locale);
+
+    if (!_weekendOverridden) {
+      var applied = false;
+      for (final key in segments) {
+        final weekend = kLocaleWeekendDefaults[key];
+        if (weekend != null) {
+          _weekendDays = weekend.toSet().toList()..sort();
+          applied = true;
+          break;
+        }
+      }
+      if (!applied) {
+        _weekendDays = <int>[DateTime.saturday, DateTime.sunday];
+      }
+    }
+
+    if (!_startOfWeekOverridden) {
+      for (final key in segments) {
+        final start = kLocaleWeekStartDefaults[key];
+        if (start != null) {
+          _defaultSettings = _defaultSettings.copyWith(startOfWeek: start);
+          break;
+        }
+      }
+    }
+  }
+
+  static List<String> _localeCandidates(String locale) {
+    final normalized = locale.toLowerCase().replaceAll('-', '_');
+    final seen = <String>{};
+    final result = <String>[];
+    final queue = <String>[];
+    void enqueue(String value) {
+      if (value.isEmpty) return;
+      if (seen.add(value)) {
+        queue.add(value);
+      }
+    }
+
+    enqueue(normalized);
+    while (queue.isNotEmpty) {
+      final current = queue.removeAt(0);
+      result.add(current);
+      final dot = current.indexOf('.');
+      if (dot != -1) {
+        enqueue(current.substring(0, dot));
+      }
+      final at = current.indexOf('@');
+      if (at != -1) {
+        enqueue(current.substring(0, at));
+      }
+      final underscore = current.lastIndexOf('_');
+      if (underscore != -1) {
+        enqueue(current.substring(0, underscore));
+      }
+    }
+    return result;
+  }
+
+  static DateTime _utcToLocal(DateTime utc, String zoneName) {
+    final fixed = _parseFixedOffset(zoneName);
+    if (fixed != null) {
+      return utc.add(fixed);
+    }
+    _ensureZoneProvider(zoneName);
+    final zone = _getZoneOrThrow(zoneName);
+    final zoned = tm.Instant.dateTime(utc).inZone(zone);
+    return zoned.localDateTime.toDateTimeLocal();
+  }
+
+  static void _ensureZoneProvider(String zoneName) {
+    if (_zoneProvider == null) {
+      throw StateError(
+        'Named timezone "$zoneName" requires calling Carbon.configureTimeMachine() first.',
+      );
+    }
+  }
+
+  static DateTime _localToUtc({
+    required int year,
+    required int month,
+    required int day,
+    required int hour,
+    required int minute,
+    required int second,
+    required int microsecond,
+    String? timeZone,
+  }) {
+    final localUtc = DateTime.utc(
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
+      0,
+      microsecond,
+    );
+    if (timeZone == null || timeZone == 'UTC') {
+      return localUtc;
+    }
+    final fixedOffset = _parseFixedOffset(timeZone);
+    if (fixedOffset != null) {
+      return localUtc.subtract(fixedOffset);
+    }
+    _ensureZoneProvider(timeZone);
+    final zone = _getZoneOrThrow(timeZone);
+    var localDateTime = tm.LocalDateTime(
+      year,
+      month,
+      day,
+      hour,
+      minute,
+      second,
+      us: microsecond,
+    );
+    final mapping = zone.mapLocal(localDateTime);
+    if (mapping.count == 0) {
+      throw StateError(
+        'Local time $localDateTime is not valid in timezone $timeZone',
+      );
+    }
+    final tm.ZonedDateTime zoned = mapping.first();
+    return zoned.toInstant().toDateTimeUtc();
+  }
+
+  static void _requireZoneAvailability(String? timeZone) {
+    if (timeZone == null || timeZone == 'UTC') {
+      return;
+    }
+    if (_parseFixedOffset(timeZone) != null) {
+      return;
+    }
+    _ensureZoneProvider(timeZone);
+  }
+
+  static DateTime _startOfDayUtcForZone(
+    DateTime baseUtc, {
+    String? timeZone,
+    int dayOffset = 0,
+  }) {
+    if (timeZone == null || timeZone == 'UTC') {
+      final midnight = DateTime.utc(
+        baseUtc.year,
+        baseUtc.month,
+        baseUtc.day,
+      ).add(Duration(days: dayOffset));
+      return midnight;
+    }
+    final local = _utcToLocal(baseUtc, timeZone);
+    final localMidnight = DateTime(
+      local.year,
+      local.month,
+      local.day,
+    ).add(Duration(days: dayOffset));
+    return _localToUtc(
+      year: localMidnight.year,
+      month: localMidnight.month,
+      day: localMidnight.day,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      microsecond: 0,
+      timeZone: timeZone,
+    );
   }
 
   CarbonInterface _wrap(DateTime value) {
@@ -113,7 +501,10 @@ abstract class CarbonBase implements CarbonInterface {
   );
 
   @override
-  CarbonInterface setLocale(String locale) => _duplicate(locale: locale);
+  CarbonInterface locale(String locale) {
+    _applyLocaleDefaults(locale);
+    return _duplicate(locale: locale);
+  }
 
   @override
   CarbonInterface tz(String zoneName) {
@@ -122,6 +513,10 @@ abstract class CarbonBase implements CarbonInterface {
     }
     if (zoneName == 'UTC') {
       return _duplicate(timeZone: 'UTC');
+    }
+    final fixed = _parseFixedOffset(zoneName);
+    if (fixed != null) {
+      return _duplicate(timeZone: zoneName);
     }
     _getZoneOrThrow(zoneName);
     return _duplicate(timeZone: zoneName);
@@ -137,7 +532,97 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface add(Duration duration) => _wrap(_dateTime.add(duration));
 
   @override
-  CarbonInterface subtract(Duration duration) => add(-duration);
+  CarbonInterface subtract([dynamic value, dynamic unit]) =>
+      _applyDynamicAdjustment(value: value, unit: unit, isAddition: false);
+
+  @override
+  CarbonInterface sub([dynamic value, dynamic unit]) => subtract(value, unit);
+
+  CarbonInterface _applyDynamicAdjustment({
+    required dynamic value,
+    dynamic unit,
+    required bool isAddition,
+  }) {
+    if (value == null) {
+      return this;
+    }
+    if (value is Duration && unit == null) {
+      final delta = isAddition ? value : -value;
+      return add(delta);
+    }
+    if (value is CarbonInterval && unit == null) {
+      return _applyCarbonInterval(value, isAddition);
+    }
+
+    dynamic amountInput = value;
+    dynamic unitInput = unit;
+
+    if (amountInput is num && unitInput != null) {
+      final resolvedUnit = _unitFromInput(unitInput);
+      if (resolvedUnit != null) {
+        final amount = amountInput.round();
+        if (amount == 0) {
+          return this;
+        }
+        return _applyTemporalUnit(
+          resolvedUnit,
+          isAddition ? amount : -amount,
+          null,
+        );
+      }
+    }
+
+    final swappedUnit = _unitFromInput(amountInput);
+    if (swappedUnit != null && unitInput is num) {
+      final amount = unitInput.round();
+      if (amount == 0) {
+        return this;
+      }
+      return _applyTemporalUnit(
+        swappedUnit,
+        isAddition ? amount : -amount,
+        null,
+      );
+    }
+
+    if (amountInput is String && unitInput == null) {
+      final instruction = _parseUnitAmountExpression(amountInput);
+      if (instruction != null) {
+        final signedAmount = isAddition
+            ? instruction.amount
+            : -instruction.amount;
+        return _applyTemporalUnit(instruction.unit, signedAmount, null);
+      }
+    }
+
+    if (amountInput is CarbonInterface && unitInput == null) {
+      final diff = amountInput.dateTime.difference(_dateTime);
+      return add(isAddition ? diff : -diff);
+    }
+
+    if (amountInput is DateTime && unitInput == null) {
+      final diff = amountInput.toUtc().difference(_dateTime);
+      return add(isAddition ? diff : -diff);
+    }
+
+    if (amountInput is Function && unitInput == null) {
+      final fn = amountInput;
+      final isNegated = !isAddition;
+      final result = Function.apply(fn, [dateTime.toUtc(), isNegated]);
+      if (result is DateTime) {
+        final target = result.isUtc ? result : result.toUtc();
+        return _wrap(target);
+      }
+      throw ArgumentError(
+        'Callback passed to ${isAddition ? 'add' : 'sub'} must return DateTime',
+      );
+    }
+
+    throw ArgumentError(
+      'Unsupported ${isAddition ? 'add' : 'subtract'} arguments: '
+      '$value, $unit',
+    );
+  }
 
   @override
   CarbonInterface addDays(int days) => add(Duration(days: days));
@@ -161,6 +646,42 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   CarbonInterface subWeekday([int amount = 1]) => addWeekdays(-amount);
+
+  @override
+  CarbonInterface nextWeekday() {
+    var cursor = _dateTime.add(const Duration(days: 1));
+    while (_weekendDays.contains(cursor.weekday)) {
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface previousWeekday() {
+    var cursor = _dateTime.subtract(const Duration(days: 1));
+    while (_weekendDays.contains(cursor.weekday)) {
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface nextWeekendDay() {
+    var cursor = _dateTime.add(const Duration(days: 1));
+    while (!_weekendDays.contains(cursor.weekday)) {
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface previousWeekendDay() {
+    var cursor = _dateTime.subtract(const Duration(days: 1));
+    while (!_weekendDays.contains(cursor.weekday)) {
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
 
   @override
   CarbonInterface addMonths(int months) => _wrap(_addMonths(_dateTime, months));
@@ -219,8 +740,7 @@ abstract class CarbonBase implements CarbonInterface {
     return current;
   }
 
-  bool _isWeekend(DateTime value) =>
-      value.weekday == DateTime.saturday || value.weekday == DateTime.sunday;
+  bool _isWeekend(DateTime value) => _weekendDays.contains(value.weekday);
 
   int _floorDiv(int a, int b) {
     final q = a ~/ b;
@@ -250,18 +770,36 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   CarbonInterface startOfWeek() {
-    final delta = (_dateTime.weekday - _settings.startOfWeek + 7) % 7;
-    final start = DateTime.utc(
-      _dateTime.year,
-      _dateTime.month,
-      _dateTime.day,
-    ).subtract(Duration(days: delta));
-    return _wrap(start);
+    final zone = _timeZone;
+    final local = zone == null ? _dateTime : _utcToLocal(_dateTime, zone);
+    final startOfWeek = _settings.startOfWeek;
+    final normalized = ((local.weekday - startOfWeek) + 7) % 7;
+    final localStart = DateTime(
+      local.year,
+      local.month,
+      local.day,
+    ).subtract(Duration(days: normalized));
+    final utc = _localDateTimeUtc(localStart, timeZone: zone);
+    return _wrap(utc);
   }
 
   @override
-  CarbonInterface endOfWeek() =>
-      startOfWeek().addWeeks(1).subtract(const Duration(microseconds: 1));
+  CarbonInterface endOfWeek() {
+    final zone = _timeZone;
+    final local = zone == null ? _dateTime : _utcToLocal(_dateTime, zone);
+    final startOfWeek = _settings.startOfWeek;
+    final normalized = ((local.weekday - startOfWeek) + 7) % 7;
+    final localStart = DateTime(
+      local.year,
+      local.month,
+      local.day,
+    ).subtract(Duration(days: normalized));
+    final localEnd = localStart
+        .add(const Duration(days: 7))
+        .subtract(const Duration(microseconds: 1));
+    final utc = _localDateTimeUtc(localEnd, timeZone: zone);
+    return _wrap(utc);
+  }
 
   @override
   CarbonInterface startOfMonth() =>
@@ -273,11 +811,412 @@ abstract class CarbonBase implements CarbonInterface {
   );
 
   @override
+  CarbonInterface firstOfMonth([dynamic weekday]) {
+    if (weekday == null) {
+      return startOfMonth();
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = DateTime.utc(_dateTime.year, _dateTime.month, 1);
+    while (cursor.weekday % 7 != target) {
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface lastOfMonth([dynamic weekday]) {
+    if (weekday == null) {
+      return endOfMonth();
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = DateTime.utc(
+      _dateTime.year,
+      _dateTime.month + 1,
+      1,
+    ).subtract(const Duration(days: 1));
+    while (cursor.weekday % 7 != target) {
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface? nthOfMonth(int nth, [dynamic weekday]) {
+    if (nth <= 0) {
+      return null;
+    }
+    if (weekday == null) {
+      final lastDay = DateTime.utc(_dateTime.year, _dateTime.month + 1, 0).day;
+      if (nth > lastDay) {
+        return null;
+      }
+      return _wrap(DateTime.utc(_dateTime.year, _dateTime.month, nth));
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = DateTime.utc(_dateTime.year, _dateTime.month, 1);
+    var count = 0;
+    while (cursor.month == _dateTime.month) {
+      if (cursor.weekday % 7 == target) {
+        count++;
+        if (count == nth) {
+          return _wrap(cursor);
+        }
+      }
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return null;
+  }
+
+  @override
   CarbonInterface startOfYear() => _wrap(DateTime.utc(_dateTime.year, 1, 1));
 
   @override
   CarbonInterface endOfYear() =>
       _wrap(DateTime.utc(_dateTime.year + 1, 1, 0, 23, 59, 59, 999, 999));
+
+  @override
+  CarbonInterface firstOfYear([dynamic weekday]) {
+    final start = DateTime.utc(_dateTime.year, 1, 1);
+    if (weekday == null) {
+      return _wrap(start);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = start;
+    while (cursor.year == start.year && cursor.weekday % 7 != target) {
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface lastOfYear([dynamic weekday]) {
+    final end = DateTime.utc(
+      _dateTime.year + 1,
+      1,
+      1,
+    ).subtract(const Duration(days: 1));
+    if (weekday == null) {
+      return _wrap(end);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = end;
+    while (cursor.year == end.year && cursor.weekday % 7 != target) {
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface? nthOfYear(int nth, [dynamic weekday]) {
+    if (nth <= 0) {
+      return null;
+    }
+    final start = DateTime.utc(_dateTime.year, 1, 1);
+    final end = DateTime.utc(
+      _dateTime.year + 1,
+      1,
+      1,
+    ).subtract(const Duration(days: 1));
+    if (weekday == null) {
+      final date = start.add(Duration(days: nth - 1));
+      if (date.isAfter(end)) {
+        return null;
+      }
+      return _wrap(date);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = start;
+    var count = 0;
+    while (!cursor.isAfter(end)) {
+      if (cursor.weekday % 7 == target) {
+        count++;
+        if (count == nth) {
+          return _wrap(cursor);
+        }
+      }
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return null;
+  }
+
+  @override
+  CarbonInterface firstOfQuarter([dynamic weekday]) {
+    final start = _quarterStart(_dateTime);
+    if (weekday == null) {
+      return _wrap(start);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = start;
+    while (cursor.month <= start.month + 2 && cursor.weekday % 7 != target) {
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface lastOfQuarter([dynamic weekday]) {
+    final end = _quarterEnd(_dateTime);
+    if (weekday == null) {
+      return _wrap(end);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = end;
+    final cutoff = _quarterStart(_dateTime).month - 1;
+    while (cursor.month > cutoff && cursor.weekday % 7 != target) {
+      cursor = cursor.subtract(const Duration(days: 1));
+    }
+    return _wrap(cursor);
+  }
+
+  @override
+  CarbonInterface? nthOfQuarter(int nth, [dynamic weekday]) {
+    if (nth <= 0) {
+      return null;
+    }
+    final start = _quarterStart(_dateTime);
+    final end = _quarterEnd(_dateTime);
+    if (weekday == null) {
+      final date = start.add(Duration(days: nth - 1));
+      if (date.isAfter(end)) {
+        return null;
+      }
+      return _wrap(date);
+    }
+    final target = _resolveWeekdayInput(weekday);
+    var cursor = start;
+    var count = 0;
+    while (!cursor.isAfter(end)) {
+      if (cursor.weekday % 7 == target) {
+        count++;
+        if (count == nth) {
+          return _wrap(cursor);
+        }
+      }
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return null;
+  }
+
+  @override
+  CarbonInterface startOfHour() => _wrap(
+    DateTime.utc(
+      _dateTime.year,
+      _dateTime.month,
+      _dateTime.day,
+      _dateTime.hour,
+    ),
+  );
+
+  @override
+  CarbonInterface endOfHour() => _wrap(
+    _endExclusive(
+      DateTime.utc(
+        _dateTime.year,
+        _dateTime.month,
+        _dateTime.day,
+        _dateTime.hour + 1,
+      ),
+    ),
+  );
+
+  @override
+  CarbonInterface startOfMinute() => _wrap(
+    DateTime.utc(
+      _dateTime.year,
+      _dateTime.month,
+      _dateTime.day,
+      _dateTime.hour,
+      _dateTime.minute,
+    ),
+  );
+
+  @override
+  CarbonInterface endOfMinute() => _wrap(
+    _endExclusive(
+      DateTime.utc(
+        _dateTime.year,
+        _dateTime.month,
+        _dateTime.day,
+        _dateTime.hour,
+        _dateTime.minute + 1,
+      ),
+    ),
+  );
+
+  @override
+  CarbonInterface startOfSecond() => _wrap(
+    DateTime.utc(
+      _dateTime.year,
+      _dateTime.month,
+      _dateTime.day,
+      _dateTime.hour,
+      _dateTime.minute,
+      _dateTime.second,
+    ),
+  );
+
+  @override
+  CarbonInterface endOfSecond() => _wrap(
+    _endExclusive(
+      DateTime.utc(
+        _dateTime.year,
+        _dateTime.month,
+        _dateTime.day,
+        _dateTime.hour,
+        _dateTime.minute,
+        _dateTime.second + 1,
+      ),
+    ),
+  );
+
+  @override
+  CarbonInterface midDay() =>
+      _wrap(DateTime.utc(_dateTime.year, _dateTime.month, _dateTime.day, 12));
+
+  @override
+  CarbonInterface startOfQuarter() => _wrap(_quarterStart(_dateTime));
+
+  @override
+  CarbonInterface endOfQuarter() =>
+      _wrap(_endExclusive(_addMonths(_quarterStart(_dateTime), 3)));
+
+  @override
+  CarbonInterface startOfDecade() =>
+      _wrap(DateTime.utc(_dateTime.year - (_dateTime.year % 10), 1, 1));
+
+  @override
+  CarbonInterface endOfDecade() => _wrap(
+    _endExclusive(
+      DateTime.utc(_dateTime.year - (_dateTime.year % 10) + 10, 1, 1),
+    ),
+  );
+
+  @override
+  CarbonInterface startOfCentury() => _wrap(_centuryStart(_dateTime));
+
+  @override
+  CarbonInterface endOfCentury() => _wrap(
+    _endExclusive(DateTime.utc(_centuryStart(_dateTime).year + 100, 1, 1)),
+  );
+
+  @override
+  CarbonInterface startOfMillennium() => _wrap(_millenniumStart(_dateTime));
+
+  @override
+  CarbonInterface endOfMillennium() => _wrap(
+    _endExclusive(DateTime.utc(_millenniumStart(_dateTime).year + 1000, 1, 1)),
+  );
+
+  @override
+  CarbonInterface startOf(dynamic unit) =>
+      _applyStartEndUnit(unit, isStart: true);
+
+  @override
+  CarbonInterface endOf(dynamic unit) =>
+      _applyStartEndUnit(unit, isStart: false);
+
+  @override
+  CarbonInterface average([dynamic other]) {
+    final target = _coerceToDateTime(other);
+    final sum =
+        _dateTime.microsecondsSinceEpoch + target.microsecondsSinceEpoch;
+    final averageMicros = sum ~/ 2;
+    final averaged = DateTime.fromMicrosecondsSinceEpoch(
+      averageMicros,
+      isUtc: true,
+    );
+    return _wrap(averaged);
+  }
+
+  CarbonInterface _applyStartEndUnit(dynamic unit, {required bool isStart}) {
+    final resolved = _resolveStartEndUnit(unit);
+    switch (resolved) {
+      case _StartEndUnit.second:
+        return isStart ? startOfSecond() : endOfSecond();
+      case _StartEndUnit.minute:
+        return isStart ? startOfMinute() : endOfMinute();
+      case _StartEndUnit.hour:
+        return isStart ? startOfHour() : endOfHour();
+      case _StartEndUnit.day:
+        return isStart ? startOfDay() : endOfDay();
+      case _StartEndUnit.week:
+        return isStart ? startOfWeek() : endOfWeek();
+      case _StartEndUnit.month:
+        return isStart ? startOfMonth() : endOfMonth();
+      case _StartEndUnit.quarter:
+        return isStart ? startOfQuarter() : endOfQuarter();
+      case _StartEndUnit.year:
+        return isStart ? startOfYear() : endOfYear();
+      case _StartEndUnit.decade:
+        return isStart ? startOfDecade() : endOfDecade();
+      case _StartEndUnit.century:
+        return isStart ? startOfCentury() : endOfCentury();
+      case _StartEndUnit.millennium:
+        return isStart ? startOfMillennium() : endOfMillennium();
+    }
+  }
+
+  _StartEndUnit _resolveStartEndUnit(dynamic value) {
+    if (value is CarbonUnit) {
+      switch (value) {
+        case CarbonUnit.second:
+          return _StartEndUnit.second;
+        case CarbonUnit.minute:
+          return _StartEndUnit.minute;
+        case CarbonUnit.hour:
+          return _StartEndUnit.hour;
+        case CarbonUnit.day:
+          return _StartEndUnit.day;
+        case CarbonUnit.week:
+          return _StartEndUnit.week;
+        case CarbonUnit.month:
+          return _StartEndUnit.month;
+        case CarbonUnit.quarter:
+          return _StartEndUnit.quarter;
+        case CarbonUnit.year:
+          return _StartEndUnit.year;
+        case CarbonUnit.decade:
+          return _StartEndUnit.decade;
+        case CarbonUnit.century:
+          return _StartEndUnit.century;
+        case CarbonUnit.millennium:
+          return _StartEndUnit.millennium;
+        default:
+          break;
+      }
+    } else if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      final singular = normalized.endsWith('s') && normalized.length > 1
+          ? normalized.substring(0, normalized.length - 1)
+          : normalized;
+      switch (singular) {
+        case 'second':
+          return _StartEndUnit.second;
+        case 'minute':
+          return _StartEndUnit.minute;
+        case 'hour':
+          return _StartEndUnit.hour;
+        case 'day':
+          return _StartEndUnit.day;
+        case 'week':
+          return _StartEndUnit.week;
+        case 'month':
+          return _StartEndUnit.month;
+        case 'quarter':
+          return _StartEndUnit.quarter;
+        case 'year':
+          return _StartEndUnit.year;
+        case 'decade':
+          return _StartEndUnit.decade;
+        case 'century':
+          return _StartEndUnit.century;
+        case 'millennium':
+        case 'millennia':
+          return _StartEndUnit.millennium;
+      }
+    }
+    throw ArgumentError("Unknown unit '$value'");
+  }
 
   @override
   int get year => _dateTime.year;
@@ -353,11 +1292,7 @@ abstract class CarbonBase implements CarbonInterface {
     final yearShift = (zeroIndexed - normalized) ~/ 12;
     final monthsDiff = yearShift * 12 + (normalizedMonth - _dateTime.month);
     return _wrap(
-      _addMonths(
-        _dateTime,
-        monthsDiff,
-        monthOverflow: _settings.monthOverflow,
-      ),
+      _addMonths(_dateTime, monthsDiff, monthOverflow: _settings.monthOverflow),
     );
   }
 
@@ -377,10 +1312,7 @@ abstract class CarbonBase implements CarbonInterface {
     ).day;
     final clampedDay = _dateTime.day.clamp(1, lastDayOfTarget);
     return _duplicate(
-      dateTime: _copyWith(
-        month: targetMonth,
-        day: clampedDay,
-      ),
+      dateTime: _copyWith(month: targetMonth, day: clampedDay),
     );
   }
 
@@ -410,8 +1342,7 @@ abstract class CarbonBase implements CarbonInterface {
   int get dayOfMonth => day;
 
   @override
-  int get dayOfYear =>
-      _daysSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+  int get dayOfYear => _daysSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
 
   @override
   int get dayOfWeek {
@@ -534,8 +1465,7 @@ abstract class CarbonBase implements CarbonInterface {
   int get hourOfQuarter => _hoursSince(_quarterStart(_dateTime)) + 1;
 
   @override
-  int get hourOfYear =>
-      _hoursSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+  int get hourOfYear => _hoursSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
 
   @override
   int get hourOfDecade => _hoursSince(_decadeStart(_dateTime)) + 1;
@@ -611,11 +1541,11 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   CarbonInterface setTime(
     int hour, [
-      int? minute,
-      int? second,
-      int? millisecond,
-      int? microsecond,
-    ]) {
+    int? minute,
+    int? second,
+    int? millisecond,
+    int? microsecond,
+  ]) {
     final resolvedMinute = minute ?? _dateTime.minute;
     final resolvedSecond = second ?? _dateTime.second;
     final resolvedMillisecond = millisecond ?? _dateTime.millisecond;
@@ -650,7 +1580,8 @@ abstract class CarbonBase implements CarbonInterface {
   int get millisecondOfSecond => millisecond + 1;
 
   @override
-  int get millisecondOfMinute => _millisecondsSince(
+  int get millisecondOfMinute =>
+      _millisecondsSince(
         DateTime.utc(
           _dateTime.year,
           _dateTime.month,
@@ -662,7 +1593,8 @@ abstract class CarbonBase implements CarbonInterface {
       1;
 
   @override
-  int get millisecondOfHour => _millisecondsSince(
+  int get millisecondOfHour =>
+      _millisecondsSince(
         DateTime.utc(
           _dateTime.year,
           _dateTime.month,
@@ -673,14 +1605,14 @@ abstract class CarbonBase implements CarbonInterface {
       1;
 
   @override
-  int get millisecondOfDay => _millisecondsSince(
+  int get millisecondOfDay =>
+      _millisecondsSince(
         DateTime.utc(_dateTime.year, _dateTime.month, _dateTime.day),
       ) +
       1;
 
   @override
-  int get millisecondOfWeek =>
-      _millisecondsSince(_weekStart(_dateTime)) + 1;
+  int get millisecondOfWeek => _millisecondsSince(_weekStart(_dateTime)) + 1;
 
   @override
   int get millisecondOfMonth =>
@@ -725,20 +1657,16 @@ abstract class CarbonBase implements CarbonInterface {
   int get millisecondsInMonth => daysInMonth * Duration.millisecondsPerDay;
 
   @override
-  int get millisecondsInQuarter =>
-      daysInQuarter * Duration.millisecondsPerDay;
+  int get millisecondsInQuarter => daysInQuarter * Duration.millisecondsPerDay;
 
   @override
-  int get millisecondsInYear =>
-      daysInYear * Duration.millisecondsPerDay;
+  int get millisecondsInYear => daysInYear * Duration.millisecondsPerDay;
 
   @override
-  int get millisecondsInDecade =>
-      daysInDecade * Duration.millisecondsPerDay;
+  int get millisecondsInDecade => daysInDecade * Duration.millisecondsPerDay;
 
   @override
-  int get millisecondsInCentury =>
-      daysInCentury * Duration.millisecondsPerDay;
+  int get millisecondsInCentury => daysInCentury * Duration.millisecondsPerDay;
 
   @override
   int get millisecondsInMillennium =>
@@ -757,15 +1685,10 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   CarbonInterface setMicro(int microsecond) {
-    final milliPortion =
-        microsecond ~/ Duration.microsecondsPerMillisecond;
-    final microPortion =
-        microsecond % Duration.microsecondsPerMillisecond;
+    final milliPortion = microsecond ~/ Duration.microsecondsPerMillisecond;
+    final microPortion = microsecond % Duration.microsecondsPerMillisecond;
     return _duplicate(
-      dateTime: _copyWith(
-        millisecond: milliPortion,
-        microsecond: microPortion,
-      ),
+      dateTime: _copyWith(millisecond: milliPortion, microsecond: microPortion),
     );
   }
 
@@ -799,7 +1722,8 @@ abstract class CarbonBase implements CarbonInterface {
   int get microsecondOfSecond => microsecond + 1;
 
   @override
-  int get microsecondOfMinute => _microsecondsSince(
+  int get microsecondOfMinute =>
+      _microsecondsSince(
         DateTime.utc(
           _dateTime.year,
           _dateTime.month,
@@ -811,7 +1735,8 @@ abstract class CarbonBase implements CarbonInterface {
       1;
 
   @override
-  int get microsecondOfHour => _microsecondsSince(
+  int get microsecondOfHour =>
+      _microsecondsSince(
         DateTime.utc(
           _dateTime.year,
           _dateTime.month,
@@ -822,14 +1747,14 @@ abstract class CarbonBase implements CarbonInterface {
       1;
 
   @override
-  int get microsecondOfDay => _microsecondsSince(
+  int get microsecondOfDay =>
+      _microsecondsSince(
         DateTime.utc(_dateTime.year, _dateTime.month, _dateTime.day),
       ) +
       1;
 
   @override
-  int get microsecondOfWeek =>
-      _microsecondsSince(_weekStart(_dateTime)) + 1;
+  int get microsecondOfWeek => _microsecondsSince(_weekStart(_dateTime)) + 1;
 
   @override
   int get microsecondOfMonth =>
@@ -844,7 +1769,8 @@ abstract class CarbonBase implements CarbonInterface {
       _microsecondsSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
 
   @override
-  int get microsecondOfDecade => _microsecondsSince(_decadeStart(_dateTime)) + 1;
+  int get microsecondOfDecade =>
+      _microsecondsSince(_decadeStart(_dateTime)) + 1;
 
   @override
   int get microsecondOfCentury =>
@@ -855,8 +1781,7 @@ abstract class CarbonBase implements CarbonInterface {
       _microsecondsSince(_millenniumStart(_dateTime)) + 1;
 
   @override
-  int get microsecondsInMillisecond =>
-      Duration.microsecondsPerMillisecond;
+  int get microsecondsInMillisecond => Duration.microsecondsPerMillisecond;
 
   @override
   int get microsecondsInSecond => Duration.microsecondsPerSecond;
@@ -874,24 +1799,19 @@ abstract class CarbonBase implements CarbonInterface {
   int get microsecondsInWeek => microsecondsInDay * daysInWeek;
 
   @override
-  int get microsecondsInMonth =>
-      daysInMonth * Duration.microsecondsPerDay;
+  int get microsecondsInMonth => daysInMonth * Duration.microsecondsPerDay;
 
   @override
-  int get microsecondsInQuarter =>
-      daysInQuarter * Duration.microsecondsPerDay;
+  int get microsecondsInQuarter => daysInQuarter * Duration.microsecondsPerDay;
 
   @override
-  int get microsecondsInYear =>
-      daysInYear * Duration.microsecondsPerDay;
+  int get microsecondsInYear => daysInYear * Duration.microsecondsPerDay;
 
   @override
-  int get microsecondsInDecade =>
-      daysInDecade * Duration.microsecondsPerDay;
+  int get microsecondsInDecade => daysInDecade * Duration.microsecondsPerDay;
 
   @override
-  int get microsecondsInCentury =>
-      daysInCentury * Duration.microsecondsPerDay;
+  int get microsecondsInCentury => daysInCentury * Duration.microsecondsPerDay;
 
   @override
   int get microsecondsInMillennium =>
@@ -1265,11 +2185,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundSeconds({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(seconds: 1),
-        precision,
-        function,
-      );
+  }) => _roundDurationUnit(const Duration(seconds: 1), precision, function);
 
   @override
   CarbonInterface roundSecond({
@@ -1297,11 +2213,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMinutes({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(minutes: 1),
-        precision,
-        function,
-      );
+  }) => _roundDurationUnit(const Duration(minutes: 1), precision, function);
 
   @override
   CarbonInterface roundMinute({
@@ -1329,11 +2241,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMonths({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(
-        precision,
-        function,
-        useOneBasedRounding: true,
-      );
+  }) => _roundMonthUnit(precision, function, useOneBasedRounding: true);
 
   @override
   CarbonInterface roundMonth({
@@ -1361,11 +2269,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundQuarters({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(
-        precision * 3,
-        function,
-        useOneBasedRounding: true,
-      );
+  }) => _roundMonthUnit(precision * 3, function, useOneBasedRounding: true);
 
   @override
   CarbonInterface roundQuarter({
@@ -1393,11 +2297,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundYears({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(
-        precision * 12,
-        function,
-        useOneBasedRounding: true,
-      );
+  }) => _roundMonthUnit(precision * 12, function, useOneBasedRounding: true);
 
   @override
   CarbonInterface roundYear({
@@ -1425,11 +2325,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundHours({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(hours: 1),
-        precision,
-        function,
-      );
+  }) => _roundDurationUnit(const Duration(hours: 1), precision, function);
 
   @override
   CarbonInterface roundHour({
@@ -1485,11 +2381,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMillennia({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(
-        precision * 12000,
-        function,
-        monthOffset: 12,
-      );
+  }) => _roundMonthUnit(precision * 12000, function, monthOffset: 12);
 
   @override
   CarbonInterface roundMillennium({
@@ -1517,11 +2409,8 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMilliseconds({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(milliseconds: 1),
-        precision,
-        function,
-      );
+  }) =>
+      _roundDurationUnit(const Duration(milliseconds: 1), precision, function);
 
   @override
   CarbonInterface roundMillisecond({
@@ -1549,11 +2438,8 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundMicroseconds({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(microseconds: 1),
-        precision,
-        function,
-      );
+  }) =>
+      _roundDurationUnit(const Duration(microseconds: 1), precision, function);
 
   @override
   CarbonInterface roundMicrosecond({
@@ -1581,11 +2467,7 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface roundDays({
     double precision = 1,
     String function = 'round',
-  }) => _roundDurationUnit(
-        const Duration(days: 1),
-        precision,
-        function,
-      );
+  }) => _roundDurationUnit(const Duration(days: 1), precision, function);
 
   @override
   CarbonInterface roundDay({double precision = 1, String function = 'round'}) =>
@@ -1608,14 +2490,25 @@ abstract class CarbonBase implements CarbonInterface {
       floorDays(precision: precision);
 
   @override
+  double secondsSinceMidnight() {
+    final midnight = _startOfDayUtcForZone(_dateTime, timeZone: _timeZone);
+    final diff = _dateTime.difference(midnight);
+    return diff.inMicroseconds / Duration.microsecondsPerSecond;
+  }
+
+  @override
+  double secondsUntilEndOfDay() {
+    final midnight = _startOfDayUtcForZone(_dateTime, timeZone: _timeZone);
+    final end = midnight.add(const Duration(days: 1));
+    final diff = end.difference(_dateTime);
+    return diff.inMicroseconds / Duration.microsecondsPerSecond;
+  }
+
+  @override
   CarbonInterface roundCenturies({
     double precision = 1,
     String function = 'round',
-  }) => _roundMonthUnit(
-        precision * 1200,
-        function,
-        monthOffset: 12,
-      );
+  }) => _roundMonthUnit(precision * 1200, function, monthOffset: 12);
 
   @override
   CarbonInterface roundCentury({
@@ -1639,6 +2532,68 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface floorCentury({double precision = 1}) =>
       floorCenturies(precision: precision);
 
+  DateTime _comparisonTarget(dynamic other) => _coerceToDateTime(other);
+
+  @override
+  bool eq(dynamic other) => equalTo(other);
+
+  @override
+  bool equalTo(dynamic other) =>
+      _dateTime.isAtSameMomentAs(_comparisonTarget(other));
+
+  @override
+  bool ne(dynamic other) => notEqualTo(other);
+
+  @override
+  bool notEqualTo(dynamic other) => !equalTo(other);
+
+  @override
+  bool gt(dynamic other) => greaterThan(other);
+
+  @override
+  bool greaterThan(dynamic other) =>
+      _dateTime.isAfter(_comparisonTarget(other));
+
+  @override
+  bool gte(dynamic other) => greaterThanOrEqual(other);
+
+  @override
+  bool greaterThanOrEqual(dynamic other) {
+    final target = _comparisonTarget(other);
+    return _dateTime.isAfter(target) || _dateTime.isAtSameMomentAs(target);
+  }
+
+  @override
+  bool lt(dynamic other) => lessThan(other);
+
+  @override
+  bool lessThan(dynamic other) => _dateTime.isBefore(_comparisonTarget(other));
+
+  @override
+  bool lte(dynamic other) => lessThanOrEqual(other);
+
+  @override
+  bool lessThanOrEqual(dynamic other) {
+    final target = _comparisonTarget(other);
+    return _dateTime.isBefore(target) || _dateTime.isAtSameMomentAs(target);
+  }
+
+  @override
+  bool between(dynamic start, dynamic end, {bool inclusive = true}) =>
+      _isBetweenRange(
+        _coerceToDateTime(start),
+        _coerceToDateTime(end),
+        inclusive: inclusive,
+      );
+
+  @override
+  bool betweenIncluded(dynamic start, dynamic end) =>
+      between(start, end, inclusive: true);
+
+  @override
+  bool betweenExcluded(dynamic start, dynamic end) =>
+      between(start, end, inclusive: false);
+
   @override
   bool isBefore(CarbonInterface other) => _dateTime.isBefore(other.dateTime);
 
@@ -1656,13 +2611,146 @@ abstract class CarbonBase implements CarbonInterface {
     CarbonInterface start,
     CarbonInterface end, {
     bool inclusive = true,
+  }) => _isBetweenRange(start.dateTime, end.dateTime, inclusive: inclusive);
+
+  bool _isBetweenRange(
+    DateTime start,
+    DateTime end, {
+    required bool inclusive,
   }) {
-    if (inclusive) {
-      final lower = isAfter(start) || isSameDay(start);
-      final upper = isBefore(end) || isSameDay(end);
-      return lower && upper;
+    var lower = start;
+    var upper = end;
+    if (lower.isAfter(upper)) {
+      final temp = lower;
+      lower = upper;
+      upper = temp;
     }
-    return isAfter(start) && isBefore(end);
+    if (inclusive) {
+      return !_dateTime.isBefore(lower) && !_dateTime.isAfter(upper);
+    }
+    return _dateTime.isAfter(lower) && _dateTime.isBefore(upper);
+  }
+
+  DateTime _endExclusive(DateTime exclusive) =>
+      exclusive.subtract(const Duration(microseconds: 1));
+
+  bool _isWithin(DateTime startInclusive, DateTime endExclusive) =>
+      !_dateTime.isBefore(startInclusive) && _dateTime.isBefore(endExclusive);
+
+  @override
+  bool isWeekday() => !_weekendDays.contains(_dateTime.weekday);
+
+  @override
+  bool isWeekend() => _weekendDays.contains(_dateTime.weekday);
+
+  @override
+  bool isYesterday() {
+    final now = _nowUtc();
+    final todayStart = _startOfDayUtcForZone(now, timeZone: _timeZone);
+    final yesterdayStart = _startOfDayUtcForZone(
+      now,
+      timeZone: _timeZone,
+      dayOffset: -1,
+    );
+    return _isWithin(yesterdayStart, todayStart);
+  }
+
+  @override
+  bool isToday() {
+    final now = _nowUtc();
+    final todayStart = _startOfDayUtcForZone(now, timeZone: _timeZone);
+    final tomorrowStart = _startOfDayUtcForZone(
+      now,
+      timeZone: _timeZone,
+      dayOffset: 1,
+    );
+    return _isWithin(todayStart, tomorrowStart);
+  }
+
+  @override
+  bool isTomorrow() {
+    final now = _nowUtc();
+    final tomorrowStart = _startOfDayUtcForZone(
+      now,
+      timeZone: _timeZone,
+      dayOffset: 1,
+    );
+    final dayAfterTomorrow = _startOfDayUtcForZone(
+      now,
+      timeZone: _timeZone,
+      dayOffset: 2,
+    );
+    return _isWithin(tomorrowStart, dayAfterTomorrow);
+  }
+
+  @override
+  bool isFuture() => _dateTime.isAfter(_nowUtc());
+
+  @override
+  bool isPast() => _dateTime.isBefore(_nowUtc());
+
+  @override
+  bool isNowOrFuture() => !_dateTime.isBefore(_nowUtc());
+
+  @override
+  bool isNowOrPast() => !_dateTime.isAfter(_nowUtc());
+
+  @override
+  bool isLeapYear() {
+    final year = _dateTime.year;
+    if (year % 4 != 0) {
+      return false;
+    }
+    if (year % 100 != 0) {
+      return true;
+    }
+    return year % 400 == 0;
+  }
+
+  @override
+  CarbonInterface min([dynamic other]) {
+    final comparison = _coerceToCarbonInterface(other);
+    return _dateTime.isBefore(comparison.dateTime) ? this : comparison;
+  }
+
+  @override
+  CarbonInterface minimum([dynamic other]) => min(other);
+
+  @override
+  CarbonInterface max([dynamic other]) {
+    final comparison = _coerceToCarbonInterface(other);
+    return _dateTime.isAfter(comparison.dateTime) ? this : comparison;
+  }
+
+  @override
+  CarbonInterface maximum([dynamic other]) => max(other);
+
+  @override
+  CarbonInterface closest(dynamic date1, dynamic date2) {
+    final first = _coerceToCarbonInterface(date1);
+    final second = _coerceToCarbonInterface(date2);
+    final firstDelta = (_dateTime.difference(first.dateTime).inMicroseconds)
+        .abs();
+    final secondDelta = (_dateTime.difference(second.dateTime).inMicroseconds)
+        .abs();
+    return firstDelta < secondDelta ? first : second;
+  }
+
+  @override
+  CarbonInterface farthest(dynamic date1, dynamic date2) {
+    final first = _coerceToCarbonInterface(date1);
+    final second = _coerceToCarbonInterface(date2);
+    final firstDelta = (_dateTime.difference(first.dateTime).inMicroseconds)
+        .abs();
+    final secondDelta = (_dateTime.difference(second.dateTime).inMicroseconds)
+        .abs();
+    return firstDelta > secondDelta ? first : second;
+  }
+
+  @override
+  bool isBirthday([dynamic comparison]) {
+    final reference = _coerceToDateTime(comparison);
+    return _dateTime.month == reference.month && _dateTime.day == reference.day;
   }
 
   @override
@@ -1691,8 +2779,7 @@ abstract class CarbonBase implements CarbonInterface {
   bool isSameMicro([CarbonInterface? other]) => isSameMicrosecond(other);
 
   @override
-  bool isCurrentMillisecond() =>
-      _isCurrentUnit(_ComparisonUnit.millisecond);
+  bool isCurrentMillisecond() => _isCurrentUnit(_ComparisonUnit.millisecond);
 
   @override
   bool isCurrentMilli() => isCurrentMillisecond();
@@ -1843,8 +2930,7 @@ abstract class CarbonBase implements CarbonInterface {
       _isSameUnitWithTarget(_ComparisonUnit.century, other);
 
   @override
-  bool isCurrentMillennium() =>
-      _isCurrentUnit(_ComparisonUnit.millennium);
+  bool isCurrentMillennium() => _isCurrentUnit(_ComparisonUnit.millennium);
 
   @override
   bool isNextMillennium() => _isNextUnit(_ComparisonUnit.millennium);
@@ -1915,8 +3001,11 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   double diffInUTCMicros([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(microseconds: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(
+        const Duration(microseconds: 1),
+        date,
+        absolute: absolute,
+      );
 
   @override
   double diffInUTCMicroseconds([dynamic date, bool absolute = true]) =>
@@ -1924,8 +3013,11 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   double diffInUTCMillis([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(milliseconds: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(
+        const Duration(milliseconds: 1),
+        date,
+        absolute: absolute,
+      );
 
   @override
   double diffInUTCMilliseconds([dynamic date, bool absolute = true]) =>
@@ -1933,28 +3025,31 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   double diffInUTCSeconds([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(seconds: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(
+        const Duration(seconds: 1),
+        date,
+        absolute: absolute,
+      );
 
   @override
   double diffInUTCMinutes([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(minutes: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(
+        const Duration(minutes: 1),
+        date,
+        absolute: absolute,
+      );
 
   @override
   double diffInUTCHours([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(hours: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(const Duration(hours: 1), date, absolute: absolute);
 
   @override
   double diffInUTCDays([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(days: 1), date,
-          absolute: absolute);
+      _diffInUTCByDuration(const Duration(days: 1), date, absolute: absolute);
 
   @override
   double diffInUTCWeeks([dynamic date, bool absolute = true]) =>
-      _diffInUTCByDuration(const Duration(days: 7), date,
-          absolute: absolute);
+      _diffInUTCByDuration(const Duration(days: 7), date, absolute: absolute);
 
   @override
   double diffInUTCMonths([dynamic date, bool absolute = true]) =>
@@ -2149,14 +3244,13 @@ abstract class CarbonBase implements CarbonInterface {
     final zoneInterval = zone.getZoneInterval(instant);
     return CarbonTimeZoneSnapshot(
       localDateTime: zoned.localDateTime.toDateTimeLocal(),
-      abbreviation:
-          zoneInterval.name.isNotEmpty ? zoneInterval.name : zone.id,
+      abbreviation: zoneInterval.name.isNotEmpty ? zoneInterval.name : zone.id,
       offset: Duration(seconds: zoned.offset.inSeconds),
       isDst: zoneInterval.savings != tm.Offset.zero,
     );
   }
 
-  tm.DateTimeZone _getZoneOrThrow(String zoneName) {
+  static tm.DateTimeZone _getZoneOrThrow(String zoneName) {
     final provider = _zoneProvider;
     if (provider == null) {
       throw StateError(
@@ -2280,6 +3374,31 @@ abstract class CarbonBase implements CarbonInterface {
     throw ArgumentError('Unsupported endDate type: ${input.runtimeType}');
   }
 
+  CarbonInterface _instantiateRelative(DateTime value) {
+    final normalized = value.toUtc();
+    if (_isMutable) {
+      return Carbon._internal(
+        dateTime: normalized,
+        locale: _locale,
+        timeZone: _timeZone,
+        settings: _settings,
+      );
+    }
+    return CarbonImmutable._internal(
+      dateTime: normalized,
+      locale: _locale,
+      timeZone: _timeZone,
+      settings: _settings,
+    );
+  }
+
+  CarbonInterface _coerceToCarbonInterface(dynamic input) {
+    if (input is CarbonInterface) {
+      return input;
+    }
+    return _instantiateRelative(_coerceToDateTime(input));
+  }
+
   CarbonPeriod _buildPeriod(
     DateTime target, {
     int? monthStep,
@@ -2382,7 +3501,9 @@ abstract class CarbonBase implements CarbonInterface {
       return this;
     }
     final lowered = function.toLowerCase();
-    final value = _monthPosition(_dateTime) - monthOffset +
+    final value =
+        _monthPosition(_dateTime) -
+        monthOffset +
         ((useOneBasedRounding && lowered == 'round') ? 1 : 0);
     final quotient = value / normalized;
     var rounded = _applyRoundFunction(quotient, function) * normalized;
@@ -2402,6 +3523,685 @@ abstract class CarbonBase implements CarbonInterface {
     }
     final normalized = precision == 0 ? 1.0 : precision.abs();
     return normalized;
+  }
+
+  @override
+  CarbonInterface modify(String expression) {
+    final normalized = expression.trim().toLowerCase();
+    if (normalized.isEmpty) {
+      throw ArgumentError('modify expression cannot be empty');
+    }
+    final durationResult = _trySignedDuration(normalized);
+    if (durationResult != null) {
+      return durationResult;
+    }
+    final keywordResult = _tryRelativeKeyword(normalized);
+    if (keywordResult != null) {
+      return keywordResult;
+    }
+    throw ArgumentError('Unsupported modify expression "$expression"');
+  }
+
+  @override
+  CarbonInterface relative(String expression) => CarbonImmutable._internal(
+    dateTime: _dateTime,
+    locale: _locale,
+    timeZone: _timeZone,
+    settings: _settings,
+  ).modify(expression);
+
+  @override
+  CarbonInterface next([dynamic input]) {
+    if (input is String) {
+      final token = _parseTimeToken(input);
+      if (token != null) {
+        return _moveToTimeOfDay(token, forward: true);
+      }
+    }
+    return _moveToWeekday(input, forward: true);
+  }
+
+  @override
+  CarbonInterface previous([dynamic input]) {
+    if (input is String) {
+      final token = _parseTimeToken(input);
+      if (token != null) {
+        return _moveToTimeOfDay(token, forward: false);
+      }
+    }
+    return _moveToWeekday(input, forward: false);
+  }
+
+  @override
+  CarbonInterface addRealSeconds(num value) =>
+      _applyRealDuration(value, _RealUnit.second);
+
+  @override
+  CarbonInterface subRealSeconds(num value) => addRealSeconds(-value);
+
+  @override
+  CarbonInterface addRealMinutes(num value) =>
+      _applyRealDuration(value, _RealUnit.minute);
+
+  @override
+  CarbonInterface subRealMinutes(num value) => addRealMinutes(-value);
+
+  @override
+  CarbonInterface addRealHours(num value) =>
+      _applyRealDuration(value, _RealUnit.hour);
+
+  @override
+  CarbonInterface subRealHours(num value) => addRealHours(-value);
+
+  @override
+  CarbonInterface addRealDays(num value) =>
+      _applyRealDuration(value, _RealUnit.day);
+
+  @override
+  CarbonInterface subRealDays(num value) => addRealDays(-value);
+
+  @override
+  CarbonInterface addRealWeeks(num value) =>
+      _applyRealDuration(value, _RealUnit.week);
+
+  @override
+  CarbonInterface subRealWeeks(num value) => addRealWeeks(-value);
+
+  @override
+  CarbonInterface addRealMonths(num value) =>
+      _applyRealDuration(value, _RealUnit.month);
+
+  @override
+  CarbonInterface subRealMonths(num value) => addRealMonths(-value);
+
+  @override
+  CarbonInterface addRealQuarters(num value) =>
+      _applyRealDuration(value, _RealUnit.quarter);
+
+  @override
+  CarbonInterface subRealQuarters(num value) => addRealQuarters(-value);
+
+  @override
+  CarbonInterface addRealYears(num value) =>
+      _applyRealDuration(value, _RealUnit.year);
+
+  @override
+  CarbonInterface subRealYears(num value) => addRealYears(-value);
+
+  @override
+  CarbonInterface addRealDecades(num value) =>
+      _applyRealDuration(value, _RealUnit.decade);
+
+  @override
+  CarbonInterface subRealDecades(num value) => addRealDecades(-value);
+
+  @override
+  CarbonInterface addRealCenturies(num value) =>
+      _applyRealDuration(value, _RealUnit.century);
+
+  @override
+  CarbonInterface subRealCenturies(num value) => addRealCenturies(-value);
+
+  @override
+  CarbonInterface addRealMillennia(num value) =>
+      _applyRealDuration(value, _RealUnit.millennium);
+
+  @override
+  CarbonInterface subRealMillennia(num value) => addRealMillennia(-value);
+
+  CarbonInterface _moveToWeekday(dynamic weekday, {required bool forward}) {
+    final target = _resolveWeekdayInput(weekday);
+    var current = _dateTime.weekday % 7;
+    var delta = forward
+        ? (target - current + 7) % 7
+        : -((current - target + 7) % 7);
+    if (delta == 0) {
+      delta = forward ? 7 : -7;
+    }
+    return _wrap(_dateTime.add(Duration(days: delta)));
+  }
+
+  CarbonInterface _moveToTimeOfDay(
+    _ParsedTimeOfDay token, {
+    required bool forward,
+  }) {
+    final zone = _timeZone;
+    final isUtcContext = zone == null || zone == 'UTC';
+    final localBase = isUtcContext ? _dateTime : _utcToLocal(_dateTime, zone!);
+    var candidate = isUtcContext
+        ? DateTime.utc(
+            localBase.year,
+            localBase.month,
+            localBase.day,
+            token.hour,
+            token.minute,
+            token.second,
+            0,
+            token.microsecond,
+          )
+        : DateTime(
+            localBase.year,
+            localBase.month,
+            localBase.day,
+            token.hour,
+            token.minute,
+            token.second,
+            0,
+            token.microsecond,
+          );
+    final comparison = candidate.compareTo(localBase);
+    if (forward) {
+      if (comparison <= 0) {
+        candidate = candidate.add(const Duration(days: 1));
+      }
+    } else if (comparison >= 0) {
+      candidate = candidate.subtract(const Duration(days: 1));
+    }
+    return _wrap(
+      _localToUtc(
+        year: candidate.year,
+        month: candidate.month,
+        day: candidate.day,
+        hour: candidate.hour,
+        minute: candidate.minute,
+        second: candidate.second,
+        microsecond: candidate.microsecond,
+        timeZone: zone,
+      ),
+    );
+  }
+
+  CarbonInterface _setToTimeOfDay(_ParsedTimeOfDay token) {
+    final zone = _timeZone;
+    final isUtcContext = zone == null || zone == 'UTC';
+    final localBase = isUtcContext ? _dateTime : _utcToLocal(_dateTime, zone!);
+    final candidate = isUtcContext
+        ? DateTime.utc(
+            localBase.year,
+            localBase.month,
+            localBase.day,
+            token.hour,
+            token.minute,
+            token.second,
+            0,
+            token.microsecond,
+          )
+        : DateTime(
+            localBase.year,
+            localBase.month,
+            localBase.day,
+            token.hour,
+            token.minute,
+            token.second,
+            0,
+            token.microsecond,
+          );
+    return _wrap(
+      _localToUtc(
+        year: candidate.year,
+        month: candidate.month,
+        day: candidate.day,
+        hour: candidate.hour,
+        minute: candidate.minute,
+        second: candidate.second,
+        microsecond: candidate.microsecond,
+        timeZone: zone,
+      ),
+    );
+  }
+
+  CarbonInterface _moveToThisWeekday(dynamic weekday) {
+    final target = _resolveWeekdayInput(weekday);
+    final current = _dateTime.weekday % 7;
+    final delta = (target - current + 7) % 7;
+    return _wrap(_dateTime.add(Duration(days: delta)));
+  }
+
+  static int _weekdayIndex(String input) {
+    final value = input.trim().toLowerCase();
+    const names = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ];
+    final index = names.indexOf(value);
+    if (index == -1) {
+      throw ArgumentError('Unknown weekday "$input"');
+    }
+    return index;
+  }
+
+  static int _normalizeWeekday(int value) {
+    var normalized = value % 7;
+    if (normalized <= 0) {
+      normalized += 7;
+    }
+    return normalized;
+  }
+
+  static int? _monthIndex(String input) {
+    final value = input.trim().toLowerCase();
+    const full = [
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december',
+    ];
+    final index = full.indexOf(value);
+    if (index != -1) {
+      return index + 1;
+    }
+    const short = [
+      'jan',
+      'feb',
+      'mar',
+      'apr',
+      'may',
+      'jun',
+      'jul',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec',
+    ];
+    final shortIndex = short.indexOf(value);
+    if (shortIndex != -1) {
+      return shortIndex + 1;
+    }
+    return null;
+  }
+
+  static _ParsedTimeOfDay? _parseTimeToken(String input) {
+    var token = input.trim().toLowerCase();
+    if (token.isEmpty) {
+      return null;
+    }
+    final hasMeridiem = token.endsWith('am') || token.endsWith('pm');
+    final hasDelimiter = token.contains(':') || token.contains('h');
+    if (!hasMeridiem && !hasDelimiter) {
+      return null;
+    }
+    var meridiem = '';
+    if (hasMeridiem) {
+      meridiem = token.substring(token.length - 2);
+      token = token.substring(0, token.length - 2).trim();
+      if (token.isEmpty) {
+        return null;
+      }
+    }
+    token = token.replaceAll(RegExp(r'\s+'), '');
+    token = token.replaceAll('h', ':');
+    final parts = token.split(':').where((part) => part.isNotEmpty).toList();
+    if (parts.isEmpty || parts.length > 3) {
+      return null;
+    }
+    int? parsePart(String value, int max) {
+      final parsed = int.tryParse(value);
+      if (parsed == null || parsed < 0 || parsed > max) {
+        return null;
+      }
+      return parsed;
+    }
+
+    var hour = parsePart(parts[0], 23);
+    if (hour == null) {
+      return null;
+    }
+    final minute = parts.length > 1 ? parsePart(parts[1], 59) : 0;
+    if (minute == null) {
+      return null;
+    }
+    final second = parts.length > 2 ? parsePart(parts[2], 59) : 0;
+    if (second == null) {
+      return null;
+    }
+    if (meridiem.isNotEmpty) {
+      if (hour > 12) {
+        return null;
+      }
+      if (meridiem == 'am') {
+        hour = hour % 12;
+      } else {
+        hour = hour % 12 + 12;
+      }
+    }
+    if (hour < 0 || hour > 23) {
+      return null;
+    }
+    return _ParsedTimeOfDay(hour, minute, second, 0);
+  }
+
+  int _resolveWeekdayInput(dynamic input) {
+    if (input == null) {
+      return _dateTime.weekday % 7;
+    }
+    if (input is int) {
+      return (_normalizeWeekday(input)) % 7;
+    }
+    if (input is String) {
+      return _weekdayIndex(input);
+    }
+    throw ArgumentError('Unsupported weekday input "$input"');
+  }
+
+  _TemporalUnit? _unitFromInput(dynamic input) {
+    if (input == null) {
+      return null;
+    }
+    if (input is _TemporalUnit) {
+      return input;
+    }
+    if (input is String) {
+      final key = input.trim().toLowerCase();
+      return _temporalUnits[key];
+    }
+    if (input is CarbonUnit) {
+      switch (input) {
+        case CarbonUnit.microsecond:
+          return _TemporalUnit.microseconds(1);
+        case CarbonUnit.millisecond:
+          return _TemporalUnit.microseconds(
+            Duration.microsecondsPerMillisecond,
+          );
+        case CarbonUnit.second:
+          return _TemporalUnit.microseconds(Duration.microsecondsPerSecond);
+        case CarbonUnit.minute:
+          return _TemporalUnit.microseconds(Duration.microsecondsPerMinute);
+        case CarbonUnit.hour:
+          return _TemporalUnit.microseconds(Duration.microsecondsPerHour);
+        case CarbonUnit.day:
+          return _TemporalUnit.microseconds(Duration.microsecondsPerDay);
+        case CarbonUnit.week:
+          return _TemporalUnit.microseconds(Duration.microsecondsPerDay * 7);
+        case CarbonUnit.month:
+          return _TemporalUnit.months(1);
+        case CarbonUnit.quarter:
+          return _TemporalUnit.months(3);
+        case CarbonUnit.year:
+          return _TemporalUnit.months(12);
+        case CarbonUnit.decade:
+          return _TemporalUnit.months(120);
+        case CarbonUnit.century:
+          return _TemporalUnit.months(1200);
+        case CarbonUnit.millennium:
+          return _TemporalUnit.months(12000);
+      }
+    }
+    return null;
+  }
+
+  _UnitAmount? _parseUnitAmountExpression(String expression) {
+    final trimmed = expression.trim().toLowerCase();
+    final match = RegExp(r'^([+-]?\d+)\s+([a-z]+)$').firstMatch(trimmed);
+    if (match != null) {
+      final unit = _unitFromInput(match.group(2));
+      if (unit != null) {
+        return _UnitAmount(int.parse(match.group(1)!), unit);
+      }
+    }
+    final unitOnly = _unitFromInput(trimmed);
+    if (unitOnly != null) {
+      return _UnitAmount(1, unitOnly);
+    }
+    return null;
+  }
+
+  CarbonInterface _applyCarbonInterval(
+    CarbonInterval interval,
+    bool isAddition,
+  ) {
+    var result = _dateTime;
+    if (interval.monthSpan != 0) {
+      result = _addMonths(
+        result,
+        isAddition ? interval.monthSpan : -interval.monthSpan,
+      );
+    }
+    if (interval.microseconds != 0) {
+      final delta = Duration(
+        microseconds: isAddition
+            ? interval.microseconds
+            : -interval.microseconds,
+      );
+      result = result.add(delta);
+    }
+    return _wrap(result);
+  }
+
+  CarbonInterface? _trySignedDuration(String expr) {
+    const unitPattern =
+        r'(seconds?|minutes?|hours?|days?|weeks?|months?|years?)';
+    final signed = RegExp('^([+-])(\\d+)\\s+$unitPattern\$').firstMatch(expr);
+    if (signed != null) {
+      final sign = signed.group(1) == '-' ? -1 : 1;
+      final amount = int.parse(signed.group(2)!);
+      return _applySignedDurationUnit(sign * amount, signed.group(3)!);
+    }
+    final ago = RegExp('^(\\d+)\\s+$unitPattern\\s+ago\$').firstMatch(expr);
+    if (ago != null) {
+      final amount = int.parse(ago.group(1)!);
+      return _applySignedDurationUnit(-amount, ago.group(2)!);
+    }
+    final inMatch = RegExp('^in\\s+(\\d+)\\s+$unitPattern\$').firstMatch(expr);
+    if (inMatch != null) {
+      final amount = int.parse(inMatch.group(1)!);
+      return _applySignedDurationUnit(amount, inMatch.group(2)!);
+    }
+    return null;
+  }
+
+  CarbonInterface? _applySignedDurationUnit(int quantity, String unit) {
+    switch (unit) {
+      case 'second':
+      case 'seconds':
+        return _applyDuration(Duration(seconds: quantity));
+      case 'minute':
+      case 'minutes':
+        return _applyDuration(Duration(minutes: quantity));
+      case 'hour':
+      case 'hours':
+        return _applyDuration(Duration(hours: quantity));
+      case 'day':
+      case 'days':
+        return _applyDuration(Duration(days: quantity));
+      case 'week':
+      case 'weeks':
+        return _applyDuration(Duration(days: quantity * 7));
+      case 'month':
+      case 'months':
+        return _applyTemporalUnit(_TemporalUnit.months(1), quantity, null);
+      case 'year':
+      case 'years':
+        return _applyTemporalUnit(_TemporalUnit.months(12), quantity, null);
+    }
+    return null;
+  }
+
+  CarbonInterface? _tryRelativeKeyword(String expr) {
+    final weekdayTime = RegExp(
+      r'^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+(noon|midnight)$',
+      caseSensitive: false,
+    ).firstMatch(expr);
+    if (weekdayTime != null) {
+      final weekday = weekdayTime.group(1)!;
+      final target = _moveToThisWeekday(
+        weekday,
+      ).dateTime; // start-of-day preserved
+      final isNoon = weekdayTime.group(2)!.toLowerCase() == 'noon';
+      final adjusted = DateTime.utc(
+        target.year,
+        target.month,
+        target.day,
+        isNoon ? 12 : 0,
+      );
+      return _wrap(adjusted);
+    }
+
+    final weekdayMonth = RegExp(
+      r'^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+([a-z]+)$',
+      caseSensitive: false,
+    ).firstMatch(expr);
+    if (weekdayMonth != null) {
+      final monthIndex = _monthIndex(weekdayMonth.group(2)!);
+      if (monthIndex != null) {
+        var year = _dateTime.year;
+        if (monthIndex < _dateTime.month) {
+          year += 1;
+        }
+        var candidate = DateTime.utc(year, monthIndex, 1);
+        final weekdayIdx = _weekdayIndex(weekdayMonth.group(1)!);
+        while (candidate.weekday % 7 != weekdayIdx) {
+          candidate = candidate.add(const Duration(days: 1));
+        }
+        return _wrap(candidate);
+      }
+    }
+
+    final monthOnly = _monthIndex(expr);
+    if (monthOnly != null) {
+      var year = _dateTime.year;
+      if (monthOnly < _dateTime.month) {
+        year += 1;
+      }
+      final firstDay = DateTime.utc(year, monthOnly, 1);
+      return _wrap(firstDay);
+    }
+
+    switch (expr) {
+      case 'today':
+        return startOfDay();
+      case 'tomorrow':
+        return startOfDay().addDays(1);
+      case 'yesterday':
+        return startOfDay().addDays(-1);
+      case 'after tomorrow':
+        return startOfDay().addDays(2);
+      case 'before yesterday':
+        return startOfDay().addDays(-2);
+      case 'first day of month':
+        return startOfMonth();
+      case 'last day of month':
+        return endOfMonth();
+      case 'first day of next month':
+        final base = _dateTime;
+        final nextMonth = DateTime.utc(
+          base.year,
+          base.month + 1,
+          1,
+          base.hour,
+          base.minute,
+          base.second,
+          base.millisecond,
+          base.microsecond,
+        );
+        return _wrap(nextMonth);
+      case 'last day of this month':
+        final base = _dateTime;
+        final nextMonthStart = DateTime.utc(
+          base.year,
+          base.month + 1,
+          1,
+          base.hour,
+          base.minute,
+          base.second,
+          base.millisecond,
+          base.microsecond,
+        );
+        return _wrap(nextMonthStart.subtract(const Duration(days: 1)));
+      case 'first day of year':
+        return startOfYear();
+      case 'last day of year':
+        return endOfYear();
+    }
+    if (expr.startsWith('next ')) {
+      final remainder = expr.substring(5).trim();
+      final time = _parseTimeToken(remainder);
+      if (time != null) {
+        return _moveToTimeOfDay(time, forward: true);
+      }
+      return _moveToWeekday(remainder, forward: true).startOfDay();
+    }
+    if (expr.startsWith('previous ')) {
+      final remainder = expr.substring(9).trim();
+      final time = _parseTimeToken(remainder);
+      if (time != null) {
+        return _moveToTimeOfDay(time, forward: false);
+      }
+      return _moveToWeekday(remainder, forward: false).startOfDay();
+    }
+    if (expr.startsWith('last ')) {
+      final remainder = expr.substring(5).trim();
+      final time = _parseTimeToken(remainder);
+      if (time != null) {
+        return _moveToTimeOfDay(time, forward: false);
+      }
+      return _moveToWeekday(remainder, forward: false).startOfDay();
+    }
+    if (expr.startsWith('this ')) {
+      final remainder = expr.substring(5).trim();
+      final time = _parseTimeToken(remainder);
+      if (time != null) {
+        return _setToTimeOfDay(time);
+      }
+      return _moveToThisWeekday(remainder).startOfDay();
+    }
+    return null;
+  }
+
+  CarbonInterface _applyDuration(Duration duration) =>
+      _wrap(_dateTime.add(duration));
+
+  CarbonInterface _applyRealDuration(num value, _RealUnit unit) {
+    final micros = (value * _realUnitMicros(unit)).round();
+    if (micros == 0) {
+      return this;
+    }
+    return _wrap(_dateTime.add(Duration(microseconds: micros)));
+  }
+
+  int _realUnitMicros(_RealUnit unit) {
+    const second = Duration.microsecondsPerSecond;
+    switch (unit) {
+      case _RealUnit.microsecond:
+        return 1;
+      case _RealUnit.millisecond:
+        return 1000;
+      case _RealUnit.second:
+        return second;
+      case _RealUnit.minute:
+        return second * 60;
+      case _RealUnit.hour:
+        return second * 3600;
+      case _RealUnit.day:
+        return second * 86400;
+      case _RealUnit.week:
+        return second * 604800;
+      case _RealUnit.month:
+        return second * 86400 * 30;
+      case _RealUnit.quarter:
+        return second * 86400 * 90;
+      case _RealUnit.year:
+        return second * 86400 * 365;
+      case _RealUnit.decade:
+        return second * 86400 * 3650;
+      case _RealUnit.century:
+        return second * 86400 * 36500;
+      case _RealUnit.millennium:
+        return second * 86400 * 365000;
+    }
   }
 
   double _applyRoundFunction(double value, String function) {
@@ -2460,7 +4260,8 @@ abstract class CarbonBase implements CarbonInterface {
     int monthsPerUnit = 1,
     bool absolute = true,
   }) {
-    final months = (_monthPosition(_dateTime) - _monthPosition(other.dateTime)) /
+    final months =
+        (_monthPosition(_dateTime) - _monthPosition(other.dateTime)) /
         monthsPerUnit;
     final truncated = months.truncate();
     return absolute ? truncated.abs() : truncated;
@@ -2477,39 +4278,25 @@ abstract class CarbonBase implements CarbonInterface {
     return (value.year * 12 + (value.month - 1)) + offset / span;
   }
 
-  bool _isSameUnit(
-    DateTime first,
-    DateTime second,
-    _ComparisonUnit unit,
-  ) =>
-      _startOfUnit(first, unit).isAtSameMomentAs(
-        _startOfUnit(second, unit),
-      );
+  bool _isSameUnit(DateTime first, DateTime second, _ComparisonUnit unit) =>
+      _startOfUnit(first, unit).isAtSameMomentAs(_startOfUnit(second, unit));
 
   bool _isCurrentUnit(_ComparisonUnit unit) =>
       _isSameUnit(_dateTime, _nowUtc(), unit);
 
-  bool _isNextUnit(_ComparisonUnit unit) => _isSameUnit(
-        _dateTime,
-        _addComparisonUnit(_nowUtc(), unit, 1),
-        unit,
-      );
+  bool _isNextUnit(_ComparisonUnit unit) =>
+      _isSameUnit(_dateTime, _addComparisonUnit(_nowUtc(), unit, 1), unit);
 
-  bool _isLastUnit(_ComparisonUnit unit) => _isSameUnit(
-        _dateTime,
-        _addComparisonUnit(_nowUtc(), unit, -1),
-        unit,
-      );
+  bool _isLastUnit(_ComparisonUnit unit) =>
+      _isSameUnit(_dateTime, _addComparisonUnit(_nowUtc(), unit, -1), unit);
 
-  bool _isSameUnitWithTarget(
-    _ComparisonUnit unit,
-    CarbonInterface? other,
-  ) => _isSameUnit(_dateTime, _resolveComparisonTarget(other), unit);
+  bool _isSameUnitWithTarget(_ComparisonUnit unit, CarbonInterface? other) =>
+      _isSameUnit(_dateTime, _resolveComparisonTarget(other), unit);
 
   DateTime _resolveComparisonTarget(CarbonInterface? other) =>
       other?.dateTime ?? _nowUtc();
 
-  DateTime _nowUtc() => clock.now().toUtc();
+  DateTime _nowUtc() => (_resolveTestNow()?.dateTime ?? clock.now().toUtc());
 
   DateTime _startOfUnit(DateTime value, _ComparisonUnit unit) {
     switch (unit) {
@@ -2606,6 +4393,13 @@ abstract class CarbonBase implements CarbonInterface {
     return DateTime.utc(dateTime.year, quarter, 1);
   }
 
+  DateTime _quarterEnd(DateTime dateTime) {
+    return _addMonths(
+      _quarterStart(dateTime),
+      3,
+    ).subtract(const Duration(days: 1));
+  }
+
   DateTime _weekStart(DateTime dateTime) {
     final startOfWeek = _settings.startOfWeek;
     final normalized = ((dateTime.weekday - startOfWeek) + 7) % 7;
@@ -2646,4 +4440,43 @@ enum _ComparisonUnit {
   decade,
   century,
   millennium,
+}
+
+enum _StartEndUnit {
+  second,
+  minute,
+  hour,
+  day,
+  week,
+  month,
+  quarter,
+  year,
+  decade,
+  century,
+  millennium,
+}
+
+enum _RealUnit {
+  microsecond,
+  millisecond,
+  second,
+  minute,
+  hour,
+  day,
+  week,
+  month,
+  quarter,
+  year,
+  decade,
+  century,
+  millennium,
+}
+
+class _ParsedTimeOfDay {
+  const _ParsedTimeOfDay(this.hour, this.minute, this.second, this.microsecond);
+
+  final int hour;
+  final int minute;
+  final int second;
+  final int microsecond;
 }

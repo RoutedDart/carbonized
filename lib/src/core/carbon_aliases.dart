@@ -165,3 +165,10 @@ class _TemporalUnit {
   final int? months;
   final int? microseconds;
 }
+
+class _UnitAmount {
+  const _UnitAmount(this.amount, this.unit);
+
+  final int amount;
+  final _TemporalUnit unit;
+}

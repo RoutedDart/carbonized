@@ -13,13 +13,14 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     CarbonSettings? settings,
   });
 
-  CarbonInterface setLocale(String locale);
+  CarbonInterface locale(String locale);
   CarbonInterface tz(String zoneName);
   CarbonInterface toUtc();
   CarbonInterface toLocal();
 
   CarbonInterface add(Duration duration);
-  CarbonInterface subtract(Duration duration);
+  CarbonInterface subtract([dynamic value, dynamic unit]);
+  CarbonInterface sub([dynamic value, dynamic unit]);
   CarbonInterface addDays(int days);
   CarbonInterface addWeeks(int weeks);
   CarbonInterface addWeekdays(int weekdays);
@@ -28,6 +29,10 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface addYears(int years);
   CarbonInterface subWeekdays(int weekdays);
   CarbonInterface subWeekday([int amount = 1]);
+  CarbonInterface nextWeekday();
+  CarbonInterface previousWeekday();
+  CarbonInterface nextWeekendDay();
+  CarbonInterface previousWeekendDay();
 
   CarbonInterface startOfDay();
   CarbonInterface endOfDay();
@@ -35,8 +40,77 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface endOfWeek();
   CarbonInterface startOfMonth();
   CarbonInterface endOfMonth();
+  CarbonInterface firstOfMonth([dynamic weekday]);
+  CarbonInterface lastOfMonth([dynamic weekday]);
+  CarbonInterface? nthOfMonth(int nth, [dynamic weekday]);
   CarbonInterface startOfYear();
   CarbonInterface endOfYear();
+  CarbonInterface firstOfYear([dynamic weekday]);
+  CarbonInterface lastOfYear([dynamic weekday]);
+  CarbonInterface? nthOfYear(int nth, [dynamic weekday]);
+  CarbonInterface firstOfQuarter([dynamic weekday]);
+  CarbonInterface lastOfQuarter([dynamic weekday]);
+  CarbonInterface? nthOfQuarter(int nth, [dynamic weekday]);
+  CarbonInterface startOfHour();
+  CarbonInterface endOfHour();
+  CarbonInterface startOfMinute();
+  CarbonInterface endOfMinute();
+  CarbonInterface startOfSecond();
+  CarbonInterface endOfSecond();
+  CarbonInterface startOfQuarter();
+  CarbonInterface endOfQuarter();
+  CarbonInterface startOfDecade();
+  CarbonInterface endOfDecade();
+  CarbonInterface startOfCentury();
+  CarbonInterface endOfCentury();
+  CarbonInterface startOfMillennium();
+  CarbonInterface endOfMillennium();
+  CarbonInterface midDay();
+  CarbonInterface startOf(dynamic unit);
+  CarbonInterface endOf(dynamic unit);
+  CarbonInterface average([dynamic other]);
+  CarbonInterface modify(String expression);
+  CarbonInterface relative(String expression);
+  CarbonInterface next([dynamic weekday]);
+  CarbonInterface previous([dynamic weekday]);
+  CarbonInterface addRealSeconds(num value);
+  CarbonInterface subRealSeconds(num value);
+  CarbonInterface addRealMinutes(num value);
+  CarbonInterface subRealMinutes(num value);
+  CarbonInterface addRealHours(num value);
+  CarbonInterface subRealHours(num value);
+  CarbonInterface addRealDays(num value);
+  CarbonInterface subRealDays(num value);
+  CarbonInterface addRealWeeks(num value);
+  CarbonInterface subRealWeeks(num value);
+  CarbonInterface addRealMonths(num value);
+  CarbonInterface subRealMonths(num value);
+  CarbonInterface addRealQuarters(num value);
+  CarbonInterface subRealQuarters(num value);
+  CarbonInterface addRealYears(num value);
+  CarbonInterface subRealYears(num value);
+  CarbonInterface addRealDecades(num value);
+  CarbonInterface subRealDecades(num value);
+  CarbonInterface addRealCenturies(num value);
+  CarbonInterface subRealCenturies(num value);
+  CarbonInterface addRealMillennia(num value);
+  CarbonInterface subRealMillennia(num value);
+
+  bool eq(dynamic other);
+  bool equalTo(dynamic other);
+  bool ne(dynamic other);
+  bool notEqualTo(dynamic other);
+  bool gt(dynamic other);
+  bool greaterThan(dynamic other);
+  bool gte(dynamic other);
+  bool greaterThanOrEqual(dynamic other);
+  bool lt(dynamic other);
+  bool lessThan(dynamic other);
+  bool lte(dynamic other);
+  bool lessThanOrEqual(dynamic other);
+  bool between(dynamic start, dynamic end, {bool inclusive = true});
+  bool betweenIncluded(dynamic start, dynamic end);
+  bool betweenExcluded(dynamic start, dynamic end);
 
   bool isBefore(CarbonInterface other);
   bool isAfter(CarbonInterface other);
@@ -46,6 +120,23 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
     CarbonInterface end, {
     bool inclusive = true,
   });
+  bool isWeekday();
+  bool isWeekend();
+  bool isYesterday();
+  bool isToday();
+  bool isTomorrow();
+  bool isFuture();
+  bool isPast();
+  bool isNowOrFuture();
+  bool isNowOrPast();
+  bool isLeapYear();
+  CarbonInterface min([dynamic other]);
+  CarbonInterface minimum([dynamic other]);
+  CarbonInterface max([dynamic other]);
+  CarbonInterface maximum([dynamic other]);
+  CarbonInterface closest(dynamic date1, dynamic date2);
+  CarbonInterface farthest(dynamic date1, dynamic date2);
+  bool isBirthday([dynamic comparison]);
   bool isCurrentMicro();
   bool isCurrentMicrosecond();
   bool isCurrentMilli();
@@ -221,11 +312,11 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface setDate(int year, [int? month, int? day]);
   CarbonInterface setTime(
     int hour, [
-      int? minute,
-      int? second,
-      int? millisecond,
-      int? microsecond,
-    ]);
+    int? minute,
+    int? second,
+    int? millisecond,
+    int? microsecond,
+  ]);
   int get micro;
   int get micros;
   int get microsecond;
@@ -496,6 +587,8 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   CarbonInterface ceilDay({double precision = 1});
   CarbonInterface floorDays({double precision = 1});
   CarbonInterface floorDay({double precision = 1});
+  double secondsSinceMidnight();
+  double secondsUntilEndOfDay();
   CarbonInterface roundCenturies({
     double precision = 1,
     String function = 'round',
@@ -512,4 +605,8 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   Map<String, dynamic> toJson();
   CarbonImmutable toImmutable();
   Carbon toMutable();
+}
+
+extension CarbonLocaleAlias on CarbonInterface {
+  CarbonInterface setLocale(String locale) => this.locale(locale);
 }

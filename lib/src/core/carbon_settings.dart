@@ -9,7 +9,11 @@ enum CarbonUnit {
   day,
   week,
   month,
+  quarter,
   year,
+  decade,
+  century,
+  millennium,
 }
 
 class CarbonSettings {

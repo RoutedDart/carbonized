@@ -8,5 +8,7 @@ export 'src/carbon.dart'
         CarbonPeriod,
         CarbonMacro,
         CarbonSettings,
+        CarbonInterval,
         CarbonUnit,
-        CarbonAliasShims;
+        CarbonAliasShims,
+        CarbonInvalidDateException;

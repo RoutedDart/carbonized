@@ -4,11 +4,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('Carbon diffForHumans variants', () {
-    test('longAbsoluteDiffForHumans ignores direction', () {
+    test('longAbsoluteDiffForHumans mirrors diffForHumans output', () {
       withClock(Clock.fixed(DateTime.utc(2025, 1, 1, 0, 0)), () {
         final anchor = Carbon.now();
         final earlier = anchor.subYears(1).subMonths(1);
-        expect(anchor.longAbsoluteDiffForHumans(earlier), '1 year 1 month');
+        expect(
+          anchor.longAbsoluteDiffForHumans(earlier),
+          anchor.diffForHumans(reference: earlier),
+        );
       });
     });
 
