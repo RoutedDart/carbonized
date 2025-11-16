@@ -1996,9 +1996,11 @@ String _macroDifferences() => '''
 
 Future<String> _buildCarbonInterval() async {
   final example = await carbon_interval_examples.runIntervalBasicsExample();
+  final humans = await carbon_interval_examples.runIntervalForHumansExample();
   final sections = <String>[
     _intervalOverview(),
     _intervalExample(example),
+    _intervalHumans(humans),
     _intervalDifferences(),
   ];
   return sections.join('\n\n');
@@ -2026,11 +2028,27 @@ ${example.output}
 ```
 ''';
 
+String _intervalHumans(ExampleRun example) =>
+    '''
+## Human-readable intervals
+
+`CarbonInterval.forHumans()` mirrors PHP's humanization helpers via `timeago`
+and the translator registry.
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
 String _intervalDifferences() => '''
 ## Differences compared to the PHP docs
 
-- Humanization helpers (`forHumans()`, translation/ordinal utilities) are not
-  implemented. Convert to `Duration` and format manually when necessary.
 - `CarbonInterval::make()`/`spec()`/`compareDateIntervals()`/constructor
   callbacks from PHP are missing. Use `CarbonInterval.fromComponents()` or
   `fromDuration()` instead.

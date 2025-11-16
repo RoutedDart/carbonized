@@ -47,7 +47,7 @@ class CarbonTranslator {
   static final Map<String, List<String>> _fallbackLocales =
       <String, List<String>>{};
   static final Set<String> _registeredTimeagoLocales = <String>{};
-  static final bool _defaultsReady = _registerDefaults();
+  static bool _defaultsReady = false;
 
   /// Registers a locale so translators and `diffForHumans()` can look it up.
   static void registerLocale(
@@ -78,9 +78,7 @@ class CarbonTranslator {
 
   /// Ensures `timeago` has messages for [locale].
   static void ensureTimeagoLocale(String locale) {
-    if (!_defaultsReady) {
-      throw StateError('CarbonTranslator defaults not registered');
-    }
+    _ensureDefaultsRegistered();
     final match = matchLocale(locale);
     if (_registeredTimeagoLocales.contains(match.locale)) {
       return;
@@ -135,6 +133,7 @@ class CarbonTranslator {
     String? locale, {
     String? fallback,
   }) {
+    _ensureDefaultsRegistered();
     final visited = <String>{};
     for (final candidate in <String?>[locale, fallback, 'en']) {
       final match = _matchLocale(candidate, visited);
@@ -208,7 +207,15 @@ class CarbonTranslator {
   static String _normalizeLocale(String locale) =>
       locale.toLowerCase().replaceAll('-', '_');
 
-  static bool _registerDefaults() {
+  static void _ensureDefaultsRegistered() {
+    if (_defaultsReady) {
+      return;
+    }
+    _registerDefaults();
+    _defaultsReady = true;
+  }
+
+  static void _registerDefaults() {
     registerLocale(
       'en',
       CarbonTranslation(timeagoMessages: timeago.EnMessages()),
@@ -230,6 +237,5 @@ class CarbonTranslator {
         },
       ),
     );
-    return true;
   }
 }

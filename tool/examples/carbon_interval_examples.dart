@@ -47,3 +47,24 @@ Future<ExampleRun> runIntervalBasicsExample() async {
     output: buffer.toString().trimRight(),
   );
 }
+
+const _intervalForHumansSource = r'''
+import 'package:carbon/carbon.dart';
+
+Future<void> main() async {
+  final interval = CarbonInterval.fromComponents(days: 3, hours: 5);
+  print('forHumans -> ${interval.forHumans()}');
+}
+''';
+
+/// Demonstrates `CarbonInterval.forHumans()`.
+Future<ExampleRun> runIntervalForHumansExample() async {
+  await _bootstrap();
+  final interval = CarbonInterval.fromComponents(days: 3, hours: 5);
+  final buffer = StringBuffer()
+    ..writeln('forHumans -> ${interval.forHumans()}');
+  return ExampleRun(
+    code: _intervalForHumansSource,
+    output: buffer.toString().trimRight(),
+  );
+}

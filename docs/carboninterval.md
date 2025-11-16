@@ -32,10 +32,30 @@ fromDuration microseconds -> 43200000000
 ```
 
 
+## Human-readable intervals
+
+`CarbonInterval.forHumans()` mirrors PHP's humanization helpers via `timeago`
+and the translator registry.
+
+```dart
+import 'package:carbon/carbon.dart';
+
+Future<void> main() async {
+  final interval = CarbonInterval.fromComponents(days: 3, hours: 5);
+  print('forHumans -> ${interval.forHumans()}');
+}
+
+```
+
+Output:
+
+```
+forHumans -> 3 days from now
+```
+
+
 ## Differences compared to the PHP docs
 
-- Humanization helpers (`forHumans()`, translation/ordinal utilities) are not
-  implemented. Convert to `Duration` and format manually when necessary.
 - `CarbonInterval::make()`/`spec()`/`compareDateIntervals()`/constructor
   callbacks from PHP are missing. Use `CarbonInterval.fromComponents()` or
   `fromDuration()` instead.

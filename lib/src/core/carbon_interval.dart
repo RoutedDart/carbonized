@@ -89,4 +89,39 @@ class CarbonInterval {
     }
     return CarbonInterval._(monthSpan: totalMonths, microseconds: totalMicros);
   }
+
+  Duration _toDurationApprox() {
+    const microsecondsPerMonth = 30 * Duration.microsecondsPerDay;
+    return Duration(
+      microseconds: microseconds + monthSpan * microsecondsPerMonth,
+    );
+  }
+
+  /// Returns a human-readable label for this interval.
+  ///
+  /// Uses the same translator + `timeago` helpers as [Carbon.diffForHumans].
+  String forHumans({
+    String? locale,
+    bool short = false,
+    bool absolute = false,
+  }) {
+    final resolvedLocale = CarbonTranslator.matchLocale(
+      locale ?? CarbonBase.defaultLocale,
+    ).locale;
+    CarbonTranslator.ensureTimeagoLocale(resolvedLocale);
+    final now = clock.now().toUtc();
+    final target = absolute
+        ? now.add(_toDurationApprox())
+        : now.add(_toDurationApprox());
+    final formatted = timeago.format(
+      target,
+      locale: resolvedLocale,
+      allowFromNow: !absolute,
+      clock: now,
+    );
+    return CarbonTranslator.translateTimeString(
+      formatted,
+      locale: resolvedLocale,
+    );
+  }
 }
