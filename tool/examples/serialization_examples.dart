@@ -1,0 +1,48 @@
+/// Runnable snippets for the "Serialization" documentation section.
+library;
+
+import 'dart:async';
+
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+import 'example_runner.dart';
+
+Future<void> _bootstrap() async {
+  await initializeDateFormatting('en');
+  await Carbon.configureTimeMachine(testing: true);
+}
+
+const _serializeSource = r'''
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+  await Carbon.configureTimeMachine(testing: true);
+
+  final dt = Carbon.parse('2012-12-25T20:30:00Z', timeZone: 'Europe/Moscow');
+  final serialized = dt.serialize();
+  final roundTrip = Carbon.fromSerialized(serialized);
+
+  print('serialized length -> ${serialized.length}');
+  print('roundTrip iso -> ${roundTrip.toIso8601String(keepOffset: true)}');
+  print('roundTrip zone -> ${roundTrip.timeZoneName}');
+}
+''';
+
+/// Demonstrates `serialize()` / `Carbon.fromSerialized()` round-trip.
+Future<ExampleRun> runSerializationExample() async {
+  await _bootstrap();
+  final dt = Carbon.parse('2012-12-25T20:30:00Z', timeZone: 'Europe/Moscow');
+  final serialized = dt.serialize();
+  final roundTrip = Carbon.fromSerialized(serialized);
+  final buffer = StringBuffer()
+    ..writeln('serialized length -> ${serialized.length}')
+    ..writeln('roundTrip iso -> ${roundTrip.toIso8601String(keepOffset: true)}')
+    ..writeln('roundTrip zone -> ${roundTrip.timeZoneName}');
+  return ExampleRun(
+    code: _serializeSource,
+    output: buffer.toString().trimRight(),
+  );
+}
