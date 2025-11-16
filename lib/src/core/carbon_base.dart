@@ -1043,6 +1043,13 @@ abstract class CarbonBase implements CarbonInterface {
   CarbonInterface toLocal() => _wrap(_dateTime.toLocal());
 
   @override
+  int get utcOffset => _currentOffset().inMinutes;
+
+  @override
+  CarbonInterface setUtcOffset(int minutes) =>
+      tz(_formatOffset(Duration(minutes: minutes)));
+
+  @override
   CarbonInterface add(Duration duration) => _wrap(_dateTime.add(duration));
 
   @override

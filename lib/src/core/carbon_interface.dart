@@ -69,6 +69,12 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   /// Projects the date/time into a timezone (IANA name or fixed offset).
   CarbonInterface tz(String zoneName);
 
+  /// Sets the UTC offset expressed in minutes (mirrors PHP `utcOffset`).
+  CarbonInterface setUtcOffset(int minutes);
+
+  /// Number of minutes offset from UTC.
+  int get utcOffset;
+
   /// Reinterprets the current local time in [zoneName], shifting the instant.
   ///
   /// Equivalent to PHP Carbon's `shiftTimezone()`: wall clock values stay the

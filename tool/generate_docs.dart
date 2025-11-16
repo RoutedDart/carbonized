@@ -168,12 +168,14 @@ Future<String> _buildInstantiation() async {
       .runComponentFactoriesExample();
   final safeCreation = await instantiation_examples.runSafeCreationExample();
   final timestamps = await instantiation_examples.runTimestampExample();
+  final utcOffset = await instantiation_examples.runUtcOffsetExample();
   final sections = <String>[
     _instantiationOverview(),
     _instantiationConstructors(constructors),
     _instantiationComponents(components),
     _instantiationSafeCreation(safeCreation),
     _instantiationTimestamps(timestamps),
+    _instantiationUtcOffset(utcOffset),
     _instantiationDifferences(),
   ];
   return sections.join('\n\n');
@@ -336,6 +338,21 @@ respects the optional timezone argument (defaulting to UTC since Carbon 3).
 `createFromTimestampUTC()` always projects the result into UTC, while
 `createFromTimestampMs()`/`createFromTimestampMsUTC()` operate on milliseconds.
 Negative timestamps and fractional seconds behave the same way they do in PHP.
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
+String _instantiationUtcOffset(ExampleRun example) =>
+    '''
+## UTC offset helpers
 
 ```dart
 ${example.code}

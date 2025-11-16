@@ -208,6 +208,33 @@ millis: 2023-06-02 16:40:00 152
 ```
 
 
+## UTC offset helpers
+
+```dart
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+
+  final date = Carbon.parse('2024-01-01T00:00:00Z');
+  print('initial offset -> ${date.utcOffset}');
+  date.setUtcOffset(180);
+  print('after set -> ${date.utcOffset}');
+  print('timezone name -> ${date.timeZoneName}');
+}
+
+```
+
+Output:
+
+```
+initial offset -> 0
+after set -> 180
+timezone name -> +03:00
+```
+
+
 ## Differences compared to the PHP docs
 
 - No `DateTimeZone` class exists in Dart. Supply the timezone as a string (IANA

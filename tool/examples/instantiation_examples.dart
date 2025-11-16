@@ -219,6 +219,34 @@ Future<ExampleRun> runSafeCreationExample() async {
   );
 }
 
+const _utcOffsetSource = r'''
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+
+  final date = Carbon.parse('2024-01-01T00:00:00Z');
+  print('initial offset -> ${date.utcOffset}');
+  date.setUtcOffset(180);
+  print('after set -> ${date.utcOffset}');
+  print('timezone name -> ${date.timeZoneName}');
+}
+''';
+
+Future<ExampleRun> runUtcOffsetExample() async {
+  await initializeDateFormatting('en');
+  final date = Carbon.parse('2024-01-01T00:00:00Z');
+  final buffer = StringBuffer()
+    ..writeln('initial offset -> ${date.utcOffset}')
+    ..writeln('after set -> ${date.setUtcOffset(180).utcOffset}')
+    ..writeln('timezone name -> ${date.timeZoneName}');
+  return ExampleRun(
+    code: _utcOffsetSource,
+    output: buffer.toString().trimRight(),
+  );
+}
+
 const _timestampSource = r'''
 import 'package:carbon/carbon.dart';
 import 'package:intl/date_symbol_data_local.dart';
