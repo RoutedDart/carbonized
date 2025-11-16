@@ -116,3 +116,30 @@ Future<ExampleRun> runShiftTimezoneExample() async {
     output: buffer.toString().trimRight(),
   );
 }
+
+const _rawAddSource = r'''
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+  await Carbon.configureTimeMachine(testing: true);
+
+  final base = Carbon.parse('2024-01-01T00:00:00Z');
+  print('rawAdd -> ${(base.copy()..rawAdd(const Duration(days: 1))).toIso8601String()}');
+  print('rawSub -> ${(base.copy()..rawSub(const Duration(hours: 3))).toIso8601String()}');
+}
+''';
+
+Future<ExampleRun> runRawAddExample() async {
+  await _bootstrap();
+  final base = Carbon.parse('2024-01-01T00:00:00Z');
+  final buffer = StringBuffer()
+    ..writeln(
+      'rawAdd -> ${(base.copy()..rawAdd(const Duration(days: 1))).toIso8601String()}',
+    )
+    ..writeln(
+      'rawSub -> ${(base.copy()..rawSub(const Duration(hours: 3))).toIso8601String()}',
+    );
+  return ExampleRun(code: _rawAddSource, output: buffer.toString().trimRight());
+}

@@ -1404,10 +1404,12 @@ Future<String> _buildAdditionAndSubtraction() async {
   final increments = await addition_examples.runIncrementExample();
   final generic = await addition_examples.runGenericAddExample();
   final shift = await addition_examples.runShiftTimezoneExample();
+  final raw = await addition_examples.runRawAddExample();
   final sections = <String>[
     _additionOverview(),
     _additionTypedHelpers(increments),
     _additionGeneric(generic),
+    _additionRaw(raw),
     _additionShiftTimezone(shift),
     _additionDifferences(),
   ];
@@ -1453,6 +1455,24 @@ ${example.output}
 ```
 ''';
 
+String _additionRaw(ExampleRun example) =>
+    '''
+## Raw addition vs `add()`
+
+`rawAdd()` and `rawSub()` call `DateTime.add()`/`subtract()` directly, mirroring
+PHP's native `rawAdd()`/`rawSub()` helpers.
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
 String _additionShiftTimezone(ExampleRun example) =>
     '''
 ## `shiftTimezone()` (vs `tz()`)
@@ -1478,8 +1498,8 @@ String _additionDifferences() => '''
   amount+unit values. Passing free-form strings like `'1 day'` works for the most
   common units, but PHP's `DateInterval` objects and obscure keywords are not
   fully supported.
-- `rawAdd()`/`rawSub()` helpers from PHP are not exposed; use `add()` with a
-  `Duration` instead when you want to bypass locale-aware tweaks.
+- Use `rawAdd()`/`rawSub()` to call `DateTime.add()`/`subtract()` directly when you
+  want to bypass Carbon-specific rounding or overflow rules.
 ''';
 
 Future<String> _buildDifference() async {

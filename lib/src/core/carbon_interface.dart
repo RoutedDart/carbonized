@@ -1221,6 +1221,12 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   /// Alias for [setMilli].
   CarbonInterface setMilliseconds(int millisecond);
 
+  /// Adds [duration] directly using `DateTime.add()`.
+  CarbonInterface rawAdd(Duration duration);
+
+  /// Subtracts [duration] directly using `DateTime.subtract()`.
+  CarbonInterface rawSub(Duration duration);
+
   /// Sets year, month, and optionally day.
   CarbonInterface setDate(int year, [int? month, int? day]);
 

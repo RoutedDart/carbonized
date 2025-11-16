@@ -66,6 +66,34 @@ change('next friday') -> 2012-02-10T00:00:00.000Z
 ```
 
 
+## Raw addition vs `add()`
+
+`rawAdd()` and `rawSub()` call `DateTime.add()`/`subtract()` directly, mirroring
+PHP's native `rawAdd()`/`rawSub()` helpers.
+
+```dart
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+  await Carbon.configureTimeMachine(testing: true);
+
+  final base = Carbon.parse('2024-01-01T00:00:00Z');
+  print('rawAdd -> ${(base.copy()..rawAdd(const Duration(days: 1))).toIso8601String()}');
+  print('rawSub -> ${(base.copy()..rawSub(const Duration(hours: 3))).toIso8601String()}');
+}
+
+```
+
+Output:
+
+```
+rawAdd -> 2024-01-02T00:00:00.000Z
+rawSub -> 2023-12-31T21:00:00.000Z
+```
+
+
 ## `shiftTimezone()` (vs `tz()`)
 
 `shiftTimezone()` reinterprets the current wall time in a different timezone,
@@ -101,6 +129,6 @@ shiftTimezone -> 2024-11-10T05:00:00.000+09:00
   amount+unit values. Passing free-form strings like `'1 day'` works for the most
   common units, but PHP's `DateInterval` objects and obscure keywords are not
   fully supported.
-- `rawAdd()`/`rawSub()` helpers from PHP are not exposed; use `add()` with a
-  `Duration` instead when you want to bypass locale-aware tweaks.
+- Use `rawAdd()`/`rawSub()` to call `DateTime.add()`/`subtract()` directly when you
+  want to bypass Carbon-specific rounding or overflow rules.
 
