@@ -45,3 +45,45 @@ Future<ExampleRun> runHumanReadableExample() async {
     output: buffer.toString().trimRight(),
   );
 }
+
+const _humanReadableDetailSource = r'''
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+
+  final now = Carbon.parse('2024-01-01T00:00:00Z');
+  final horizon = now.copy()
+    ..addYears(1)
+    ..addMonths(2)
+    ..addDays(3)
+    ..addHours(4);
+
+  print('multi unit -> ${horizon.diffForHumans(reference: now, parts: 3)}');
+  print('short join -> ${horizon.diffForHumans(reference: now, parts: 2, short: true, joiner: ', ')}');
+  print('just now -> ${now.diffForHumans(reference: now, parts: 2)}');
+}
+''';
+
+Future<ExampleRun> runHumanReadableDetailExample() async {
+  await _bootstrap();
+  final now = Carbon.parse('2024-01-01T00:00:00Z');
+  final horizon = now.copy()
+    ..addYears(1)
+    ..addMonths(2)
+    ..addDays(3)
+    ..addHours(4);
+  final buffer = StringBuffer()
+    ..writeln(
+      'multi unit -> ${horizon.diffForHumans(reference: now, parts: 3)}',
+    )
+    ..writeln(
+      'short join -> ${horizon.diffForHumans(reference: now, parts: 2, short: true, joiner: ', ')}',
+    )
+    ..writeln('just now -> ${now.diffForHumans(reference: now)}');
+  return ExampleRun(
+    code: _humanReadableDetailSource,
+    output: buffer.toString().trimRight(),
+  );
+}

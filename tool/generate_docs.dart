@@ -1540,9 +1540,12 @@ String _differenceDifferences() => '''
 
 Future<String> _buildDiffForHumans() async {
   final humans = await diff_for_humans_examples.runHumanReadableExample();
+  final detailed = await diff_for_humans_examples
+      .runHumanReadableDetailExample();
   final sections = <String>[
     _diffHumansOverview(),
     _diffHumansBasic(humans),
+    _diffHumansAdvanced(detailed),
     _diffHumansDifferences(),
   ];
   return sections.join('\n\n');
@@ -1571,12 +1574,28 @@ ${example.output}
 ```
 ''';
 
+String _diffHumansAdvanced(ExampleRun example) =>
+    '''
+## Multi-unit strings
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
 String _diffHumansDifferences() => '''
 ## Differences compared to the PHP docs
 
-- Advanced options from the PHP docs (`parts`, `join`, `short`,
-  `Carbon::ROUND`/`::CEIL`/`::FLOOR`, etc.) are not implemented. Dart's version
-  only accepts `reference` and `locale` arguments.
+`diffForHumans()` also exposes `parts`, `short`, and `joiner` arguments so you
+can build repeatable multi-unit strings. The underlying computation approximates
+months (30 days) and years (365 days) to keep the helper fast, so very long
+intervals may deviate slightly from PHP's calendar-aware math.
 - Only locales registered with `timeago.setLocaleMessages()` are supported. The
   package ships with English by default, so additional languages require manual
   registration.

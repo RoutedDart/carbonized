@@ -101,6 +101,52 @@ const Map<String, CarbonUnit> _carbonUnitAliases = <String, CarbonUnit>{
   'millenniums': CarbonUnit.millennium,
 };
 
+class _HumanDiffUnit {
+  const _HumanDiffUnit(this.label, this.shortLabel, this.duration);
+
+  final String Function(int count) label;
+  final String shortLabel;
+  final Duration duration;
+}
+
+List<_HumanDiffUnit> _humanDiffUnits = <_HumanDiffUnit>[
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'year' : 'years',
+    'yr',
+    Duration(days: 365),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'month' : 'months',
+    'mo',
+    Duration(days: 30),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'week' : 'weeks',
+    'wk',
+    Duration(days: 7),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'day' : 'days',
+    'd',
+    Duration(days: 1),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'hour' : 'hours',
+    'h',
+    Duration(hours: 1),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'minute' : 'minutes',
+    'm',
+    Duration(minutes: 1),
+  ),
+  _HumanDiffUnit(
+    (count) => count == 1 ? 'second' : 'seconds',
+    's',
+    Duration(seconds: 1),
+  ),
+];
+
 dynamic _invokeAlias(CarbonBase base, String name, Invocation invocation) {
   final result = _handleAddSubAlias(base, name, invocation);
   if (!identical(result, _aliasNotHandled)) {

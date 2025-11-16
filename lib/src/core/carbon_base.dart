@@ -4259,14 +4259,37 @@ abstract class CarbonBase implements CarbonInterface {
   }
 
   @override
-  String diffForHumans({CarbonInterface? reference, String? locale}) {
+  String diffForHumans({
+    CarbonInterface? reference,
+    String? locale,
+    int parts = 1,
+    bool short = false,
+    String joiner = ' ',
+  }) {
     final base = (reference?.dateTime ?? clock.now()).toUtc();
-    return timeago.format(
-      _dateTime,
-      locale: locale ?? _locale,
-      allowFromNow: true,
-      clock: base,
+    if (parts <= 1) {
+      return timeago.format(
+        _dateTime,
+        locale: locale ?? _locale,
+        allowFromNow: true,
+        clock: base,
+      );
+    }
+
+    final diff = _dateTime.difference(base);
+    if (diff == Duration.zero) {
+      return short ? 'now' : 'just now';
+    }
+    final future = diff > Duration.zero;
+    final segments = _buildHumanDiffSegments(
+      diff.abs(),
+      short: short,
+      limit: parts,
     );
+    final joined = segments.join(joiner);
+    final prefix = future ? 'in ' : '';
+    final suffix = future ? 'from now' : 'ago';
+    return '$prefix$joined $suffix'.trim();
   }
 
   @override
@@ -5948,6 +5971,36 @@ abstract class CarbonBase implements CarbonInterface {
   double _preciseDayDiff(DateTime start, DateTime end) =>
       end.difference(start).inMicroseconds.toDouble() /
       Duration.microsecondsPerDay;
+
+  List<String> _buildHumanDiffSegments(
+    Duration delta, {
+    required bool short,
+    required int limit,
+  }) {
+    final units = _humanDiffUnits;
+    final segments = <String>[];
+    if (limit <= 0) {
+      limit = 1;
+    }
+    var remaining = delta;
+    for (final unit in units) {
+      if (segments.length >= limit) {
+        break;
+      }
+      final count = remaining.inMicroseconds ~/ unit.duration.inMicroseconds;
+      if (count > 0) {
+        final micros = unit.duration.inMicroseconds * count;
+        remaining -= Duration(microseconds: micros);
+        final label = short ? unit.shortLabel : unit.label(count);
+        segments.add('$count $label');
+      }
+    }
+    if (segments.isEmpty) {
+      final label = short ? _humanDiffUnits.last.shortLabel : 'seconds';
+      segments.add('0 $label');
+    }
+    return segments;
+  }
 
   bool _isSameUnit(DateTime first, DateTime second, _ComparisonUnit unit) =>
       _startOfUnit(first, unit).isAtSameMomentAs(_startOfUnit(second, unit));

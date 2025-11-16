@@ -988,7 +988,18 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   String toRfc7231String();
 
   /// Human-readable difference (e.g., "2 days ago").
-  String diffForHumans({CarbonInterface? reference, String? locale});
+  ///
+  /// [parts] limits how many units should appear in a multi-unit string when
+  /// the diff is composed manually; values <= 1 delegate back to `timeago`.
+  /// [short] toggles abbreviated labels, and [joiner] controls how portions are
+  /// stitched together when `parts > 1`.
+  String diffForHumans({
+    CarbonInterface? reference,
+    String? locale,
+    int parts = 1,
+    bool short = false,
+    String joiner = ' ',
+  });
 
   /// Long absolute difference string.
   String longAbsoluteDiffForHumans([CarbonInterface? other]);
