@@ -44,34 +44,6 @@ toW3cString -> 2019-02-01T03:45:27+00:00
 ```
 
 
-## HTML helpers
-
-`toHtmlString()` wraps the instant in a `<time>` element, while
-`toHtmlDiffString()` embeds `diffForHumans()` inside an `<abbr>` with a `title`
-set to the exact ISO instant.
-
-```dart
-import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
-Future<void> main() async {
-  await initializeDateFormatting('en');
-
-  final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
-  print('html -> ${dt.toHtmlString()}');
-  print('html diff -> ${dt.diffForHumans(reference: Carbon.now())}');
-}
-
-```
-
-Output:
-
-```
-html -> <time datetime="2019-02-01T03:45:27.612584Z">2019-02-01 03:45:27</time>
-html diff -> 7 years ago
-```
-
-
 ## Differences compared to the PHP docs
 
 - `toIso8601String()` always emits the extended ISO-8601 form with a colon in
@@ -80,4 +52,6 @@ html diff -> 7 years ago
 - PHP's note about `DateTime::ISO8601` incompatibility still applies. Use
   `dt.format(DateFormat('yyyy-MM-ddTHH:mm:ssZ'))` if you need the legacy compact
   form without a colon.
+- Some niche helpers (`toHtmlString()`, `toHtmlDiffString()`) remain TODO until
+  the corresponding PHP sections are ported.
 

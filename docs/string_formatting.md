@@ -158,6 +158,6 @@ startOfWeek setting -> 1
 - `format()` accepts ICU/Intl tokens (the same syntax used by `DateFormat`), not
   PHP's `DateTime::format()` letters. Use `isoFormat()` when you want Carbon's
   PHP-style tokens (`Do`, `LLLL`, etc.).
-- HTML helpers such as `toHtmlString()`/`toHtmlDiffString()` now live under the
-  Common Formats guide, where `<time>`/`<abbr>` wrappers mirror PHP's output.
+- HTML helpers such as `toHtmlString()`/`toHtmlDiffString()` have not been
+  ported. Compose them manually using `format()`/`diffForHumans()`.
 

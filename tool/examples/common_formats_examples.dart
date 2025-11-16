@@ -50,28 +50,3 @@ Future<ExampleRun> runCommonFormatsExample() async {
     output: buffer.toString().trimRight(),
   );
 }
-
-const _htmlFormatsSource = r'''
-import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
-Future<void> main() async {
-  await initializeDateFormatting('en');
-
-  final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
-  print('html -> ${dt.toHtmlString()}');
-  print('html diff -> ${dt.diffForHumans(reference: Carbon.now())}');
-}
-''';
-
-Future<ExampleRun> runHtmlExample() async {
-  await _bootstrap();
-  final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
-  final buffer = StringBuffer()
-    ..writeln('html -> ${dt.toHtmlString()}')
-    ..writeln('html diff -> ${dt.diffForHumans(reference: Carbon.now())}');
-  return ExampleRun(
-    code: _htmlFormatsSource,
-    output: buffer.toString().trimRight(),
-  );
-}

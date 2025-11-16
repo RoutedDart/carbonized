@@ -1164,17 +1164,15 @@ String _stringFormattingDifferences() => '''
 - `format()` accepts ICU/Intl tokens (the same syntax used by `DateFormat`), not
   PHP's `DateTime::format()` letters. Use `isoFormat()` when you want Carbon's
   PHP-style tokens (`Do`, `LLLL`, etc.).
-- HTML helpers such as `toHtmlString()`/`toHtmlDiffString()` now live under the
-  Common Formats guide, where `<time>`/`<abbr>` wrappers mirror PHP's output.
+- HTML helpers such as `toHtmlString()`/`toHtmlDiffString()` have not been
+  ported. Compose them manually using `format()`/`diffForHumans()`.
 ''';
 
 Future<String> _buildCommonFormats() async {
   final example = await common_formats_examples.runCommonFormatsExample();
-  final htmlExample = await common_formats_examples.runHtmlExample();
   final sections = <String>[
     _commonFormatsOverview(),
     _commonFormatsMatrix(example),
-    _commonFormatsHtml(htmlExample),
     _commonFormatsDifferences(),
   ];
   return sections.join('\n\n');
@@ -1204,25 +1202,6 @@ ${example.output}
 ```
 ''';
 
-String _commonFormatsHtml(ExampleRun example) =>
-    '''
-## HTML helpers
-
-`toHtmlString()` wraps the instant in a `<time>` element, while
-`toHtmlDiffString()` embeds `diffForHumans()` inside an `<abbr>` with a `title`
-set to the exact ISO instant.
-
-```dart
-${example.code}
-```
-
-Output:
-
-```
-${example.output}
-```
-''';
-
 String _commonFormatsDifferences() => '''
 ## Differences compared to the PHP docs
 
@@ -1232,6 +1211,8 @@ String _commonFormatsDifferences() => '''
 - PHP's note about `DateTime::ISO8601` incompatibility still applies. Use
   `dt.format(DateFormat('yyyy-MM-ddTHH:mm:ssZ'))` if you need the legacy compact
   form without a colon.
+- Some niche helpers (`toHtmlString()`, `toHtmlDiffString()`) remain TODO until
+  the corresponding PHP sections are ported.
 ''';
 
 Future<String> _buildConversion() async {

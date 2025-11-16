@@ -993,21 +993,6 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   /// RFC 7231 (HTTP date) format.
   String toRfc7231String();
 
-  /// Wraps the current instant in a `<time>` tag.
-  ///
-  /// By default it renders `toDateTimeString()`; provide [format] to replace
-  /// the inner text (e.g., `YYYY-MM-DD`).
-  String toHtmlString({String? format});
-
-  /// Wraps `diffForHumans()` in an `<abbr>` tag with the ISO instant in `title`.
-  String toHtmlDiffString({
-    CarbonInterface? reference,
-    String? locale,
-    int parts = 1,
-    bool short = false,
-    String joiner = ' ',
-  });
-
   /// Human-readable difference (e.g., "2 days ago").
   ///
   /// [parts] limits how many units should appear in a multi-unit string when

@@ -4420,32 +4420,6 @@ abstract class CarbonBase implements CarbonInterface {
     return '$weekday, ${_twoDigits(utc.day)} $month ${_padYear(utc.year)} ${_formatTimePart(utc)} GMT';
   }
 
-  @override
-  String toHtmlString({String? format}) {
-    final iso = toIso8601String(keepOffset: true);
-    final text = format == null ? toDateTimeString() : isoFormat(format);
-    return '<time datetime="${_htmlEscape(iso)}">${_htmlEscape(text)}</time>';
-  }
-
-  @override
-  String toHtmlDiffString({
-    CarbonInterface? reference,
-    String? locale,
-    int parts = 1,
-    bool short = false,
-    String joiner = ' ',
-  }) {
-    final iso = toIso8601String(keepOffset: true);
-    final diff = diffForHumans(
-      reference: reference,
-      locale: locale,
-      parts: parts,
-      short: short,
-      joiner: joiner,
-    );
-    return '<abbr class="Carbon-diff" title="${_htmlEscape(iso)}">${_htmlEscape(diff)}</abbr>';
-  }
-
   String _formatRfcFamily({required bool shortYear}) {
     final local = _localDateTimeForFormatting();
     final weekday = _weekdayShortNames[(local.weekday + 6) % 7];
@@ -4453,13 +4427,6 @@ abstract class CarbonBase implements CarbonInterface {
     final year = shortYear ? _twoDigitYear(local) : _padYear(local.year);
     return '$weekday, ${_twoDigits(local.day)} $month $year ${_formatTimePart(local)} ${_formatOffset(_currentOffset(), compact: true)}';
   }
-
-  static String _htmlEscape(String value) => value
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
 
   @override
   String diffForHumans({
