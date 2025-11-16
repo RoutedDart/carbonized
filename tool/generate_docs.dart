@@ -1424,10 +1424,12 @@ String _additionDifferences() => '''
 
 Future<String> _buildDifference() async {
   final diffUnits = await difference_examples.runDiffUnitsExample();
+  final floatDiffs = await difference_examples.runFloatDiffExample();
   final durations = await difference_examples.runDurationDiffExample();
   final sections = <String>[
     _differenceOverview(),
     _differenceUnits(diffUnits),
+    _differenceFloat(floatDiffs),
     _differenceDuration(durations),
     _differenceDifferences(),
   ];
@@ -1438,14 +1440,29 @@ String _differenceOverview() => '''
 # Difference
 
 `diff()` returns a Dart `Duration`, while helpers like `diffInHours()` and
-`diffInMonths()` mirror the PHP Carbon API for integer-based deltas. Signed
-results require `absolute: false`, and timezone math stays consistent because
-everything is computed in UTC internally.
+`diffInMonths()` mirror the PHP Carbon API for truncated deltas. Use
+`floatDiffIn*()` when you need fractional precision; both families use the same
+underlying UTC math so daylight-saving transitions stay predictable.
 ''';
 
 String _differenceUnits(ExampleRun example) =>
     '''
 ## `diffIn*` helpers
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
+String _differenceFloat(ExampleRun example) =>
+    '''
+## `floatDiffIn*` helpers
 
 ```dart
 ${example.code}
@@ -1479,9 +1496,9 @@ String _differenceDifferences() => '''
 - `diff()`/`diffAsCarbonInterval()` return `CarbonInterval` in PHP. Dart's
   `diff()` exposes the platform `Duration` instead, so you access `inDays`
   / `inHours` rather than `years`, `months`, etc.
-- `diffAsCarbonInterval()`, `diffAsDateInterval()`, `diffInUnit()`, and the
-  `floatDiffIn*()` family are not implemented. Use the existing `diffIn*()` int
-  helpers or compute fractional durations manually.
+- `diffAsCarbonInterval()`, `diffAsDateInterval()`, and `diffInUnit()` are not
+  implemented yet. Convert `diff()` into a `CarbonInterval` manually when you
+  need structured units.
 - Carbon's PHP-specific `invert` flag is not exposed since Dart relies on the
   sign of the returned `Duration`.
 ''';

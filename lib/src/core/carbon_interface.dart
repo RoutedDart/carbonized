@@ -744,6 +744,45 @@ abstract class CarbonInterface implements Comparable<CarbonInterface> {
   /// Difference in days, floored (rounded down).
   int diffInDaysFloored(CarbonInterface other);
 
+  /// Floating-point difference in microseconds (preserves fractions).
+  double floatDiffInMicroseconds(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in milliseconds (preserves fractions).
+  double floatDiffInMilliseconds(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in seconds (preserves fractions).
+  double floatDiffInSeconds(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in minutes (preserves fractions).
+  double floatDiffInMinutes(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in hours (preserves fractions).
+  double floatDiffInHours(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in days (preserves fractions).
+  double floatDiffInDays(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in weeks (preserves fractions).
+  double floatDiffInWeeks(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in months (preserves fractions).
+  double floatDiffInMonths(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in quarters (preserves fractions).
+  double floatDiffInQuarters(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in years (preserves fractions).
+  double floatDiffInYears(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in decades (preserves fractions).
+  double floatDiffInDecades(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in centuries (preserves fractions).
+  double floatDiffInCenturies(CarbonInterface other, {bool absolute = true});
+
+  /// Floating-point difference in millennia (preserves fractions).
+  double floatDiffInMillennia(CarbonInterface other, {bool absolute = true});
+
   /// Difference in UTC microseconds (with fractional part).
   double diffInUTCMicros([dynamic date, bool absolute = true]);
 

@@ -3784,6 +3784,70 @@ abstract class CarbonBase implements CarbonInterface {
       _dateTime.difference(other.dateTime).inDays;
 
   @override
+  double floatDiffInMicroseconds(
+    CarbonInterface other, {
+    bool absolute = true,
+  }) => _floatDiffLinear(
+    other,
+    const Duration(microseconds: 1),
+    absolute: absolute,
+  );
+
+  @override
+  double floatDiffInMilliseconds(
+    CarbonInterface other, {
+    bool absolute = true,
+  }) => _floatDiffLinear(
+    other,
+    const Duration(milliseconds: 1),
+    absolute: absolute,
+  );
+
+  @override
+  double floatDiffInSeconds(CarbonInterface other, {bool absolute = true}) =>
+      _floatDiffLinear(other, const Duration(seconds: 1), absolute: absolute);
+
+  @override
+  double floatDiffInMinutes(CarbonInterface other, {bool absolute = true}) =>
+      _floatDiffLinear(other, const Duration(minutes: 1), absolute: absolute);
+
+  @override
+  double floatDiffInHours(CarbonInterface other, {bool absolute = true}) =>
+      _floatDiffLinear(other, const Duration(hours: 1), absolute: absolute);
+
+  @override
+  double floatDiffInDays(CarbonInterface other, {bool absolute = true}) =>
+      _floatDiffLinear(other, const Duration(days: 1), absolute: absolute);
+
+  @override
+  double floatDiffInWeeks(CarbonInterface other, {bool absolute = true}) =>
+      _floatDiffLinear(other, const Duration(days: 7), absolute: absolute);
+
+  @override
+  double floatDiffInMonths(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsDouble(other, absolute: absolute);
+
+  @override
+  double floatDiffInQuarters(CarbonInterface other, {bool absolute = true}) =>
+      _diffInMonthsDouble(other, monthsPerUnit: 3, absolute: absolute);
+
+  @override
+  double floatDiffInYears(CarbonInterface other, {bool absolute = true}) =>
+      _diffInYearsDouble(other, absolute: absolute);
+
+  @override
+  double floatDiffInDecades(CarbonInterface other, {bool absolute = true}) =>
+      _diffInYearsDouble(other, absolute: absolute) / 10;
+
+  @override
+  double floatDiffInCenturies(CarbonInterface other, {bool absolute = true}) =>
+      _diffInYearsDouble(other, absolute: absolute) / 100;
+
+  @override
+  double floatDiffInMillennia(CarbonInterface other, {bool absolute = true}) =>
+      _diffInYearsDouble(other, absolute: absolute) / 1000;
+
+  @override
   double diffInUTCMicros([dynamic date, bool absolute = true]) =>
       _diffInUTCByDuration(
         const Duration(microseconds: 1),
@@ -5644,6 +5708,19 @@ abstract class CarbonBase implements CarbonInterface {
     return absolute ? value.abs() : value;
   }
 
+  double _floatDiffLinear(
+    CarbonInterface other,
+    Duration unit, {
+    bool absolute = true,
+  }) {
+    final delta =
+        (other.dateTime.microsecondsSinceEpoch -
+                _dateTime.microsecondsSinceEpoch)
+            .toDouble() /
+        unit.inMicroseconds;
+    return absolute ? delta.abs() : delta;
+  }
+
   double _diffInUTCByMonths(
     dynamic other, {
     int monthsPerUnit = 1,
@@ -5677,6 +5754,109 @@ abstract class CarbonBase implements CarbonInterface {
     final offset = value.difference(start).inMicroseconds;
     return (value.year * 12 + (value.month - 1)) + offset / span;
   }
+
+  double _diffInMonthsDouble(
+    CarbonInterface other, {
+    int monthsPerUnit = 1,
+    bool absolute = true,
+  }) {
+    var start = _dateTime;
+    var end = other.dateTime;
+    final ascending = !start.isAfter(end);
+    final sign = absolute || ascending ? 1.0 : -1.0;
+    final monthsDelta = _adjustedMonthDelta(start, end).abs();
+
+    if (!ascending) {
+      final tmp = start;
+      start = end;
+      end = tmp;
+    }
+
+    final floorEnd = _addMonths(start, monthsDelta);
+
+    double monthsValue;
+    if (!floorEnd.isBefore(end)) {
+      monthsValue = monthsDelta.toDouble();
+    } else {
+      final ceilEnd = _addMonths(start, monthsDelta + 1);
+      final daysToFloor = _preciseDayDiff(floorEnd, end);
+      final daysToCeil = _preciseDayDiff(end, ceilEnd);
+      final denominator = daysToCeil + daysToFloor;
+      final fraction = denominator == 0 ? 0.0 : daysToFloor / denominator;
+      monthsValue = monthsDelta + fraction;
+    }
+
+    final scaled = monthsValue / monthsPerUnit;
+    return sign * scaled;
+  }
+
+  double _diffInYearsDouble(CarbonInterface other, {bool absolute = true}) {
+    var start = _dateTime;
+    var end = other.dateTime;
+    final ascending = !start.isAfter(end);
+    final sign = absolute || ascending ? 1.0 : -1.0;
+
+    if (!ascending) {
+      final tmp = start;
+      start = end;
+      end = tmp;
+    }
+
+    var yearsDiff = end.year - start.year;
+    var floorEnd = _addMonths(start, yearsDiff * 12);
+    if (floorEnd.isAfter(end)) {
+      yearsDiff -= 1;
+      floorEnd = _addMonths(start, yearsDiff * 12);
+    }
+
+    if (!floorEnd.isBefore(end)) {
+      return sign * yearsDiff.toDouble();
+    }
+
+    final ceilEnd = _addMonths(start, (yearsDiff + 1) * 12);
+    final daysToFloor = _preciseDayDiff(floorEnd, end);
+    final daysToCeil = _preciseDayDiff(end, ceilEnd);
+    final denominator = daysToCeil + daysToFloor;
+    final fraction = denominator == 0 ? 0.0 : daysToFloor / denominator;
+    return sign * (yearsDiff + fraction);
+  }
+
+  int _adjustedMonthDelta(DateTime start, DateTime end) {
+    final monthDelta = (end.year - start.year) * 12 + (end.month - start.month);
+    if (monthDelta > 0 && _isDayTimeAfter(start, end)) {
+      return monthDelta - 1;
+    }
+    if (monthDelta < 0 && _isDayTimeBefore(start, end)) {
+      return monthDelta + 1;
+    }
+    return monthDelta;
+  }
+
+  bool _isDayTimeAfter(DateTime a, DateTime b) {
+    if (a.day != b.day) return a.day > b.day;
+    if (a.hour != b.hour) return a.hour > b.hour;
+    if (a.minute != b.minute) return a.minute > b.minute;
+    if (a.second != b.second) return a.second > b.second;
+    if (a.millisecond != b.millisecond) {
+      return a.millisecond > b.millisecond;
+    }
+    return a.microsecond > b.microsecond;
+  }
+
+  bool _isDayTimeBefore(DateTime a, DateTime b) {
+    if (a.day != b.day) return a.day < b.day;
+    if (a.hour != b.hour) return a.hour < b.hour;
+    if (a.minute != b.minute) return a.minute < b.minute;
+    if (a.second != b.second) return a.second < b.second;
+    if (a.millisecond != b.millisecond) {
+      return a.millisecond < b.millisecond;
+    }
+    return a.microsecond < b.microsecond;
+  }
+
+  double _preciseDayDiff(DateTime start, DateTime end) =>
+      end.difference(start).inMicroseconds.toDouble() /
+      Duration.microsecondsPerDay;
 
   bool _isSameUnit(DateTime first, DateTime second, _ComparisonUnit unit) =>
       _startOfUnit(first, unit).isAtSameMomentAs(_startOfUnit(second, unit));
