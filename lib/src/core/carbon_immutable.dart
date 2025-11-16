@@ -187,6 +187,9 @@ class CarbonImmutable extends CarbonBase {
     settings: settings,
   ).toImmutable();
 
+  /// Casts [source] to an immutable instance, like PHP's `CarbonImmutable::cast()`.
+  static CarbonImmutable cast(CarbonInterface source) => source.toImmutable();
+
   static CarbonImmutable createFromFormat(
     String format,
     String input, {

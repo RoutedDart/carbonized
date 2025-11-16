@@ -143,3 +143,32 @@ Future<ExampleRun> runCarbonizeExample() async {
     output: buffer.toString().trimRight(),
   );
 }
+
+const _castSource = r'''
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+
+  final source = Carbon.parse('2015-01-01T00:00:00Z');
+  final casted = Carbon.cast(source);
+  final immutable = CarbonImmutable.cast(source);
+
+  print('cast type -> ${casted.runtimeType}');
+  print('cast iso -> ${casted.toIso8601String()}');
+  print('immutable -> ${immutable.runtimeType}');
+}
+''';
+
+Future<ExampleRun> runCastExample() async {
+  await _bootstrap();
+  final source = Carbon.parse('2015-01-01T00:00:00Z');
+  final casted = Carbon.cast(source);
+  final immutable = CarbonImmutable.cast(source);
+  final buffer = StringBuffer()
+    ..writeln('cast type -> ${casted.runtimeType}')
+    ..writeln('cast iso -> ${casted.toIso8601String()}')
+    ..writeln('immutable -> ${immutable.runtimeType}');
+  return ExampleRun(code: _castSource, output: buffer.toString().trimRight());
+}

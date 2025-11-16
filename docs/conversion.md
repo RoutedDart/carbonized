@@ -114,6 +114,38 @@ carbonize duration -> 2019-02-01T21:45:27.612584+01:00
 ```
 
 
+## Casting helpers
+
+`Carbon.cast()` and `CarbonImmutable.cast()` mirror PHP's `cast()` helpers,
+returning a mutable or immutable copy regardless of the source type.
+
+```dart
+import 'package:carbon/carbon.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+Future<void> main() async {
+  await initializeDateFormatting('en');
+
+  final source = Carbon.parse('2015-01-01T00:00:00Z');
+  final casted = Carbon.cast(source);
+  final immutable = CarbonImmutable.cast(source);
+
+  print('cast type -> ${casted.runtimeType}');
+  print('cast iso -> ${casted.toIso8601String()}');
+  print('immutable -> ${immutable.runtimeType}');
+}
+
+```
+
+Output:
+
+```
+cast type -> Carbon
+cast iso -> 2015-01-01T00:00:00.000Z
+immutable -> CarbonImmutable
+```
+
+
 ## Differences compared to the PHP docs
 
 - `cast()` is not available. Instead, call `.toMutable()` / `.toImmutable()` or

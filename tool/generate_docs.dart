@@ -1219,11 +1219,13 @@ Future<String> _buildConversion() async {
   final snapshot = await conversion_examples.runConversionSnapshotExample();
   final dateTimes = await conversion_examples.runDateTimeConversionExample();
   final carbonize = await conversion_examples.runCarbonizeExample();
+  final cast = await conversion_examples.runCastExample();
   final sections = <String>[
     _conversionOverview(),
     _conversionSnapshots(snapshot),
     _conversionDateTime(dateTimes),
     _conversionCarbonize(carbonize),
+    _conversionCast(cast),
     _conversionDifferences(),
   ];
   return sections.join('\n\n');
@@ -1274,6 +1276,24 @@ String _conversionCarbonize(ExampleRun example) =>
 
 `carbonize()` mirrors the PHP helper: strings reuse the current timezone,
 intervals/durations add to a clone, and periods return their starting date.
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
+String _conversionCast(ExampleRun example) =>
+    '''
+## Casting helpers
+
+`Carbon.cast()` and `CarbonImmutable.cast()` mirror PHP's `cast()` helpers,
+returning a mutable or immutable copy regardless of the source type.
 
 ```dart
 ${example.code}

@@ -1176,6 +1176,9 @@ class Carbon extends CarbonBase {
     settings: settings,
   );
 
+  /// Casts [source] to a mutable `Carbon`, mirroring `Carbon::cast()` in PHP.
+  static CarbonInterface cast(CarbonInterface source) => source.toMutable();
+
   static CarbonInterface createFromFormat(
     String format,
     String input, {
