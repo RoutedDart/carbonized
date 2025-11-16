@@ -38,10 +38,46 @@ fromJson zone -> null
 ```
 
 
+## Custom payloads and `__set_state`
+
+```dart
+import 'package:carbon/carbon.dart';
+
+Future<void> main() async {
+  final dt = Carbon.parse('2024-05-21T12:00:00Z');
+  Carbon.serializeUsing((date) => 'CUSTOM:${date.toIso8601String()}');
+  print('custom -> ${dt.serialize()}');
+  Carbon.resetSerializationFormat();
+
+  final state = {
+    'iso': '2024-05-21T12:00:00.000Z',
+    'timeZone': 'Europe/Paris',
+    'locale': 'fr',
+    'settings': {'startOfWeek': DateTime.monday},
+    'type': 'carbon',
+  };
+  final fromState = Carbon.fromState(state);
+  print('fromState iso -> ${fromState.toIso8601String()}');
+  print('fromState locale -> ${fromState.localeCode}');
+}
+
+```
+
+Output:
+
+```
+custom -> CUSTOM:2024-05-21T12:00:00.000Z
+fromState iso -> 2024-05-21T12:00:00.000Z
+fromState locale -> fr
+```
+
+
 ## Differences compared to the PHP docs
 
-- `Carbon::serializeUsing()` and per-instance `settings(['toJsonFormat'])` are
-  not exposed. Customize JSON by wrapping `jsonEncode()` yourself.
-- `Carbon::__set_state()` is not implemented; use `Carbon.fromJson()` with the
-  structured payload the round-trip expects.
+- `Carbon::serializeUsing()` is exposed through `Carbon.serializeUsing()` and
+  `Carbon.resetSerializationFormat()`, so you can change the global payload
+  without editing `toJson()`.
+- `Carbon::fromJson()` and `Carbon::fromState()` accept the map that PHP's
+  `__set_state()`/`jsonSerialize()` produce, so you can rehydrate using the
+  standard fields (`iso`, `timeZone`, `locale`, `settings`, etc.).
 

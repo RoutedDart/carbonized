@@ -1893,9 +1893,11 @@ String _serializationDifferences() => '''
 
 Future<String> _buildJson() async {
   final example = await json_examples.runJsonExample();
+  final custom = await json_examples.runJsonCustomExample();
   final sections = <String>[
     _jsonOverview(),
     _jsonExample(example),
+    _jsonCustom(custom),
     _jsonDifferences(),
   ];
   return sections.join('\n\n');
@@ -1924,13 +1926,30 @@ ${example.output}
 ```
 ''';
 
+String _jsonCustom(ExampleRun example) =>
+    '''
+## Custom payloads and `__set_state`
+
+```dart
+${example.code}
+```
+
+Output:
+
+```
+${example.output}
+```
+''';
+
 String _jsonDifferences() => '''
 ## Differences compared to the PHP docs
 
-- `Carbon::serializeUsing()` and per-instance `settings(['toJsonFormat'])` are
-  not exposed. Customize JSON by wrapping `jsonEncode()` yourself.
-- `Carbon::__set_state()` is not implemented; use `Carbon.fromJson()` with the
-  structured payload the round-trip expects.
+- `Carbon::serializeUsing()` is exposed through `Carbon.serializeUsing()` and
+  `Carbon.resetSerializationFormat()`, so you can change the global payload
+  without editing `toJson()`.
+- `Carbon::fromJson()` and `Carbon::fromState()` accept the map that PHP's
+  `__set_state()`/`jsonSerialize()` produce, so you can rehydrate using the
+  standard fields (`iso`, `timeZone`, `locale`, `settings`, etc.).
 ''';
 
 Future<String> _buildMacro() async {

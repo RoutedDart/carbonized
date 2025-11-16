@@ -50,3 +50,52 @@ Future<ExampleRun> runJsonExample() async {
     ..writeln('fromJson zone -> ${fromJson.timeZoneName}');
   return ExampleRun(code: _jsonSource, output: buffer.toString().trimRight());
 }
+
+const _jsonCustomSource = r'''
+import 'package:carbon/carbon.dart';
+
+Future<void> main() async {
+  final dt = Carbon.parse('2024-05-21T12:00:00Z');
+  Carbon.serializeUsing((date) => 'CUSTOM:${date.toIso8601String()}');
+  print('custom -> ${dt.serialize()}');
+  Carbon.resetSerializationFormat();
+
+  final state = {
+    'iso': '2024-05-21T12:00:00.000Z',
+    'timeZone': 'Europe/Paris',
+    'locale': 'fr',
+    'settings': {'startOfWeek': DateTime.monday},
+    'type': 'carbon',
+  };
+  final fromState = Carbon.fromState(state);
+  print('fromState iso -> ${fromState.toIso8601String()}');
+  print('fromState locale -> ${fromState.localeCode}');
+}
+''';
+
+Future<ExampleRun> runJsonCustomExample() async {
+  await _bootstrap();
+  final dt = Carbon.parse('2024-05-21T12:00:00Z');
+
+  Carbon.serializeUsing((date) => 'CUSTOM:${date.toIso8601String()}');
+  final custom = dt.serialize();
+  Carbon.resetSerializationFormat();
+
+  final state = {
+    'iso': '2024-05-21T12:00:00.000Z',
+    'timeZone': 'Europe/Paris',
+    'locale': 'fr',
+    'settings': {'startOfWeek': DateTime.monday},
+    'type': 'carbon',
+  };
+  final fromState = Carbon.fromState(state);
+
+  final buffer = StringBuffer()
+    ..writeln('custom -> $custom')
+    ..writeln('fromState iso -> ${fromState.toIso8601String()}')
+    ..writeln('fromState locale -> ${fromState.localeCode}');
+  return ExampleRun(
+    code: _jsonCustomSource,
+    output: buffer.toString().trimRight(),
+  );
+}
