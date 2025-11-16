@@ -48,6 +48,11 @@ class Carbon extends CarbonBase {
     CarbonBase.resetSerializationFormat();
   }
 
+  /// Creates a new instance from the attributes that `var_export`/`jsonSerialize`
+  /// produce.
+  static CarbonInterface fromState(Map<String, dynamic> state) =>
+      CarbonBase.deserializeSerialized(state);
+
   /// Registers translator data for the specified [locale].
   static void registerTranslatorLocale(
     String locale,
