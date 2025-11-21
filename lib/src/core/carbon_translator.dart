@@ -76,6 +76,14 @@ class CarbonTranslator {
         .toList();
   }
 
+  /// Clears all registered locales and fallback settings (primarily for tests).
+  static void resetTranslations() {
+    _translations.clear();
+    _fallbackLocales.clear();
+    _registeredTimeagoLocales.clear();
+    _defaultsReady = false;
+  }
+
   /// Ensures `timeago` has messages for [locale].
   static void ensureTimeagoLocale(String locale) {
     _ensureDefaultsRegistered();
@@ -223,6 +231,8 @@ class CarbonTranslator {
     registerLocale(
       'fr',
       CarbonTranslation(
+        numbers: {'1': 'un ', '2': 'deux ', '3': 'trois '},
+        altNumbers: {'4': 'quatre_alt ', '5': 'cinq_alt '},
         timeagoMessages: timeago.FrMessages(),
         timeStrings: {
           'ago': 'il y a',

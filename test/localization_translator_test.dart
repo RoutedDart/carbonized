@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 void main() {
   setUpAll(() async {
     await Carbon.configureTimeMachine(testing: true);
+    CarbonTranslator.resetTranslations();
   });
 
   test('translateNumber honors fallback locales', () {
