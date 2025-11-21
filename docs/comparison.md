@@ -154,8 +154,9 @@ matches('3pm') -> false
 - PHP's dynamic `is('<string>')` matcher maps to the strongly typed
   `matches('<string>')` method in Dart. It accepts the same patterns but uses a
   Dart-friendly name because `is` is a reserved keyword.
-- `equalTo()`/`min()`/`max()` now accept `CarbonInterval`/`CarbonPeriod`
-  instances by comparing their month/microsecond spans or the interval start/end
-  of the period, matching the PHP comparators.
+- `equalTo()`/`min()`/`max()` currently accept `CarbonInterface`/`DateTime`
+  inputs. Comparisons against `CarbonInterval`/`CarbonPeriod` will be added in a
+  later pass.
 - PHP's microsecond caveat does not apply—Dart always compares the full instant
   since the VM retains microsecond precision.
+
