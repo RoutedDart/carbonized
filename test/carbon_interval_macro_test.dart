@@ -8,7 +8,9 @@ void main() {
 
   test('interval macros execute', () {
     CarbonInterval.registerMacro('doubleDays', (interval, pos, named) {
-      final days = interval.monthSpan * 30 + interval.microseconds ~/ Duration.microsecondsPerDay;
+      final days =
+          interval.monthSpan * 30 +
+          interval.microseconds ~/ Duration.microsecondsPerDay;
       return CarbonInterval.days(days * 2);
     });
 
@@ -20,6 +22,9 @@ void main() {
     final CarbonInterval typedInterval = CarbonInterval.days(3);
     final CarbonInterval doubledViaHelper =
         typedInterval.carbon('doubleDays') as CarbonInterval;
-    expect(doubledViaHelper.microseconds, equals(Duration.microsecondsPerDay * 6));
+    expect(
+      doubledViaHelper.microseconds,
+      equals(Duration.microsecondsPerDay * 6),
+    );
   });
 }

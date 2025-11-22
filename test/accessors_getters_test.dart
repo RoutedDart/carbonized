@@ -3,7 +3,16 @@ import 'package:test/test.dart';
 
 void main() {
   group('Carbon accessors - year/month/day', () {
-    final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 35, second: 42, millisecond: 500, microsecond: 0);
+    final date = Carbon.create(
+      year: 2020,
+      month: 3,
+      day: 15,
+      hour: 14,
+      minute: 35,
+      second: 42,
+      millisecond: 500,
+      microsecond: 0,
+    );
 
     test('year getter returns year', () {
       expect(date.year, 2020);

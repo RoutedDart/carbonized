@@ -123,7 +123,11 @@ class CarbonInterval {
       final name = _symbolToString(invocation.memberName);
       final macro = _macros[name];
       if (macro != null) {
-        return macro(this, invocation.positionalArguments, invocation.namedArguments);
+        return macro(
+          this,
+          invocation.positionalArguments,
+          invocation.namedArguments,
+        );
       }
     }
     return super.noSuchMethod(invocation);
@@ -142,17 +146,16 @@ class CarbonInterval {
     int minutes = 0,
     int seconds = 0,
     int microseconds = 0,
-  }) =>
-      CarbonInterval.fromComponents(
-        years: years,
-        months: months,
-        weeks: weeks,
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-        microseconds: microseconds,
-      );
+  }) => CarbonInterval.fromComponents(
+    years: years,
+    months: months,
+    weeks: weeks,
+    days: days,
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds,
+    microseconds: microseconds,
+  );
 
   Duration _toDurationApprox() {
     const microsecondsPerMonth = 30 * Duration.microsecondsPerDay;
@@ -239,7 +242,8 @@ class CarbonInterval {
       if (parts['minutes']! > 0) buffer.write('${parts['minutes']}M');
       if (parts['seconds']! > 0 || parts['microseconds']! > 0) {
         final seconds =
-            parts['seconds']! + parts['microseconds']! / Duration.microsecondsPerSecond;
+            parts['seconds']! +
+            parts['microseconds']! / Duration.microsecondsPerSecond;
         buffer.write('${seconds.toStringAsFixed(6)}S');
       }
     }
@@ -248,15 +252,15 @@ class CarbonInterval {
 
   /// Add a given duration to the interval.
   CarbonInterval add(Duration duration) => CarbonInterval._(
-        monthSpan: monthSpan,
-        microseconds: microseconds + duration.inMicroseconds,
-      );
+    monthSpan: monthSpan,
+    microseconds: microseconds + duration.inMicroseconds,
+  );
 
   /// Subtract a given duration from the interval.
   CarbonInterval sub(Duration duration) => CarbonInterval._(
-        monthSpan: monthSpan,
-        microseconds: microseconds - duration.inMicroseconds,
-      );
+    monthSpan: monthSpan,
+    microseconds: microseconds - duration.inMicroseconds,
+  );
 
   /// Add a given duration to the interval.
   CarbonInterval operator +(Duration duration) => add(duration);

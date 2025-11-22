@@ -28,7 +28,11 @@ void main() {
     });
 
     test('macros expose getter/setter helpers', () {
-      Carbon.registerMacro('getSchoolYear', (carbon, unusedPositional, unusedNamed) {
+      Carbon.registerMacro('getSchoolYear', (
+        carbon,
+        unusedPositional,
+        unusedNamed,
+      ) {
         var year = carbon.year;
         if (carbon.month > 7) {
           year++;

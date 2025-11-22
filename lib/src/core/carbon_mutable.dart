@@ -44,17 +44,17 @@ class Carbon extends CarbonBase {
   }
 
   /// Weekday constants (align with PHP `Carbon::SUNDAY`, ...).
-  static const int SUNDAY = DateTime.sunday;
-  static const int MONDAY = DateTime.monday;
-  static const int TUESDAY = DateTime.tuesday;
-  static const int WEDNESDAY = DateTime.wednesday;
-  static const int THURSDAY = DateTime.thursday;
-  static const int FRIDAY = DateTime.friday;
-  static const int SATURDAY = DateTime.saturday;
+  static const int sunday = DateTime.sunday;
+  static const int monday = DateTime.monday;
+  static const int tuesday = DateTime.tuesday;
+  static const int wednesday = DateTime.wednesday;
+  static const int thursday = DateTime.thursday;
+  static const int friday = DateTime.friday;
+  static const int saturday = DateTime.saturday;
 
   /// Numeric helpers for common calendar values.
-  static const int YEARS_PER_DECADE = 10;
-  static const int MONTHS_PER_YEAR = 12;
+  static const int yearsPerDecade = 10;
+  static const int monthsPerYear = 12;
 
   /// Resets the custom serialization formatter to the default JSON payload.
   static void resetSerializationFormat() {
@@ -69,7 +69,7 @@ class Carbon extends CarbonBase {
   /// Registers translator data for the specified [locale].
   static void registerTranslatorLocale(
     String locale,
-    CarbonTranslation translation, {
+    CarbonLocaleData translation, {
     List<String>? fallbackLocales,
   }) {
     CarbonTranslator.registerLocale(

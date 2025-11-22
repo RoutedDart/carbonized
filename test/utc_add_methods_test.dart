@@ -19,7 +19,8 @@ void main() {
       final date = CarbonImmutable.parse('2025-01-01T00:00:00Z');
       final result = (date as dynamic).addUTCMillis(5);
       expect(
-        result.dateTime.microsecondsSinceEpoch - date.dateTime.microsecondsSinceEpoch,
+        result.dateTime.microsecondsSinceEpoch -
+            date.dateTime.microsecondsSinceEpoch,
         5000,
       );
     });
@@ -28,7 +29,8 @@ void main() {
       final date = CarbonImmutable.parse('2025-01-01T00:00:00Z');
       final result = (date as dynamic).addUTCMicroseconds(250);
       expect(
-        result.dateTime.microsecondsSinceEpoch - date.dateTime.microsecondsSinceEpoch,
+        result.dateTime.microsecondsSinceEpoch -
+            date.dateTime.microsecondsSinceEpoch,
         250,
       );
     });

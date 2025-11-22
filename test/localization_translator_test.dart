@@ -1,4 +1,5 @@
 import 'package:carbon/carbon.dart';
+import 'package:carbon/src/carbon.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:test/test.dart';
 
@@ -9,7 +10,8 @@ void main() {
   });
 
   test('translateNumber honors fallback locales', () {
-    final translation = CarbonTranslation(
+    final translation = CarbonLocaleData(
+      localeCode: 'fr',
       numbers: {'1': 'un ', '2': 'deux ', '3': 'trois '},
       altNumbers: {'4': 'quatre_alt ', '5': 'cinq_alt '},
       timeagoMessages: timeago.FrMessages(),
@@ -24,7 +26,8 @@ void main() {
   test('diffForHumans returns localized strings', () {
     CarbonTranslator.registerLocale(
       'fr',
-      CarbonTranslation(
+      CarbonLocaleData(
+        localeCode: 'fr',
         timeStrings: {'ago': 'il y a', 'from now': "d'ici", 'in ': 'dans '},
         timeagoMessages: timeago.FrMessages(),
       ),
@@ -38,7 +41,7 @@ void main() {
   test('translateTimeString applies replacements', () {
     CarbonTranslator.registerLocale(
       'tt',
-      const CarbonTranslation(timeStrings: {'minutes': 'minutos'}),
+      const CarbonLocaleData(localeCode: 'tt', timeStrings: {'minutes': 'minutos'}),
     );
 
     expect(

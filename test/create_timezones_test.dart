@@ -7,8 +7,7 @@ void main() {
     setUp(() => Carbon.resetTimeMachineSupport());
 
     test('fixed offset strings convert to UTC', () {
-      final CarbonInterface result =
-          Carbon.createFromDate(2024, 1, 1, '+0530');
+      final CarbonInterface result = Carbon.createFromDate(2024, 1, 1, '+0530');
       expect(result.dateTime, DateTime.utc(2023, 12, 31, 18, 30));
       expect(result.timeZoneName, '+0530');
     });
@@ -46,13 +45,7 @@ void main() {
     test('DST gaps throw for missing local times', () {
       withClock(Clock.fixed(DateTime.utc(2014, 3, 30)), () {
         expect(
-          () => Carbon.createFromTime(
-            1,
-            30,
-            0,
-            0,
-            'Europe/London',
-          ),
+          () => Carbon.createFromTime(1, 30, 0, 0, 'Europe/London'),
           throwsStateError,
         );
       });

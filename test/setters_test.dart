@@ -28,34 +28,71 @@ void main() {
     });
 
     test('setHour updates the hour', () {
-      final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 10, minute: 30);
+      final date = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 10,
+        minute: 30,
+      );
       final result = date.setHour(14);
       expect(result.hour, 14);
       expect(result.minute, 30);
     });
 
     test('setMinute updates the minute', () {
-      final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30);
+      final date = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+      );
       final result = date.setMinute(45);
       expect(result.hour, 14);
       expect(result.minute, 45);
     });
 
     test('setSecond updates the second', () {
-      final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30, second: 30);
+      final date = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+        second: 30,
+      );
       final result = date.setSecond(45);
       expect(result.second, 45);
       expect(result.minute, 30);
     });
 
     test('setMillisecond updates millisecond', () {
-      final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30, second: 30, millisecond: 100, microsecond: 0);
+      final date = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+        second: 30,
+        millisecond: 100,
+        microsecond: 0,
+      );
       final result = date.setMillisecond(500);
       expect(result.millisecond, 500);
     });
 
     test('setMicrosecond updates microsecond', () {
-      final date = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30, second: 30, millisecond: 100, microsecond: 500);
+      final date = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+        second: 30,
+        millisecond: 100,
+        microsecond: 500,
+      );
       final result = date.setMicrosecond(750000);
       expect(result.microsecond, 750000);
     });
@@ -64,16 +101,16 @@ void main() {
   group('Carbon setters - date components', () {
     test('setQuarter updates to correct month', () {
       final date = Carbon.create(year: 2020, month: 3, day: 15);
-      
+
       final q1 = date.setQuarter(1);
       expect(q1.month, 1);
-      
+
       final q2 = date.setQuarter(2);
       expect(q2.month, 4);
-      
+
       final q3 = date.setQuarter(3);
       expect(q3.month, 7);
-      
+
       final q4 = date.setQuarter(4);
       expect(q4.month, 10);
     });
@@ -95,7 +132,11 @@ void main() {
     test('setMonth with day adjustment honors overflow settings', () {
       final overflow = Carbon.create(year: 2020, month: 1, day: 31);
       final resultOverflow = overflow.setMonth(2);
-      expect(resultOverflow.month, 3, reason: 'Default overflow should carry into March');
+      expect(
+        resultOverflow.month,
+        3,
+        reason: 'Default overflow should carry into March',
+      );
 
       final clamped = Carbon.fromDateTime(
         DateTime.utc(2020, 1, 31),
@@ -132,9 +173,11 @@ void main() {
     });
 
     test('setters work with add methods', () {
-      final date = Carbon.create(year: 2020, month: 1, day: 1)
-          .setMonth(6)
-          .addMonths(3);
+      final date = Carbon.create(
+        year: 2020,
+        month: 1,
+        day: 1,
+      ).setMonth(6).addMonths(3);
 
       expect(date.month, 9);
       expect(date.year, 2020);
@@ -143,7 +186,13 @@ void main() {
 
   group('Carbon composite setters', () {
     test('setDate sets year month day together', () {
-      final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 14, minute: 30);
+      final date = Carbon.create(
+        year: 2020,
+        month: 1,
+        day: 1,
+        hour: 14,
+        minute: 30,
+      );
       final result = date.setDate(2021, 3, 15);
 
       expect(result.year, 2021);
@@ -168,7 +217,11 @@ void main() {
 
   group('Carbon immutability with setters', () {
     test('setter returns new instance', () {
-      final original = Carbon.create(year: 2020, month: 3, day: 15).toImmutable();
+      final original = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+      ).toImmutable();
       final modified = original.setYear(2021);
 
       expect(original.year, 2020);
@@ -177,11 +230,12 @@ void main() {
     });
 
     test('original unchanged after multiple setters', () {
-      final original = Carbon.create(year: 2020, month: 3, day: 15).toImmutable();
-      final _ = original
-          .setYear(2021)
-          .setMonth(6)
-          .setDay(20);
+      final original = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+      ).toImmutable();
+      final _ = original.setYear(2021).setMonth(6).setDay(20);
 
       expect(original.year, 2020);
       expect(original.month, 3);

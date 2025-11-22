@@ -17,7 +17,7 @@ void main() {
 
     test('diffInUTCMinutes supports fractional precision', () {
       expect(later.diffInUTCMinutes(start), 2880);
-  });
+    });
   });
 
   group('Carbon long/short diffForHumans helpers', () {

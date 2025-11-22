@@ -37,7 +37,7 @@ class CarbonImmutable extends CarbonBase {
 
   static void registerTranslatorLocale(
     String locale,
-    CarbonTranslation translation, {
+    CarbonLocaleData translation, {
     List<String>? fallbackLocales,
   }) => Carbon.registerTranslatorLocale(
     locale,

@@ -29,11 +29,14 @@ void main() {
       expect(shifted.toIso8601String(), '2100-03-01T00:00:00.000Z');
     });
 
-    test('addMillenniaWithoutOverflow clamps when millennium drops leap day', () {
-      final date = _immutable('2000-02-29T00:00:00Z');
-      final shifted = date.addMillenniaWithoutOverflow(1);
-      expect(shifted.toIso8601String(), '3000-02-28T00:00:00.000Z');
-    });
+    test(
+      'addMillenniaWithoutOverflow clamps when millennium drops leap day',
+      () {
+        final date = _immutable('2000-02-29T00:00:00Z');
+        final shifted = date.addMillenniaWithoutOverflow(1);
+        expect(shifted.toIso8601String(), '3000-02-28T00:00:00.000Z');
+      },
+    );
   });
 
   group('UTC alias coverage', () {
@@ -53,7 +56,8 @@ void main() {
       final date = _immutable('2030-05-01T00:00:00Z');
       final shifted = date.addUTCMillis(5);
       expect(
-        shifted.dateTime.microsecondsSinceEpoch - date.dateTime.microsecondsSinceEpoch,
+        shifted.dateTime.microsecondsSinceEpoch -
+            date.dateTime.microsecondsSinceEpoch,
         5000,
       );
     });
@@ -62,7 +66,8 @@ void main() {
       final date = _immutable('2030-05-01T00:00:00Z');
       final shifted = date.addUTCMicroseconds(250);
       expect(
-        shifted.dateTime.microsecondsSinceEpoch - date.dateTime.microsecondsSinceEpoch,
+        shifted.dateTime.microsecondsSinceEpoch -
+            date.dateTime.microsecondsSinceEpoch,
         250,
       );
     });
@@ -71,7 +76,8 @@ void main() {
       final date = _immutable('2030-05-01T00:00:00Z');
       final shifted = date.subUTCMicroseconds(1);
       expect(
-        date.dateTime.microsecondsSinceEpoch - shifted.dateTime.microsecondsSinceEpoch,
+        date.dateTime.microsecondsSinceEpoch -
+            shifted.dateTime.microsecondsSinceEpoch,
         1,
       );
     });

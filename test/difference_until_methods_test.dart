@@ -36,14 +36,40 @@ void main() {
     });
 
     test('diffInMinutes between dates', () {
-      final date1 = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30);
-      final date2 = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 45);
+      final date1 = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+      );
+      final date2 = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 45,
+      );
       expect(date2.diffInMinutes(date1), 15);
     });
 
     test('diffInSeconds between dates', () {
-      final date1 = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 35, second: 30);
-      final date2 = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 35, second: 42);
+      final date1 = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 35,
+        second: 30,
+      );
+      final date2 = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 35,
+        second: 42,
+      );
       expect(date2.diffInSeconds(date1), 12);
     });
   });
@@ -52,7 +78,7 @@ void main() {
     test('diffInDays is absolute regardless of direction', () {
       final date1 = Carbon.create(year: 2020, month: 3, day: 15);
       final date2 = Carbon.create(year: 2020, month: 3, day: 20);
-      
+
       expect(date2.diffInDays(date1), 5);
       expect(date1.diffInDays(date2), 5);
     });
@@ -60,7 +86,7 @@ void main() {
     test('diffInYears handles negative differences', () {
       final date1 = Carbon.create(year: 2020, month: 1, day: 1);
       final date2 = Carbon.create(year: 2023, month: 1, day: 1);
-      
+
       expect(date1.diffInYears(date2), 3);
     });
   });
@@ -95,14 +121,40 @@ void main() {
     });
 
     test('minutesUntil calculates minutes to target', () {
-      final base = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30);
-      final target = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 45);
+      final base = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+      );
+      final target = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 45,
+      );
       expect(periodSpan(base.minutesUntil(target)), 15);
     });
 
     test('secondsUntil calculates seconds to target', () {
-      final base = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 35, second: 30);
-      final target = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 35, second: 42);
+      final base = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 35,
+        second: 30,
+      );
+      final target = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 35,
+        second: 42,
+      );
       expect(periodSpan(base.secondsUntil(target)), 12);
     });
   });
@@ -142,7 +194,13 @@ void main() {
 
     test('diffInHours handles partial hours', () {
       final date1 = Carbon.create(year: 2020, month: 3, day: 15, hour: 10);
-      final date2 = Carbon.create(year: 2020, month: 3, day: 15, hour: 14, minute: 30);
+      final date2 = Carbon.create(
+        year: 2020,
+        month: 3,
+        day: 15,
+        hour: 14,
+        minute: 30,
+      );
       expect(date2.diffInHours(date1) >= 4, true);
     });
   });

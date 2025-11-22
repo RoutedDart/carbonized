@@ -90,28 +90,44 @@ void main() {
 
     group('decade overflow handling', () {
       test('addDecadeNoOverflow preserves day on leap year boundary', () {
-        final date = Carbon.create(year: 2016, month: 2, day: 29).addDecadeNoOverflow();
+        final date = Carbon.create(
+          year: 2016,
+          month: 2,
+          day: 29,
+        ).addDecadeNoOverflow();
         expect(date.year, 2026);
         expect(date.month, 2);
         expect(date.day, 28);
       });
 
       test('addDecadeWithOverflow overflows day on leap year boundary', () {
-        final date = Carbon.create(year: 2016, month: 2, day: 29).addDecadeWithOverflow();
+        final date = Carbon.create(
+          year: 2016,
+          month: 2,
+          day: 29,
+        ).addDecadeWithOverflow();
         expect(date.year, 2026);
         expect(date.month, 3);
         expect(date.day, 1);
       });
 
       test('addDecadesNoOverflow with multiple decades', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addDecadesNoOverflow(3);
+        final date = Carbon.create(
+          year: 2000,
+          month: 2,
+          day: 29,
+        ).addDecadesNoOverflow(3);
         expect(date.year, 2030);
         expect(date.month, 2);
         expect(date.day, 28);
       });
 
       test('addDecadesWithOverflow with multiple decades', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addDecadesWithOverflow(3);
+        final date = Carbon.create(
+          year: 2000,
+          month: 2,
+          day: 29,
+        ).addDecadesWithOverflow(3);
         expect(date.year, 2030);
         expect(date.month, 3);
         expect(date.day, 1);
@@ -163,19 +179,33 @@ void main() {
     });
 
     group('century overflow handling', () {
-      test('addCenturyNoOverflow preserves day when target century drops leap day', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addCenturyNoOverflow();
-        expect(date.year, 2100);
-        expect(date.month, 2);
-        expect(date.day, 28);
-      });
+      test(
+        'addCenturyNoOverflow preserves day when target century drops leap day',
+        () {
+          final date = Carbon.create(
+            year: 2000,
+            month: 2,
+            day: 29,
+          ).addCenturyNoOverflow();
+          expect(date.year, 2100);
+          expect(date.month, 2);
+          expect(date.day, 28);
+        },
+      );
 
-      test('addCenturyWithOverflow spills into next month when target century drops leap day', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addCenturyWithOverflow();
-        expect(date.year, 2100);
-        expect(date.month, 3);
-        expect(date.day, 1);
-      });
+      test(
+        'addCenturyWithOverflow spills into next month when target century drops leap day',
+        () {
+          final date = Carbon.create(
+            year: 2000,
+            month: 2,
+            day: 29,
+          ).addCenturyWithOverflow();
+          expect(date.year, 2100);
+          expect(date.month, 3);
+          expect(date.day, 1);
+        },
+      );
     });
   });
 
@@ -233,19 +263,33 @@ void main() {
     });
 
     group('millennium overflow handling', () {
-      test('addMillenniumNoOverflow preserves day when target millennium drops leap day', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addMillenniumNoOverflow();
-        expect(date.year, 3000);
-        expect(date.month, 2);
-        expect(date.day, 28);
-      });
+      test(
+        'addMillenniumNoOverflow preserves day when target millennium drops leap day',
+        () {
+          final date = Carbon.create(
+            year: 2000,
+            month: 2,
+            day: 29,
+          ).addMillenniumNoOverflow();
+          expect(date.year, 3000);
+          expect(date.month, 2);
+          expect(date.day, 28);
+        },
+      );
 
-      test('addMillenniumWithOverflow overflows day when target millennium drops leap day', () {
-        final date = Carbon.create(year: 2000, month: 2, day: 29).addMillenniumWithOverflow();
-        expect(date.year, 3000);
-        expect(date.month, 3);
-        expect(date.day, 1);
-      });
+      test(
+        'addMillenniumWithOverflow overflows day when target millennium drops leap day',
+        () {
+          final date = Carbon.create(
+            year: 2000,
+            month: 2,
+            day: 29,
+          ).addMillenniumWithOverflow();
+          expect(date.year, 3000);
+          expect(date.month, 3);
+          expect(date.day, 1);
+        },
+      );
     });
   });
 

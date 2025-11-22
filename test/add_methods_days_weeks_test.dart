@@ -21,14 +21,22 @@ void main() {
     });
 
     test('addDay adds one day', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 5, day: 31);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 5,
+        day: 31,
+      );
       final date = carbon.addDay();
       expect(date.day, 1);
       expect(date.month, 6);
     });
 
     test('addDay with explicit count', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 5, day: 10);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 5,
+        day: 10,
+      );
       final date = carbon.addDay(2);
       expect(date.day, 12);
     });
@@ -59,7 +67,11 @@ void main() {
     });
 
     test('subDay subtracts one day', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 6, day: 1);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 6,
+        day: 1,
+      );
       final date = carbon.subDay();
       expect(date.day, 31);
       expect(date.month, 5);
@@ -83,13 +95,21 @@ void main() {
     });
 
     test('addWeek adds one week', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 5, day: 21);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 5,
+        day: 21,
+      );
       final date = carbon.addWeek();
       expect(date.day, 28);
     });
 
     test('addWeek with explicit count', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 5, day: 21);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 5,
+        day: 21,
+      );
       final date = carbon.addWeek(2);
       expect(date.day, 4);
       expect(date.month, 6);
@@ -120,7 +140,11 @@ void main() {
     });
 
     test('subWeek subtracts one week', () {
-      final CarbonInterface carbon = Carbon.create(year: 1975, month: 5, day: 28);
+      final CarbonInterface carbon = Carbon.create(
+        year: 1975,
+        month: 5,
+        day: 28,
+      );
       final date = carbon.subWeek();
       expect(date.day, 21);
     });
@@ -145,26 +169,42 @@ void main() {
     });
 
     test('addWeekdays with zero', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 4);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 4,
+      );
       final date = carbon.addWeekdays(0);
       expect(date.day, 4);
     });
 
     test('addWeekdays with negative value', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 31);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 31,
+      );
       final date = carbon.addWeekdays(-9);
       expect(date.day, 18);
     });
 
     test('addWeekday adds one weekday', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 6);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 6,
+      );
       final date = carbon.addWeekday();
       expect(date.day, 9);
     });
 
     test('addWeekday skips weekend', () {
       // 2012-01-07 is Saturday
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 7);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 7,
+      );
       final date = carbon.addWeekday();
       expect(date.day, 9); // Skip to Monday
     });
@@ -172,25 +212,41 @@ void main() {
 
   group('Carbon.sub - weekdays', () {
     test('subWeekdays with positive value skips weekends', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 31);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 31,
+      );
       final date = carbon.subWeekdays(9);
       expect(date.day, 18);
     });
 
     test('subWeekdays with zero', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 31);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 31,
+      );
       final date = carbon.subWeekdays(0);
       expect(date.day, 31);
     });
 
     test('subWeekdays with negative value', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 4);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 4,
+      );
       final date = carbon.subWeekdays(-9);
       expect(date.day, 17);
     });
 
     test('subWeekday subtracts one weekday', () {
-      final CarbonInterface carbon = Carbon.create(year: 2012, month: 1, day: 6);
+      final CarbonInterface carbon = Carbon.create(
+        year: 2012,
+        month: 1,
+        day: 6,
+      );
       final date = carbon.subWeekday();
       expect(date.day, 5);
     });

@@ -5,20 +5,42 @@ void main() {
   group('Carbon rounding - ceil', () {
     group('ceil by time units', () {
       test('ceilSecond rounds up to next second', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45, millisecond: 500, microsecond: 0);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+          millisecond: 500,
+          microsecond: 0,
+        );
         final result = date.ceilSecond();
         expect(result.second, 46);
       });
 
       test('ceilMinute rounds up to next minute', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+        );
         final result = date.ceilMinute();
         expect(result.minute, 31);
         expect(result.second, 0);
       });
 
       test('ceilHour rounds up to next hour', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+        );
         final result = date.ceilHour();
         expect(result.hour, 13);
         expect(result.minute, 0);
@@ -77,13 +99,31 @@ void main() {
 
     group('ceil milliseconds/microseconds', () {
       test('ceilMillisecond rounds up', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 500, microsecond: 0);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 500,
+          microsecond: 0,
+        );
         final result = date.ceilMillisecond();
         expect(result.millisecond, 501);
       });
 
       test('ceilMicrosecond rounds up', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 500);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+          microsecond: 500,
+        );
         final result = date.ceilMicrosecond();
         expect(result.microsecond, 501);
       });
@@ -93,21 +133,43 @@ void main() {
   group('Carbon rounding - floor', () {
     group('floor by time units', () {
       test('floorSecond rounds down to second', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45, millisecond: 500, microsecond: 0);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+          millisecond: 500,
+          microsecond: 0,
+        );
         final result = date.floorSecond();
         expect(result.second, 45);
         expect(result.millisecond, 0);
       });
 
       test('floorMinute rounds down to minute', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+        );
         final result = date.floorMinute();
         expect(result.minute, 30);
         expect(result.second, 0);
       });
 
       test('floorHour rounds down to hour', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+        );
         final result = date.floorHour();
         expect(result.hour, 12);
         expect(result.minute, 0);
@@ -167,13 +229,31 @@ void main() {
 
     group('floor milliseconds/microseconds', () {
       test('floorMillisecond rounds down', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 500, microsecond: 0);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 500,
+          microsecond: 0,
+        );
         final result = date.floorMillisecond();
         expect(result.millisecond, 500);
       });
 
       test('floorMicrosecond rounds down', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 500);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+          microsecond: 500,
+        );
         final result = date.floorMicrosecond();
         expect(result.microsecond, 500);
       });
@@ -183,19 +263,41 @@ void main() {
   group('Carbon rounding - round', () {
     group('round by time units', () {
       test('roundSecond rounds to nearest second', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45, millisecond: 500, microsecond: 0);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+          millisecond: 500,
+          microsecond: 0,
+        );
         final result = date.roundSecond();
         expect(result.second, 46);
       });
 
       test('roundMinute rounds to nearest minute', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30, second: 45);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+          second: 45,
+        );
         final result = date.roundMinute();
         expect(result.minute, 31);
       });
 
       test('roundHour rounds to nearest hour', () {
-        final date = Carbon.create(year: 2020, month: 1, day: 1, hour: 12, minute: 30);
+        final date = Carbon.create(
+          year: 2020,
+          month: 1,
+          day: 1,
+          hour: 12,
+          minute: 30,
+        );
         final result = date.roundHour();
         expect(result.hour, 13);
       });

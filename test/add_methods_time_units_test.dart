@@ -50,7 +50,12 @@ void main() {
     });
 
     test('addHours across day boundary', () {
-      final date = Carbon.create(year: 2020, month: 1, day: 15, hour: 22).addHours(5);
+      final date = Carbon.create(
+        year: 2020,
+        month: 1,
+        day: 15,
+        hour: 22,
+      ).addHours(5);
       expect(date.hour, 3);
       expect(date.day, 16);
     });

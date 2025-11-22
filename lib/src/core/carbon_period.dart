@@ -85,14 +85,16 @@ class CarbonPeriod extends Iterable<Carbon> {
       final name = _symbolToString(invocation.memberName);
       final macro = _macros[name];
       if (macro != null) {
-        return macro(this, invocation.positionalArguments, invocation.namedArguments);
+        return macro(
+          this,
+          invocation.positionalArguments,
+          invocation.namedArguments,
+        );
       }
     }
     return super.noSuchMethod(invocation);
   }
 
-  static String _symbolToString(Symbol symbol) => symbol
-      .toString()
-      .replaceAll('Symbol("', '')
-      .replaceAll('")', '');
+  static String _symbolToString(Symbol symbol) =>
+      symbol.toString().replaceAll('Symbol("', '').replaceAll('")', '');
 }
