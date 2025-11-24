@@ -8,6 +8,9 @@ import 'dart:math' as math;
 
 import 'package:clock/clock.dart';
 import 'package:intl/intl.dart';
+
+// Import generated locales first
+import 'core/locales/generated/all_generated.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:time_machine/time_machine.dart' as tm;
 
@@ -33,3 +36,6 @@ part 'core/carbon_factory.dart';
 part 'core/carbon_test_support.dart';
 part 'core/iso_format.dart';
 part 'core/carbon_translator.dart';
+part 'core/carbon_locale_data.dart';
+part 'core/carbon_lookup_messages.dart';
+part 'core/locales/all_locales.dart';

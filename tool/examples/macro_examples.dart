@@ -37,7 +37,11 @@ Carbon.registerMacro('businessEndOfWeek', (carbon, positionalArguments, namedArg
 /// Demonstrates registering and invoking a macro.
 Future<ExampleRun> runMacroExample() async {
   await _bootstrap();
-  Carbon.registerMacro('businessEndOfWeek', (carbon, positionalArguments, namedArguments) {
+  Carbon.registerMacro('businessEndOfWeek', (
+    carbon,
+    positionalArguments,
+    namedArguments,
+  ) {
     final date = carbon.copy()..nextWeekday();
     return date.endOfWeek();
   });

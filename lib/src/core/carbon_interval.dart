@@ -17,7 +17,24 @@ class CarbonInterval {
   static bool hasMacro(String name) => _macros.containsKey(name);
   static void resetMacros() => _macros.clear();
 
-  const CarbonInterval._({this.monthSpan = 0, this.microseconds = 0});
+  /// Sets the global default locale for Carbon operations.
+  static void setLocale(String locale) => CarbonBase.setDefaultLocale(locale);
+
+  /// Gets the current global default locale.
+  static String getLocale() => CarbonBase.defaultLocale;
+
+  /// Sets the fallback locale for the default locale.
+  static void setFallbackLocale(String locale) =>
+      CarbonTranslator.setFallbackLocale(locale);
+
+  /// Gets the fallback locale for the default locale.
+  static String? getFallbackLocale() => CarbonTranslator.getFallbackLocale();
+
+  CarbonInterval._({
+    this.monthSpan = 0,
+    this.microseconds = 0,
+    String? locale,
+  }) : _locale = locale ?? CarbonBase.defaultLocale;
 
   /// Invokes a registered macro by [name] for this interval.
   dynamic carbon(
@@ -40,6 +57,19 @@ class CarbonInterval {
 
   /// Additional microseconds represented by the interval.
   final int microseconds;
+
+  /// The locale code for this interval instance.
+  final String _locale;
+
+  /// Gets the locale code for this interval instance.
+  String get localeCode => _locale;
+
+  /// Creates a new CarbonInterval with the specified locale.
+  CarbonInterval locale(String locale) => CarbonInterval._(
+        monthSpan: monthSpan,
+        microseconds: microseconds,
+        locale: locale,
+      );
 
   /// Total days approximated by treating months as 30 days.
   double get totalDays =>
@@ -157,39 +187,89 @@ class CarbonInterval {
     microseconds: microseconds,
   );
 
-  Duration _toDurationApprox() {
-    const microsecondsPerMonth = 30 * Duration.microsecondsPerDay;
-    return Duration(
-      microseconds: microseconds + monthSpan * microsecondsPerMonth,
-    );
-  }
-
   /// Returns a human-readable label for this interval.
   ///
-  /// Uses the same translator + `timeago` helpers as [Carbon.diffForHumans].
+  /// Mirrors PHP `CarbonInterval::forHumans()`.
+  /// Produces a duration string like "3 days 5 hours" instead of relative time.
   String forHumans({
     String? locale,
     bool short = false,
-    bool absolute = false,
+    bool absolute =
+        false, // Kept for API compatibility, but ignored for duration formatting
+    int parts = -1, // Number of parts to show (default all)
+    String joiner = ' ',
   }) {
-    final resolvedLocale = CarbonTranslator.matchLocale(
-      locale ?? CarbonBase.defaultLocale,
-    ).locale;
-    CarbonTranslator.ensureTimeagoLocale(resolvedLocale);
-    final now = clock.now().toUtc();
-    final target = absolute
-        ? now.add(_toDurationApprox())
-        : now.add(_toDurationApprox());
-    final formatted = timeago.format(
-      target,
-      locale: resolvedLocale,
-      allowFromNow: !absolute,
-      clock: now,
+    final localeData = CarbonTranslator.matchLocale(
+      locale ?? _locale,
     );
-    return CarbonTranslator.translateTimeString(
-      formatted,
-      locale: resolvedLocale,
-    );
+    final code = localeData.localeCode;
+
+    // Decompose interval
+    final years = monthSpan ~/ 12;
+    final months = monthSpan % 12;
+
+    var remainingMicros = microseconds;
+    final days = remainingMicros ~/ Duration.microsecondsPerDay;
+    remainingMicros %= Duration.microsecondsPerDay;
+
+    final hours = remainingMicros ~/ Duration.microsecondsPerHour;
+    remainingMicros %= Duration.microsecondsPerHour;
+
+    final minutes = remainingMicros ~/ Duration.microsecondsPerMinute;
+    remainingMicros %= Duration.microsecondsPerMinute;
+
+    final seconds = remainingMicros ~/ Duration.microsecondsPerSecond;
+
+    final segments = <String>[];
+
+    void addSegment(String unit, int count) {
+      if (count == 0) return;
+      final key = short ? _shortUnit(unit) : unit;
+      segments.add(CarbonTranslator.translateUnit(key, count, locale: code));
+    }
+
+    addSegment('year', years);
+    addSegment('month', months);
+    // Weeks are usually converted to days in standard cascade, but if we wanted weeks we'd need extra logic.
+    // PHP CarbonInterval cascade usually goes Year > Month > Day > Hour...
+    addSegment('day', days);
+    addSegment('hour', hours);
+    addSegment('minute', minutes);
+    addSegment('second', seconds);
+
+    if (segments.isEmpty) {
+      // If empty, it's zero. Return "0 seconds" (or short equivalent)
+      final key = short ? 's' : 'second';
+      return CarbonTranslator.translateUnit(key, 0, locale: code);
+    }
+
+    var resultSegments = segments;
+    if (parts > 0 && segments.length > parts) {
+      resultSegments = segments.sublist(0, parts);
+    }
+
+    return resultSegments.join(joiner);
+  }
+
+  String _shortUnit(String unit) {
+    switch (unit) {
+      case 'year':
+        return 'y';
+      case 'month':
+        return 'm';
+      case 'week':
+        return 'w';
+      case 'day':
+        return 'd';
+      case 'hour':
+        return 'h';
+      case 'minute':
+        return 'min';
+      case 'second':
+        return 's';
+      default:
+        return unit;
+    }
   }
 
   int compareTo(CarbonInterval other) {

@@ -373,13 +373,13 @@ final class _IsoFormatter {
       case 'Q':
         return _quarter.toString();
       case 'Qo':
-        return _ordinal(_quarter, _carbon.localeCode);
+        return _ordinal(_quarter, 'Q', _carbon.localeCode);
       case 'M':
         return _carbon.month.toString();
       case 'MM':
         return _twoDigits(_carbon.month);
       case 'Mo':
-        return _ordinal(_carbon.month, _carbon.localeCode);
+        return _ordinal(_carbon.month, 'M', _carbon.localeCode);
       case 'MMM':
         return _localizedMonthShortName(_carbon.localeCode, _carbon.month);
       case 'MMMM':
@@ -402,7 +402,7 @@ final class _IsoFormatter {
       case 't':
         return _carbon.daysInMonth.toString();
       case 'Do':
-        return _ordinal(_carbon.day, _carbon.localeCode);
+        return _ordinal(_carbon.day, 'D', _carbon.localeCode);
       case 'ddd':
         return _localizedWeekdayShortName(_carbon.localeCode, local.weekday);
       case 'dddd':
@@ -418,7 +418,7 @@ final class _IsoFormatter {
       case 'ww':
         return _localeWeek().toString().padLeft(2, '0');
       case 'wo':
-        return _ordinal(_localeWeek(), _carbon.localeCode);
+        return _ordinal(_localeWeek(), 'w', _carbon.localeCode);
       case 'z':
         return (_carbon.dayOfYear - 1).toString();
       case 'o':
@@ -518,6 +518,14 @@ final class _IsoFormatter {
     if (overridePattern != null) {
       return DateFormat(overridePattern, locale).format(local);
     }
+
+    // Check CarbonLocaleData formats
+    final data = CarbonTranslator.matchLocale(locale);
+    final formatPattern = data.formats[token];
+    if (formatPattern != null) {
+      return format(formatPattern);
+    }
+
     final formatter = _presetFormatters[token];
     if (formatter != null) {
       return formatter(local, locale);
@@ -770,12 +778,12 @@ const Map<String, Map<String, String>> _localePresetOverrides = {
   },
 };
 
-String _ordinal(int value, String locale) {
-  final lower = locale.toLowerCase();
-  if (lower.startsWith('fr')) {
-    final suffix = value == 1 ? 'er' : 'e';
-    return '$value$suffix';
+String _ordinal(int value, String period, String locale) {
+  final data = CarbonTranslator.matchLocale(locale);
+  if (data.ordinal != null) {
+    return data.ordinal!(value, period);
   }
+  // Default English ordinal logic
   final special = value % 100;
   if (special >= 11 && special <= 13) {
     return '${value}th';

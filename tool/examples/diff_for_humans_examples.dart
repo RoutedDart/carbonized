@@ -99,7 +99,8 @@ Future<void> main() async {
 
   CarbonTranslator.registerLocale(
     'fr',
-    CarbonTranslation(
+    CarbonLocaleData(
+      localeCode: 'fr',
       timeStrings: {
         'ago': 'il y a',
         'from now': "d'ici",
@@ -122,7 +123,8 @@ Future<ExampleRun> runLocalizedHumanReadableExample() async {
 
   CarbonTranslator.registerLocale(
     'fr',
-    CarbonTranslation(
+    CarbonLocaleData(
+      localeCode: 'fr',
       timeStrings: {'ago': 'il y a', 'from now': "d'ici", 'in ': 'dans '},
       timeagoMessages: timeago.FrMessages(),
     ),

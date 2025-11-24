@@ -1,0 +1,89 @@
+{
+    "translationStrings": {
+        "year": ":count voros|:count vorsam",
+        "y": ":countv",
+        "month": ":count mhoino|:count mhoine",
+        "m": ":countmh",
+        "week": ":count satolleacho|:count satolleache",
+        "w": ":countsa|:countsa",
+        "day": ":count dis",
+        "d": ":countd",
+        "hour": ":count hor|:count horam",
+        "h": ":counth",
+        "minute": ":count minute|:count mintam",
+        "min": ":countm",
+        "second": ":count second",
+        "s": ":counts",
+        "diff_today": "Aiz",
+        "diff_yesterday": "Kal",
+        "diff_tomorrow": "Faleam"
+    },
+    "formats": {
+        "LT": "A h:mm [vazta]",
+        "LTS": "A h:mm:ss [vazta]",
+        "L": "DD-MM-YYYY",
+        "LL": "D MMMM YYYY",
+        "LLL": "D MMMM YYYY A h:mm [vazta]",
+        "LLLL": "dddd, MMMM[achea] Do, YYYY, A h:mm [vazta]",
+        "llll": "ddd, D MMM YYYY, A h:mm [vazta]"
+    },
+    "months": [
+        "Janer",
+        "Febrer",
+        "Mars",
+        "Abril",
+        "Mai",
+        "Jun",
+        "Julai",
+        "Agost",
+        "Setembr",
+        "Otubr",
+        "Novembr",
+        "Dezembr"
+    ],
+    "monthsShort": [
+        "Jan.",
+        "Feb.",
+        "Mars",
+        "Abr.",
+        "Mai",
+        "Jun",
+        "Jul.",
+        "Ago.",
+        "Set.",
+        "Otu.",
+        "Nov.",
+        "Dez."
+    ],
+    "weekdays": [
+        "Aitar",
+        "Somar",
+        "Mongllar",
+        "Budvar",
+        "Brestar",
+        "Sukrar",
+        "Son'var"
+    ],
+    "weekdaysShort": [
+        "Ait.",
+        "Som.",
+        "Mon.",
+        "Bud.",
+        "Bre.",
+        "Suk.",
+        "Son."
+    ],
+    "weekdaysMin": [
+        "Ai",
+        "Sm",
+        "Mo",
+        "Bu",
+        "Br",
+        "Su",
+        "Sn"
+    ],
+    "firstDayOfWeek": 1,
+    "dayOfFirstWeekOfYear": 4,
+    "ordinal_function": "    return '${number}${(period == 'D' ? 'er' : '')}';\n",
+    "meridiem_function": "    if (hour < 4) {\n      return 'rati';\n    }\n    if (hour < 12) {\n      return 'sokalli';\n    }\n    if (hour < 16) {\n      return 'donparam';\n    }\n    if (hour < 20) {\n      return 'sanje';\n    }\n    return 'rati';\n"
+}

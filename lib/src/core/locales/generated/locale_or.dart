@@ -1,0 +1,99 @@
+// AUTO-GENERATED from PHP Carbon locale: or
+// Do not edit - changes will be overwritten
+
+import 'package:carbon/carbon.dart';
+
+const CarbonLocaleData localeOr = CarbonLocaleData(
+  localeCode: 'or',
+  translationStrings: {
+    'diff_now': 'ବର୍ତ୍ତମାନ',
+    'diff_yesterday': 'ଗତକାଲି',
+    'diff_tomorrow': 'ଆସନ୍ତାକାଲି',
+    'year': ':count ବର୍ଷ',
+    'y': ':count ବ.',
+    'month': ':count ମାସ',
+    'm': ':count ମା.',
+    'week': ':count ସପ୍ତାହ',
+    'w': ':count ସପ୍ତା.',
+    'day': ':count ଦିନ',
+    'd': ':count ଦିନ',
+    'hour': ':count ଘଣ୍ତ',
+    'h': ':count ଘ.',
+    'minute': ':count ମିନଟ',
+    'min': ':count ମି.',
+    'second': ':count ସେକଣ୍ଢ',
+    's': ':count ସେ.',
+    'ago': ':time ପୂର୍ବେ',
+    'from_now': ':timeରେ',
+  },
+  formats: {
+    'LT': 'Oh:Om A',
+    'LTS': 'Oh:Om:Os A',
+    'L': 'OD-OM-OY',
+    'LL': 'OD MMMM OY',
+    'LLL': 'OD MMMM OY Oh:Om A',
+    'LLLL': 'dddd OD MMMM OY Oh:Om A',
+  },
+  months: [
+    'ଜାନୁଆରୀ',
+    'ଫେବୃଆରୀ',
+    'ମାର୍ଚ୍ଚ',
+    'ଅପ୍ରେଲ',
+    'ମଇ',
+    'ଜୁନ',
+    'ଜୁଲାଇ',
+    'ଅଗଷ୍ଟ',
+    'ସେପ୍ଟେମ୍ବର',
+    'ଅକ୍ଟୋବର',
+    'ନଭେମ୍ବର',
+    'ଡିସେମ୍ବର',
+  ],
+  monthsShort: [
+    'ଜାନୁଆରୀ',
+    'ଫେବୃଆରୀ',
+    'ମାର୍ଚ୍ଚ',
+    'ଅପ୍ରେଲ',
+    'ମଇ',
+    'ଜୁନ',
+    'ଜୁଲାଇ',
+    'ଅଗଷ୍ଟ',
+    'ସେପ୍ଟେମ୍ବର',
+    'ଅକ୍ଟୋବର',
+    'ନଭେମ୍ବର',
+    'ଡିସେମ୍ବର',
+  ],
+  weekdays: [
+    'ରବିବାର',
+    'ସୋମବାର',
+    'ମଙ୍ଗଳବାର',
+    'ବୁଧବାର',
+    'ଗୁରୁବାର',
+    'ଶୁକ୍ରବାର',
+    'ଶନିବାର',
+  ],
+  weekdaysShort: [
+    'ରବି',
+    'ସୋମ',
+    'ମଙ୍ଗଳ',
+    'ବୁଧ',
+    'ଗୁରୁ',
+    'ଶୁକ୍ର',
+    'ଶନି',
+  ],
+  weekdaysMin: [
+    'ରବି',
+    'ସୋମ',
+    'ମଙ୍ଗଳ',
+    'ବୁଧ',
+    'ଗୁରୁ',
+    'ଶୁକ୍ର',
+    'ଶନି',
+  ],
+  dayOfFirstWeekOfYear: 1,
+);
+
+// Regional variant: or_IN
+final CarbonLocaleData localeOrIn = localeOr.copyWith(
+  localeCode: 'or_in',
+);
+

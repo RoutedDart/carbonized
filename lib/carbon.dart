@@ -50,5 +50,6 @@ export 'src/carbon.dart'
         CarbonUnreachableException,
         CarbonFactory,
         CarbonTranslator,
-        CarbonTranslation,
-        CarbonTestSubclass;
+        CarbonLocaleData,
+        CarbonTestSubclass,
+        allLocales;

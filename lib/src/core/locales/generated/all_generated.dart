@@ -1,0 +1,1104 @@
+// AUTO-GENERATED - Do not edit
+// This file imports all generated locales and builds the allLocales map
+
+import 'package:carbon/carbon.dart';
+
+import 'locale_aa.dart';
+import 'locale_af.dart';
+import 'locale_agq.dart';
+import 'locale_agr.dart';
+import 'locale_ak.dart';
+import 'locale_am.dart';
+import 'locale_an.dart';
+import 'locale_anp.dart';
+import 'locale_ar.dart';
+import 'locale_as.dart';
+import 'locale_asa.dart';
+import 'locale_ast.dart';
+import 'locale_ayc.dart';
+import 'locale_az.dart';
+import 'locale_bas.dart';
+import 'locale_be.dart';
+import 'locale_bem.dart';
+import 'locale_ber.dart';
+import 'locale_bez.dart';
+import 'locale_bg.dart';
+import 'locale_bhb.dart';
+import 'locale_bho.dart';
+import 'locale_bi.dart';
+import 'locale_bm.dart';
+import 'locale_bn.dart';
+import 'locale_bo.dart';
+import 'locale_br.dart';
+import 'locale_brx.dart';
+import 'locale_bs.dart';
+import 'locale_byn.dart';
+import 'locale_ca.dart';
+import 'locale_ccp.dart';
+import 'locale_ce.dart';
+import 'locale_cgg.dart';
+import 'locale_chr.dart';
+import 'locale_ckb.dart';
+import 'locale_cmn.dart';
+import 'locale_crh.dart';
+import 'locale_cs.dart';
+import 'locale_csb.dart';
+import 'locale_cu.dart';
+import 'locale_cv.dart';
+import 'locale_cy.dart';
+import 'locale_da.dart';
+import 'locale_dav.dart';
+import 'locale_de.dart';
+import 'locale_dje.dart';
+import 'locale_doi.dart';
+import 'locale_dsb.dart';
+import 'locale_dua.dart';
+import 'locale_dv.dart';
+import 'locale_dyo.dart';
+import 'locale_dz.dart';
+import 'locale_ebu.dart';
+import 'locale_ee.dart';
+import 'locale_el.dart';
+import 'locale_en.dart';
+import 'locale_eo.dart';
+import 'locale_es.dart';
+import 'locale_et.dart';
+import 'locale_eu.dart';
+import 'locale_ewo.dart';
+import 'locale_fa.dart';
+import 'locale_ff.dart';
+import 'locale_fi.dart';
+import 'locale_fil.dart';
+import 'locale_fo.dart';
+import 'locale_fr.dart';
+import 'locale_fur.dart';
+import 'locale_fy.dart';
+import 'locale_ga.dart';
+import 'locale_gd.dart';
+import 'locale_gez.dart';
+import 'locale_gl.dart';
+import 'locale_gom.dart';
+import 'locale_gsw.dart';
+import 'locale_gu.dart';
+import 'locale_guz.dart';
+import 'locale_gv.dart';
+import 'locale_ha.dart';
+import 'locale_hak.dart';
+import 'locale_haw.dart';
+import 'locale_he.dart';
+import 'locale_hi.dart';
+import 'locale_hif.dart';
+import 'locale_hne.dart';
+import 'locale_hr.dart';
+import 'locale_hsb.dart';
+import 'locale_ht.dart';
+import 'locale_hu.dart';
+import 'locale_hy.dart';
+import 'locale_i18n.dart';
+import 'locale_ia.dart';
+import 'locale_id.dart';
+import 'locale_ig.dart';
+import 'locale_ii.dart';
+import 'locale_ik.dart';
+import 'locale_in.dart';
+import 'locale_is.dart';
+import 'locale_it.dart';
+import 'locale_iu.dart';
+import 'locale_iw.dart';
+import 'locale_ja.dart';
+import 'locale_jgo.dart';
+import 'locale_jmc.dart';
+import 'locale_jv.dart';
+import 'locale_ka.dart';
+import 'locale_kab.dart';
+import 'locale_kam.dart';
+import 'locale_kde.dart';
+import 'locale_kea.dart';
+import 'locale_khq.dart';
+import 'locale_ki.dart';
+import 'locale_kk.dart';
+import 'locale_kkj.dart';
+import 'locale_kl.dart';
+import 'locale_kln.dart';
+import 'locale_km.dart';
+import 'locale_kn.dart';
+import 'locale_ko.dart';
+import 'locale_kok.dart';
+import 'locale_ks.dart';
+import 'locale_ksb.dart';
+import 'locale_ksf.dart';
+import 'locale_ksh.dart';
+import 'locale_ku.dart';
+import 'locale_kw.dart';
+import 'locale_ky.dart';
+import 'locale_lag.dart';
+import 'locale_lb.dart';
+import 'locale_lg.dart';
+import 'locale_li.dart';
+import 'locale_lij.dart';
+import 'locale_lkt.dart';
+import 'locale_ln.dart';
+import 'locale_lo.dart';
+import 'locale_lrc.dart';
+import 'locale_lt.dart';
+import 'locale_lu.dart';
+import 'locale_luo.dart';
+import 'locale_luy.dart';
+import 'locale_lv.dart';
+import 'locale_lzh.dart';
+import 'locale_mag.dart';
+import 'locale_mai.dart';
+import 'locale_mas.dart';
+import 'locale_mer.dart';
+import 'locale_mfe.dart';
+import 'locale_mg.dart';
+import 'locale_mgh.dart';
+import 'locale_mgo.dart';
+import 'locale_mhr.dart';
+import 'locale_mi.dart';
+import 'locale_miq.dart';
+import 'locale_mjw.dart';
+import 'locale_mk.dart';
+import 'locale_ml.dart';
+import 'locale_mn.dart';
+import 'locale_mni.dart';
+import 'locale_mo.dart';
+import 'locale_mr.dart';
+import 'locale_ms.dart';
+import 'locale_mt.dart';
+import 'locale_mua.dart';
+import 'locale_my.dart';
+import 'locale_mzn.dart';
+import 'locale_nan.dart';
+import 'locale_naq.dart';
+import 'locale_nb.dart';
+import 'locale_nd.dart';
+import 'locale_nds.dart';
+import 'locale_ne.dart';
+import 'locale_nhn.dart';
+import 'locale_niu.dart';
+import 'locale_nl.dart';
+import 'locale_nmg.dart';
+import 'locale_nn.dart';
+import 'locale_nnh.dart';
+import 'locale_no.dart';
+import 'locale_nr.dart';
+import 'locale_nso.dart';
+import 'locale_nus.dart';
+import 'locale_nyn.dart';
+import 'locale_oc.dart';
+import 'locale_om.dart';
+import 'locale_or.dart';
+import 'locale_os.dart';
+import 'locale_pa.dart';
+import 'locale_pap.dart';
+import 'locale_pl.dart';
+import 'locale_prg.dart';
+import 'locale_ps.dart';
+import 'locale_pt.dart';
+import 'locale_qu.dart';
+import 'locale_quz.dart';
+import 'locale_raj.dart';
+import 'locale_rm.dart';
+import 'locale_rn.dart';
+import 'locale_ro.dart';
+import 'locale_rof.dart';
+import 'locale_ru.dart';
+import 'locale_rw.dart';
+import 'locale_rwk.dart';
+import 'locale_sa.dart';
+import 'locale_sah.dart';
+import 'locale_saq.dart';
+import 'locale_sat.dart';
+import 'locale_sbp.dart';
+import 'locale_sc.dart';
+import 'locale_sd.dart';
+import 'locale_se.dart';
+import 'locale_seh.dart';
+import 'locale_ses.dart';
+import 'locale_sg.dart';
+import 'locale_sgs.dart';
+import 'locale_sh.dart';
+import 'locale_shi.dart';
+import 'locale_shn.dart';
+import 'locale_shs.dart';
+import 'locale_si.dart';
+import 'locale_sid.dart';
+import 'locale_sk.dart';
+import 'locale_sl.dart';
+import 'locale_sm.dart';
+import 'locale_smn.dart';
+import 'locale_sn.dart';
+import 'locale_so.dart';
+import 'locale_sq.dart';
+import 'locale_sr.dart';
+import 'locale_ss.dart';
+import 'locale_st.dart';
+import 'locale_sv.dart';
+import 'locale_sw.dart';
+import 'locale_szl.dart';
+import 'locale_ta.dart';
+import 'locale_tcy.dart';
+import 'locale_te.dart';
+import 'locale_teo.dart';
+import 'locale_tet.dart';
+import 'locale_tg.dart';
+import 'locale_th.dart';
+import 'locale_the.dart';
+import 'locale_ti.dart';
+import 'locale_tig.dart';
+import 'locale_tk.dart';
+import 'locale_tl.dart';
+import 'locale_tlh.dart';
+import 'locale_tn.dart';
+import 'locale_to.dart';
+import 'locale_tpi.dart';
+import 'locale_tr.dart';
+import 'locale_ts.dart';
+import 'locale_tt.dart';
+import 'locale_twq.dart';
+import 'locale_tzl.dart';
+import 'locale_tzm.dart';
+import 'locale_ug.dart';
+import 'locale_uk.dart';
+import 'locale_unm.dart';
+import 'locale_ur.dart';
+import 'locale_uz.dart';
+import 'locale_vai.dart';
+import 'locale_ve.dart';
+import 'locale_vi.dart';
+import 'locale_vo.dart';
+import 'locale_vun.dart';
+import 'locale_wa.dart';
+import 'locale_wae.dart';
+import 'locale_wal.dart';
+import 'locale_wo.dart';
+import 'locale_xh.dart';
+import 'locale_xog.dart';
+import 'locale_yav.dart';
+import 'locale_yi.dart';
+import 'locale_yo.dart';
+import 'locale_yue.dart';
+import 'locale_yuw.dart';
+import 'locale_zgh.dart';
+import 'locale_zh.dart';
+import 'locale_zu.dart';
+
+// Map of all generated locales
+final Map<String, CarbonLocaleData> generatedLocales = {
+  'aa': localeAa,
+  'aa_dj': localeAaDj,
+  'aa_er': localeAaEr,
+  'aa_et': localeAaEt,
+  'af': localeAf,
+  'af_na': localeAfNa,
+  'af_za': localeAfZa,
+  'agq': localeAgq,
+  'agr': localeAgr,
+  'agr_pe': localeAgrPe,
+  'ak': localeAk,
+  'ak_gh': localeAkGh,
+  'am': localeAm,
+  'am_et': localeAmEt,
+  'an': localeAn,
+  'an_es': localeAnEs,
+  'anp': localeAnp,
+  'anp_in': localeAnpIn,
+  'ar': localeAr,
+  'ar_ae': localeArAe,
+  'ar_bh': localeArBh,
+  'ar_dj': localeArDj,
+  'ar_dz': localeArDz,
+  'ar_eg': localeArEg,
+  'ar_eh': localeArEh,
+  'ar_er': localeArEr,
+  'ar_il': localeArIl,
+  'ar_in': localeArIn,
+  'ar_iq': localeArIq,
+  'ar_jo': localeArJo,
+  'ar_km': localeArKm,
+  'ar_kw': localeArKw,
+  'ar_lb': localeArLb,
+  'ar_ly': localeArLy,
+  'ar_ma': localeArMa,
+  'ar_mr': localeArMr,
+  'ar_om': localeArOm,
+  'ar_ps': localeArPs,
+  'ar_qa': localeArQa,
+  'ar_sa': localeArSa,
+  'ar_sd': localeArSd,
+  'ar_so': localeArSo,
+  'ar_ss': localeArSs,
+  'ar_sy': localeArSy,
+  'ar_shakl': localeArShakl,
+  'ar_td': localeArTd,
+  'ar_tn': localeArTn,
+  'ar_ye': localeArYe,
+  'as': localeAs,
+  'as_in': localeAsIn,
+  'asa': localeAsa,
+  'ast': localeAst,
+  'ast_es': localeAstEs,
+  'ayc': localeAyc,
+  'ayc_pe': localeAycPe,
+  'az': localeAz,
+  'az_az': localeAzAz,
+  'az_cyrl': localeAzCyrl,
+  'az_ir': localeAzIr,
+  'az_latn': localeAzLatn,
+  'bas': localeBas,
+  'be': localeBe,
+  'be_by': localeBeBy,
+  'bem': localeBem,
+  'bem_zm': localeBemZm,
+  'ber': localeBer,
+  'ber_dz': localeBerDz,
+  'ber_ma': localeBerMa,
+  'bez': localeBez,
+  'bg': localeBg,
+  'bg_bg': localeBgBg,
+  'bhb': localeBhb,
+  'bhb_in': localeBhbIn,
+  'bho': localeBho,
+  'bho_in': localeBhoIn,
+  'bi': localeBi,
+  'bi_vu': localeBiVu,
+  'bm': localeBm,
+  'bn': localeBn,
+  'bn_bd': localeBnBd,
+  'bn_in': localeBnIn,
+  'bo': localeBo,
+  'bo_cn': localeBoCn,
+  'bo_in': localeBoIn,
+  'br': localeBr,
+  'br_fr': localeBrFr,
+  'brx': localeBrx,
+  'brx_in': localeBrxIn,
+  'bs': localeBs,
+  'bs_ba': localeBsBa,
+  'bs_cyrl': localeBsCyrl,
+  'bs_latn': localeBsLatn,
+  'byn': localeByn,
+  'byn_er': localeBynEr,
+  'ca': localeCa,
+  'ca_ad': localeCaAd,
+  'ca_es': localeCaEs,
+  'ca_es_valencia': localeCaEsValencia,
+  'ca_fr': localeCaFr,
+  'ca_it': localeCaIt,
+  'ccp': localeCcp,
+  'ccp_in': localeCcpIn,
+  'ce': localeCe,
+  'ce_ru': localeCeRu,
+  'cgg': localeCgg,
+  'chr': localeChr,
+  'chr_us': localeChrUs,
+  'ckb': localeCkb,
+  'cmn': localeCmn,
+  'cmn_tw': localeCmnTw,
+  'crh': localeCrh,
+  'crh_ua': localeCrhUa,
+  'cs': localeCs,
+  'cs_cz': localeCsCz,
+  'csb': localeCsb,
+  'csb_pl': localeCsbPl,
+  'cu': localeCu,
+  'cv': localeCv,
+  'cv_ru': localeCvRu,
+  'cy': localeCy,
+  'cy_gb': localeCyGb,
+  'da': localeDa,
+  'da_dk': localeDaDk,
+  'da_gl': localeDaGl,
+  'dav': localeDav,
+  'de': localeDe,
+  'de_at': localeDeAt,
+  'de_be': localeDeBe,
+  'de_ch': localeDeCh,
+  'de_de': localeDeDe,
+  'de_it': localeDeIt,
+  'de_li': localeDeLi,
+  'de_lu': localeDeLu,
+  'dje': localeDje,
+  'doi': localeDoi,
+  'doi_in': localeDoiIn,
+  'dsb': localeDsb,
+  'dsb_de': localeDsbDe,
+  'dua': localeDua,
+  'dv': localeDv,
+  'dv_mv': localeDvMv,
+  'dyo': localeDyo,
+  'dz': localeDz,
+  'dz_bt': localeDzBt,
+  'ebu': localeEbu,
+  'ee': localeEe,
+  'ee_tg': localeEeTg,
+  'el': localeEl,
+  'el_cy': localeElCy,
+  'el_gr': localeElGr,
+  'en': localeEn,
+  'en_001': localeEn001,
+  'en_150': localeEn150,
+  'en_ag': localeEnAg,
+  'en_ai': localeEnAi,
+  'en_as': localeEnAs,
+  'en_at': localeEnAt,
+  'en_au': localeEnAu,
+  'en_bb': localeEnBb,
+  'en_be': localeEnBe,
+  'en_bi': localeEnBi,
+  'en_bm': localeEnBm,
+  'en_bs': localeEnBs,
+  'en_bw': localeEnBw,
+  'en_bz': localeEnBz,
+  'en_ca': localeEnCa,
+  'en_cc': localeEnCc,
+  'en_ch': localeEnCh,
+  'en_ck': localeEnCk,
+  'en_cm': localeEnCm,
+  'en_cx': localeEnCx,
+  'en_cy': localeEnCy,
+  'en_de': localeEnDe,
+  'en_dg': localeEnDg,
+  'en_dk': localeEnDk,
+  'en_dm': localeEnDm,
+  'en_er': localeEnEr,
+  'en_fi': localeEnFi,
+  'en_fj': localeEnFj,
+  'en_fk': localeEnFk,
+  'en_fm': localeEnFm,
+  'en_gb': localeEnGb,
+  'en_gd': localeEnGd,
+  'en_gg': localeEnGg,
+  'en_gh': localeEnGh,
+  'en_gi': localeEnGi,
+  'en_gm': localeEnGm,
+  'en_gu': localeEnGu,
+  'en_gy': localeEnGy,
+  'en_hk': localeEnHk,
+  'en_ie': localeEnIe,
+  'en_il': localeEnIl,
+  'en_im': localeEnIm,
+  'en_in': localeEnIn,
+  'en_io': localeEnIo,
+  'en_iso': localeEnIso,
+  'en_je': localeEnJe,
+  'en_jm': localeEnJm,
+  'en_ke': localeEnKe,
+  'en_ki': localeEnKi,
+  'en_kn': localeEnKn,
+  'en_ky': localeEnKy,
+  'en_lc': localeEnLc,
+  'en_lr': localeEnLr,
+  'en_ls': localeEnLs,
+  'en_mg': localeEnMg,
+  'en_mh': localeEnMh,
+  'en_mo': localeEnMo,
+  'en_mp': localeEnMp,
+  'en_ms': localeEnMs,
+  'en_mt': localeEnMt,
+  'en_mu': localeEnMu,
+  'en_mw': localeEnMw,
+  'en_my': localeEnMy,
+  'en_na': localeEnNa,
+  'en_nf': localeEnNf,
+  'en_ng': localeEnNg,
+  'en_nl': localeEnNl,
+  'en_nr': localeEnNr,
+  'en_nu': localeEnNu,
+  'en_nz': localeEnNz,
+  'en_pg': localeEnPg,
+  'en_ph': localeEnPh,
+  'en_pk': localeEnPk,
+  'en_pn': localeEnPn,
+  'en_pr': localeEnPr,
+  'en_pw': localeEnPw,
+  'en_rw': localeEnRw,
+  'en_sb': localeEnSb,
+  'en_sc': localeEnSc,
+  'en_sd': localeEnSd,
+  'en_se': localeEnSe,
+  'en_sg': localeEnSg,
+  'en_sh': localeEnSh,
+  'en_si': localeEnSi,
+  'en_sl': localeEnSl,
+  'en_ss': localeEnSs,
+  'en_sx': localeEnSx,
+  'en_sz': localeEnSz,
+  'en_tc': localeEnTc,
+  'en_tk': localeEnTk,
+  'en_to': localeEnTo,
+  'en_tt': localeEnTt,
+  'en_tv': localeEnTv,
+  'en_tz': localeEnTz,
+  'en_ug': localeEnUg,
+  'en_um': localeEnUm,
+  'en_us': localeEnUs,
+  'en_us_posix': localeEnUsPosix,
+  'en_vc': localeEnVc,
+  'en_vg': localeEnVg,
+  'en_vi': localeEnVi,
+  'en_vu': localeEnVu,
+  'en_ws': localeEnWs,
+  'en_za': localeEnZa,
+  'en_zm': localeEnZm,
+  'en_zw': localeEnZw,
+  'eo': localeEo,
+  'es': localeEs,
+  'es_419': localeEs419,
+  'es_ar': localeEsAr,
+  'es_bo': localeEsBo,
+  'es_br': localeEsBr,
+  'es_bz': localeEsBz,
+  'es_cl': localeEsCl,
+  'es_co': localeEsCo,
+  'es_cr': localeEsCr,
+  'es_cu': localeEsCu,
+  'es_do': localeEsDo,
+  'es_ea': localeEsEa,
+  'es_ec': localeEsEc,
+  'es_es': localeEsEs,
+  'es_gq': localeEsGq,
+  'es_gt': localeEsGt,
+  'es_hn': localeEsHn,
+  'es_ic': localeEsIc,
+  'es_mx': localeEsMx,
+  'es_ni': localeEsNi,
+  'es_pa': localeEsPa,
+  'es_pe': localeEsPe,
+  'es_ph': localeEsPh,
+  'es_pr': localeEsPr,
+  'es_py': localeEsPy,
+  'es_sv': localeEsSv,
+  'es_us': localeEsUs,
+  'es_uy': localeEsUy,
+  'es_ve': localeEsVe,
+  'et': localeEt,
+  'et_ee': localeEtEe,
+  'eu': localeEu,
+  'eu_es': localeEuEs,
+  'ewo': localeEwo,
+  'fa': localeFa,
+  'fa_af': localeFaAf,
+  'fa_ir': localeFaIr,
+  'ff': localeFf,
+  'ff_cm': localeFfCm,
+  'ff_gn': localeFfGn,
+  'ff_mr': localeFfMr,
+  'ff_sn': localeFfSn,
+  'fi': localeFi,
+  'fi_fi': localeFiFi,
+  'fil': localeFil,
+  'fil_ph': localeFilPh,
+  'fo': localeFo,
+  'fo_dk': localeFoDk,
+  'fo_fo': localeFoFo,
+  'fr': localeFr,
+  'fr_be': localeFrBe,
+  'fr_bf': localeFrBf,
+  'fr_bi': localeFrBi,
+  'fr_bj': localeFrBj,
+  'fr_bl': localeFrBl,
+  'fr_ca': localeFrCa,
+  'fr_cd': localeFrCd,
+  'fr_cf': localeFrCf,
+  'fr_cg': localeFrCg,
+  'fr_ch': localeFrCh,
+  'fr_ci': localeFrCi,
+  'fr_cm': localeFrCm,
+  'fr_dj': localeFrDj,
+  'fr_dz': localeFrDz,
+  'fr_fr': localeFrFr,
+  'fr_ga': localeFrGa,
+  'fr_gf': localeFrGf,
+  'fr_gn': localeFrGn,
+  'fr_gp': localeFrGp,
+  'fr_gq': localeFrGq,
+  'fr_ht': localeFrHt,
+  'fr_km': localeFrKm,
+  'fr_lu': localeFrLu,
+  'fr_ma': localeFrMa,
+  'fr_mc': localeFrMc,
+  'fr_mf': localeFrMf,
+  'fr_mg': localeFrMg,
+  'fr_ml': localeFrMl,
+  'fr_mq': localeFrMq,
+  'fr_mr': localeFrMr,
+  'fr_mu': localeFrMu,
+  'fr_nc': localeFrNc,
+  'fr_ne': localeFrNe,
+  'fr_pf': localeFrPf,
+  'fr_pm': localeFrPm,
+  'fr_re': localeFrRe,
+  'fr_rw': localeFrRw,
+  'fr_sc': localeFrSc,
+  'fr_sn': localeFrSn,
+  'fr_sy': localeFrSy,
+  'fr_td': localeFrTd,
+  'fr_tg': localeFrTg,
+  'fr_tn': localeFrTn,
+  'fr_vu': localeFrVu,
+  'fr_wf': localeFrWf,
+  'fr_yt': localeFrYt,
+  'fur': localeFur,
+  'fur_it': localeFurIt,
+  'fy': localeFy,
+  'fy_de': localeFyDe,
+  'fy_nl': localeFyNl,
+  'ga': localeGa,
+  'ga_ie': localeGaIe,
+  'gd': localeGd,
+  'gd_gb': localeGdGb,
+  'gez': localeGez,
+  'gez_er': localeGezEr,
+  'gez_et': localeGezEt,
+  'gl': localeGl,
+  'gl_es': localeGlEs,
+  'gom': localeGom,
+  'gom_latn': localeGomLatn,
+  'gsw': localeGsw,
+  'gsw_ch': localeGswCh,
+  'gsw_fr': localeGswFr,
+  'gsw_li': localeGswLi,
+  'gu': localeGu,
+  'gu_in': localeGuIn,
+  'guz': localeGuz,
+  'gv': localeGv,
+  'gv_gb': localeGvGb,
+  'ha': localeHa,
+  'ha_gh': localeHaGh,
+  'ha_ne': localeHaNe,
+  'ha_ng': localeHaNg,
+  'hak': localeHak,
+  'hak_tw': localeHakTw,
+  'haw': localeHaw,
+  'he': localeHe,
+  'he_il': localeHeIl,
+  'hi': localeHi,
+  'hi_in': localeHiIn,
+  'hif': localeHif,
+  'hif_fj': localeHifFj,
+  'hne': localeHne,
+  'hne_in': localeHneIn,
+  'hr': localeHr,
+  'hr_ba': localeHrBa,
+  'hr_hr': localeHrHr,
+  'hsb': localeHsb,
+  'hsb_de': localeHsbDe,
+  'ht': localeHt,
+  'ht_ht': localeHtHt,
+  'hu': localeHu,
+  'hu_hu': localeHuHu,
+  'hy': localeHy,
+  'hy_am': localeHyAm,
+  'i18n': localeI18n,
+  'ia': localeIa,
+  'ia_fr': localeIaFr,
+  'id': localeId,
+  'id_id': localeIdId,
+  'ig': localeIg,
+  'ig_ng': localeIgNg,
+  'ii': localeIi,
+  'ik': localeIk,
+  'ik_ca': localeIkCa,
+  'in': localeIn,
+  'is': localeIs,
+  'is_is': localeIsIs,
+  'it': localeIt,
+  'it_ch': localeItCh,
+  'it_it': localeItIt,
+  'it_sm': localeItSm,
+  'it_va': localeItVa,
+  'iu': localeIu,
+  'iu_ca': localeIuCa,
+  'iw': localeIw,
+  'ja': localeJa,
+  'ja_jp': localeJaJp,
+  'jgo': localeJgo,
+  'jmc': localeJmc,
+  'jv': localeJv,
+  'ka': localeKa,
+  'ka_ge': localeKaGe,
+  'kab': localeKab,
+  'kab_dz': localeKabDz,
+  'kam': localeKam,
+  'kde': localeKde,
+  'kea': localeKea,
+  'khq': localeKhq,
+  'ki': localeKi,
+  'kk': localeKk,
+  'kk_kz': localeKkKz,
+  'kkj': localeKkj,
+  'kl': localeKl,
+  'kl_gl': localeKlGl,
+  'kln': localeKln,
+  'km': localeKm,
+  'km_kh': localeKmKh,
+  'kn': localeKn,
+  'kn_in': localeKnIn,
+  'ko': localeKo,
+  'ko_kp': localeKoKp,
+  'ko_kr': localeKoKr,
+  'kok': localeKok,
+  'kok_in': localeKokIn,
+  'ks': localeKs,
+  'ks_in': localeKsIn,
+  'ksb': localeKsb,
+  'ksf': localeKsf,
+  'ksh': localeKsh,
+  'ku': localeKu,
+  'ku_tr': localeKuTr,
+  'kw': localeKw,
+  'kw_gb': localeKwGb,
+  'ky': localeKy,
+  'ky_kg': localeKyKg,
+  'lag': localeLag,
+  'lb': localeLb,
+  'lb_lu': localeLbLu,
+  'lg': localeLg,
+  'lg_ug': localeLgUg,
+  'li': localeLi,
+  'li_nl': localeLiNl,
+  'lij': localeLij,
+  'lij_it': localeLijIt,
+  'lkt': localeLkt,
+  'ln': localeLn,
+  'ln_ao': localeLnAo,
+  'ln_cd': localeLnCd,
+  'ln_cf': localeLnCf,
+  'ln_cg': localeLnCg,
+  'lo': localeLo,
+  'lo_la': localeLoLa,
+  'lrc': localeLrc,
+  'lrc_iq': localeLrcIq,
+  'lt': localeLt,
+  'lt_lt': localeLtLt,
+  'lu': localeLu,
+  'luo': localeLuo,
+  'luy': localeLuy,
+  'lv': localeLv,
+  'lv_lv': localeLvLv,
+  'lzh': localeLzh,
+  'lzh_tw': localeLzhTw,
+  'mag': localeMag,
+  'mag_in': localeMagIn,
+  'mai': localeMai,
+  'mai_in': localeMaiIn,
+  'mas': localeMas,
+  'mas_tz': localeMasTz,
+  'mer': localeMer,
+  'mfe': localeMfe,
+  'mfe_mu': localeMfeMu,
+  'mg': localeMg,
+  'mg_mg': localeMgMg,
+  'mgh': localeMgh,
+  'mgo': localeMgo,
+  'mhr': localeMhr,
+  'mhr_ru': localeMhrRu,
+  'mi': localeMi,
+  'mi_nz': localeMiNz,
+  'miq': localeMiq,
+  'miq_ni': localeMiqNi,
+  'mjw': localeMjw,
+  'mjw_in': localeMjwIn,
+  'mk': localeMk,
+  'mk_mk': localeMkMk,
+  'ml': localeMl,
+  'ml_in': localeMlIn,
+  'mn': localeMn,
+  'mn_mn': localeMnMn,
+  'mni': localeMni,
+  'mni_in': localeMniIn,
+  'mo': localeMo,
+  'mr': localeMr,
+  'mr_in': localeMrIn,
+  'ms': localeMs,
+  'ms_bn': localeMsBn,
+  'ms_my': localeMsMy,
+  'ms_sg': localeMsSg,
+  'mt': localeMt,
+  'mt_mt': localeMtMt,
+  'mua': localeMua,
+  'my': localeMy,
+  'my_mm': localeMyMm,
+  'mzn': localeMzn,
+  'nan': localeNan,
+  'nan_tw': localeNanTw,
+  'naq': localeNaq,
+  'nb': localeNb,
+  'nb_no': localeNbNo,
+  'nb_sj': localeNbSj,
+  'nd': localeNd,
+  'nds': localeNds,
+  'nds_de': localeNdsDe,
+  'nds_nl': localeNdsNl,
+  'ne': localeNe,
+  'ne_in': localeNeIn,
+  'ne_np': localeNeNp,
+  'nhn': localeNhn,
+  'nhn_mx': localeNhnMx,
+  'niu': localeNiu,
+  'niu_nu': localeNiuNu,
+  'nl': localeNl,
+  'nl_aw': localeNlAw,
+  'nl_be': localeNlBe,
+  'nl_bq': localeNlBq,
+  'nl_cw': localeNlCw,
+  'nl_nl': localeNlNl,
+  'nl_sr': localeNlSr,
+  'nl_sx': localeNlSx,
+  'nmg': localeNmg,
+  'nn': localeNn,
+  'nn_no': localeNnNo,
+  'nnh': localeNnh,
+  'no': localeNo,
+  'nr': localeNr,
+  'nr_za': localeNrZa,
+  'nso': localeNso,
+  'nso_za': localeNsoZa,
+  'nus': localeNus,
+  'nyn': localeNyn,
+  'oc': localeOc,
+  'oc_fr': localeOcFr,
+  'om': localeOm,
+  'om_et': localeOmEt,
+  'om_ke': localeOmKe,
+  'or': localeOr,
+  'or_in': localeOrIn,
+  'os': localeOs,
+  'os_ru': localeOsRu,
+  'pa': localePa,
+  'pa_arab': localePaArab,
+  'pa_guru': localePaGuru,
+  'pa_in': localePaIn,
+  'pa_pk': localePaPk,
+  'pap': localePap,
+  'pap_aw': localePapAw,
+  'pap_cw': localePapCw,
+  'pl': localePl,
+  'pl_pl': localePlPl,
+  'prg': localePrg,
+  'ps': localePs,
+  'ps_af': localePsAf,
+  'pt': localePt,
+  'pt_ao': localePtAo,
+  'pt_br': localePtBr,
+  'pt_ch': localePtCh,
+  'pt_cv': localePtCv,
+  'pt_gq': localePtGq,
+  'pt_gw': localePtGw,
+  'pt_lu': localePtLu,
+  'pt_mo': localePtMo,
+  'pt_mz': localePtMz,
+  'pt_pt': localePtPt,
+  'pt_st': localePtSt,
+  'pt_tl': localePtTl,
+  'qu': localeQu,
+  'qu_bo': localeQuBo,
+  'qu_ec': localeQuEc,
+  'quz': localeQuz,
+  'quz_pe': localeQuzPe,
+  'raj': localeRaj,
+  'raj_in': localeRajIn,
+  'rm': localeRm,
+  'rn': localeRn,
+  'ro': localeRo,
+  'ro_md': localeRoMd,
+  'ro_ro': localeRoRo,
+  'rof': localeRof,
+  'ru': localeRu,
+  'ru_by': localeRuBy,
+  'ru_kg': localeRuKg,
+  'ru_kz': localeRuKz,
+  'ru_md': localeRuMd,
+  'ru_ru': localeRuRu,
+  'ru_ua': localeRuUa,
+  'rw': localeRw,
+  'rw_rw': localeRwRw,
+  'rwk': localeRwk,
+  'sa': localeSa,
+  'sa_in': localeSaIn,
+  'sah': localeSah,
+  'sah_ru': localeSahRu,
+  'saq': localeSaq,
+  'sat': localeSat,
+  'sat_in': localeSatIn,
+  'sbp': localeSbp,
+  'sc': localeSc,
+  'sc_it': localeScIt,
+  'sd': localeSd,
+  'sd_in': localeSdIn,
+  'se': localeSe,
+  'se_fi': localeSeFi,
+  'se_no': localeSeNo,
+  'se_se': localeSeSe,
+  'seh': localeSeh,
+  'ses': localeSes,
+  'sg': localeSg,
+  'sgs': localeSgs,
+  'sgs_lt': localeSgsLt,
+  'sh': localeSh,
+  'shi': localeShi,
+  'shi_latn': localeShiLatn,
+  'shi_tfng': localeShiTfng,
+  'shn': localeShn,
+  'shn_mm': localeShnMm,
+  'shs': localeShs,
+  'shs_ca': localeShsCa,
+  'si': localeSi,
+  'si_lk': localeSiLk,
+  'sid': localeSid,
+  'sid_et': localeSidEt,
+  'sk': localeSk,
+  'sk_sk': localeSkSk,
+  'sl': localeSl,
+  'sl_si': localeSlSi,
+  'sm': localeSm,
+  'sm_ws': localeSmWs,
+  'smn': localeSmn,
+  'sn': localeSn,
+  'so': localeSo,
+  'so_dj': localeSoDj,
+  'so_et': localeSoEt,
+  'so_ke': localeSoKe,
+  'so_so': localeSoSo,
+  'sq': localeSq,
+  'sq_al': localeSqAl,
+  'sq_mk': localeSqMk,
+  'sq_xk': localeSqXk,
+  'sr': localeSr,
+  'sr_cyrl': localeSrCyrl,
+  'sr_cyrl_ba': localeSrCyrlBa,
+  'sr_cyrl_me': localeSrCyrlMe,
+  'sr_cyrl_xk': localeSrCyrlXk,
+  'sr_latn': localeSrLatn,
+  'sr_latn_ba': localeSrLatnBa,
+  'sr_latn_me': localeSrLatnMe,
+  'sr_latn_xk': localeSrLatnXk,
+  'sr_me': localeSrMe,
+  'sr_rs': localeSrRs,
+  'ss': localeSs,
+  'ss_za': localeSsZa,
+  'st': localeSt,
+  'st_za': localeStZa,
+  'sv': localeSv,
+  'sv_ax': localeSvAx,
+  'sv_fi': localeSvFi,
+  'sv_se': localeSvSe,
+  'sw': localeSw,
+  'sw_cd': localeSwCd,
+  'sw_ke': localeSwKe,
+  'sw_tz': localeSwTz,
+  'sw_ug': localeSwUg,
+  'szl': localeSzl,
+  'szl_pl': localeSzlPl,
+  'ta': localeTa,
+  'ta_in': localeTaIn,
+  'ta_lk': localeTaLk,
+  'ta_my': localeTaMy,
+  'ta_sg': localeTaSg,
+  'tcy': localeTcy,
+  'tcy_in': localeTcyIn,
+  'te': localeTe,
+  'te_in': localeTeIn,
+  'teo': localeTeo,
+  'teo_ke': localeTeoKe,
+  'tet': localeTet,
+  'tg': localeTg,
+  'tg_tj': localeTgTj,
+  'th': localeTh,
+  'th_th': localeThTh,
+  'the': localeThe,
+  'the_np': localeTheNp,
+  'ti': localeTi,
+  'ti_er': localeTiEr,
+  'ti_et': localeTiEt,
+  'tig': localeTig,
+  'tig_er': localeTigEr,
+  'tk': localeTk,
+  'tk_tm': localeTkTm,
+  'tl': localeTl,
+  'tl_ph': localeTlPh,
+  'tlh': localeTlh,
+  'tn': localeTn,
+  'tn_za': localeTnZa,
+  'to': localeTo,
+  'to_to': localeToTo,
+  'tpi': localeTpi,
+  'tpi_pg': localeTpiPg,
+  'tr': localeTr,
+  'tr_cy': localeTrCy,
+  'tr_tr': localeTrTr,
+  'ts': localeTs,
+  'ts_za': localeTsZa,
+  'tt': localeTt,
+  'tt_ru': localeTtRu,
+  'twq': localeTwq,
+  'tzl': localeTzl,
+  'tzm': localeTzm,
+  'tzm_latn': localeTzmLatn,
+  'ug': localeUg,
+  'ug_cn': localeUgCn,
+  'uk': localeUk,
+  'uk_ua': localeUkUa,
+  'unm': localeUnm,
+  'unm_us': localeUnmUs,
+  'ur': localeUr,
+  'ur_in': localeUrIn,
+  'ur_pk': localeUrPk,
+  'uz': localeUz,
+  'uz_arab': localeUzArab,
+  'uz_cyrl': localeUzCyrl,
+  'uz_latn': localeUzLatn,
+  'uz_uz': localeUzUz,
+  'vai': localeVai,
+  'vai_latn': localeVaiLatn,
+  'vai_vaii': localeVaiVaii,
+  've': localeVe,
+  've_za': localeVeZa,
+  'vi': localeVi,
+  'vi_vn': localeViVn,
+  'vo': localeVo,
+  'vun': localeVun,
+  'wa': localeWa,
+  'wa_be': localeWaBe,
+  'wae': localeWae,
+  'wae_ch': localeWaeCh,
+  'wal': localeWal,
+  'wal_et': localeWalEt,
+  'wo': localeWo,
+  'wo_sn': localeWoSn,
+  'xh': localeXh,
+  'xh_za': localeXhZa,
+  'xog': localeXog,
+  'yav': localeYav,
+  'yi': localeYi,
+  'yi_us': localeYiUs,
+  'yo': localeYo,
+  'yo_bj': localeYoBj,
+  'yo_ng': localeYoNg,
+  'yue': localeYue,
+  'yue_hk': localeYueHk,
+  'yue_hans': localeYueHans,
+  'yue_hant': localeYueHant,
+  'yuw': localeYuw,
+  'yuw_pg': localeYuwPg,
+  'zgh': localeZgh,
+  'zh': localeZh,
+  'zh_cn': localeZhCn,
+  'zh_hk': localeZhHk,
+  'zh_hans': localeZhHans,
+  'zh_hans_hk': localeZhHansHk,
+  'zh_hans_mo': localeZhHansMo,
+  'zh_hans_sg': localeZhHansSg,
+  'zh_hant': localeZhHant,
+  'zh_hant_hk': localeZhHantHk,
+  'zh_hant_mo': localeZhHantMo,
+  'zh_hant_tw': localeZhHantTw,
+  'zh_mo': localeZhMo,
+  'zh_sg': localeZhSg,
+  'zh_tw': localeZhTw,
+  'zh_yue': localeZhYue,
+  'zu': localeZu,
+  'zu_za': localeZuZa,
+};

@@ -1,0 +1,99 @@
+// AUTO-GENERATED from PHP Carbon locale: cv
+// Do not edit - changes will be overwritten
+
+import 'package:carbon/carbon.dart';
+
+const CarbonLocaleData localeCv = CarbonLocaleData(
+  localeCode: 'cv',
+  translationStrings: {
+    'year': ':count ҫул',
+    'a_year': '{1}пӗр ҫул|:count ҫул',
+    'month': ':count уйӑх',
+    'a_month': '{1}пӗр уйӑх|:count уйӑх',
+    'week': ':count эрне',
+    'a_week': '{1}пӗр эрне|:count эрне',
+    'day': ':count кун',
+    'a_day': '{1}пӗр кун|:count кун',
+    'hour': ':count сехет',
+    'a_hour': '{1}пӗр сехет|:count сехет',
+    'minute': ':count минут',
+    'a_minute': '{1}пӗр минут|:count минут',
+    'second': ':count ҫеккунт',
+    'a_second': '{1}пӗр-ик ҫеккунт|:count ҫеккунт',
+    'ago': ':time каялла',
+    'diff_yesterday': 'Ӗнер',
+    'diff_today': 'Паян',
+    'diff_tomorrow': 'Ыран',
+  },
+  formats: {
+    'LT': 'HH:mm',
+    'LTS': 'HH:mm:ss',
+    'L': 'DD-MM-YYYY',
+    'LL': 'YYYY [ҫулхи] MMMM [уйӑхӗн] D[-мӗшӗ]',
+    'LLL': 'YYYY [ҫулхи] MMMM [уйӑхӗн] D[-мӗшӗ], HH:mm',
+    'LLLL': 'dddd, YYYY [ҫулхи] MMMM [уйӑхӗн] D[-мӗшӗ], HH:mm',
+  },
+  months: [
+    'кӑрлач',
+    'нарӑс',
+    'пуш',
+    'ака',
+    'май',
+    'ҫӗртме',
+    'утӑ',
+    'ҫурла',
+    'авӑн',
+    'юпа',
+    'чӳк',
+    'раштав',
+  ],
+  monthsShort: [
+    'кӑр',
+    'нар',
+    'пуш',
+    'ака',
+    'май',
+    'ҫӗр',
+    'утӑ',
+    'ҫур',
+    'авн',
+    'юпа',
+    'чӳк',
+    'раш',
+  ],
+  weekdays: [
+    'вырсарникун',
+    'тунтикун',
+    'ытларикун',
+    'юнкун',
+    'кӗҫнерникун',
+    'эрнекун',
+    'шӑматкун',
+  ],
+  weekdaysShort: [
+    'выр',
+    'тун',
+    'ытл',
+    'юн',
+    'кӗҫ',
+    'эрн',
+    'шӑм',
+  ],
+  weekdaysMin: [
+    'вр',
+    'тн',
+    'ыт',
+    'юн',
+    'кҫ',
+    'эр',
+    'шм',
+  ],
+  firstDayOfWeek: 1,
+  dayOfFirstWeekOfYear: 1,
+);
+
+// Regional variant: cv_RU
+final CarbonLocaleData localeCvRu = localeCv.copyWith(
+  localeCode: 'cv_ru',
+);
+

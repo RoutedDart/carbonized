@@ -161,7 +161,8 @@ Future<void> main() async {
 
   CarbonTranslator.registerLocale(
     'fr',
-    CarbonTranslation(
+    CarbonLocaleData(
+      localeCode: 'fr',
       numbers: {
         '1': 'un ',
         '2': 'deux ',
@@ -196,7 +197,8 @@ Future<ExampleRun> runTranslatorExample() async {
 
   CarbonTranslator.registerLocale(
     'fr',
-    CarbonTranslation(
+    CarbonLocaleData(
+      localeCode: 'fr',
       numbers: {'1': 'un ', '2': 'deux ', '3': 'trois ', '4': 'quatre '},
       timeStrings: {
         'ago': 'il y a',

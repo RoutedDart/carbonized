@@ -65,7 +65,7 @@ Future<void> main() async {
 
 Future<ExampleRun> runCustomSerializationExample() async {
   await _bootstrap();
-  Carbon.serializeUsing((date) => 'CUSTOM:' + date.toIso8601String());
+  Carbon.serializeUsing((date) => 'CUSTOM:${date.toIso8601String()}');
   final dt = Carbon.parse('2024-01-01T00:00:00Z');
   final buffer = StringBuffer()
     ..writeln('custom serialization -> ${dt.serialize()}');

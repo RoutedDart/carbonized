@@ -1,0 +1,91 @@
+{
+    "translationStrings": {
+        "year": "ọdún :count",
+        "a_year": "{1}ọdún kan|ọdún :count",
+        "month": "osù :count",
+        "a_month": "{1}osù kan|osù :count",
+        "week": "ọsẹ :count",
+        "a_week": "{1}ọsẹ kan|ọsẹ :count",
+        "day": "ọjọ́ :count",
+        "a_day": "{1}ọjọ́ kan|ọjọ́ :count",
+        "hour": "wákati :count",
+        "a_hour": "{1}wákati kan|wákati :count",
+        "minute": "ìsẹjú :count",
+        "a_minute": "{1}ìsẹjú kan|ìsẹjú :count",
+        "second": "iaayá :count",
+        "a_second": "{1}ìsẹjú aayá die|aayá :count",
+        "ago": ":time kọjá",
+        "from_now": "ní :time",
+        "diff_yesterday": "Àna",
+        "diff_yesterday_regexp": "Àna(?:\\s+ni)?",
+        "diff_today": "Ònì",
+        "diff_today_regexp": "Ònì(?:\\s+ni)?",
+        "diff_tomorrow": "Ọ̀la",
+        "diff_tomorrow_regexp": "Ọ̀la(?:\\s+ni)?"
+    },
+    "formats": {
+        "LT": "HH:mm",
+        "LTS": "HH:mm:ss",
+        "L": "DD\/MM\/YYYY",
+        "LL": "D MMM YYYY",
+        "LLL": "D MMMM YYYY HH:mm",
+        "LLLL": "dddd, D MMMM YYYY HH:mm"
+    },
+    "months": [
+        "Oshù Shɛ́rɛ́",
+        "Oshù Èrèlè",
+        "Oshù Ɛrɛ̀nà",
+        "Oshù Ìgbé",
+        "Oshù Ɛ̀bibi",
+        "Oshù Òkúdu",
+        "Oshù Agɛmɔ",
+        "Oshù Ògún",
+        "Oshù Owewe",
+        "Oshù Ɔ̀wàrà",
+        "Oshù Bélú",
+        "Oshù Ɔ̀pɛ̀"
+    ],
+    "monthsShort": [
+        "Shɛ́rɛ́",
+        "Èrèlè",
+        "Ɛrɛ̀nà",
+        "Ìgbé",
+        "Ɛ̀bibi",
+        "Òkúdu",
+        "Agɛmɔ",
+        "Ògún",
+        "Owewe",
+        "Ɔ̀wàrà",
+        "Bélú",
+        "Ɔ̀pɛ̀"
+    ],
+    "weekdays": [
+        "Ɔjɔ́ Àìkú",
+        "Ɔjɔ́ Ajé",
+        "Ɔjɔ́ Ìsɛ́gun",
+        "Ɔjɔ́rú",
+        "Ɔjɔ́bɔ",
+        "Ɔjɔ́ Ɛtì",
+        "Ɔjɔ́ Àbámɛ́ta"
+    ],
+    "weekdaysShort": [
+        "Àìkú",
+        "Ajé",
+        "Ìsɛ́gun",
+        "Ɔjɔ́rú",
+        "Ɔjɔ́bɔ",
+        "Ɛtì",
+        "Àbámɛ́ta"
+    ],
+    "weekdaysMin": [
+        "Àìkú",
+        "Ajé",
+        "Ìsɛ́gun",
+        "Ɔjɔ́rú",
+        "Ɔjɔ́bɔ",
+        "Ɛtì",
+        "Àbámɛ́ta"
+    ],
+    "firstDayOfWeek": 1,
+    "dayOfFirstWeekOfYear": 4
+}

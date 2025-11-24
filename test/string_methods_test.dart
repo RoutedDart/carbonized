@@ -106,6 +106,9 @@ void main() {
       expect(value.toFormattedDateString(), 'déc. 25, 1975');
       expect(value.toDayDateTimeString(), 'jeu., déc. 25, 1975 7:15 PM');
       expect(value.toFormattedDayDateString(), 'jeu., déc. 25, 1975');
+      print("-------");
+      print(value.isoFormat('MMMM Do YYYY, h:mm:ss a'));
+      print("-------");
       expect(
         value.isoFormat('MMMM Do YYYY, h:mm:ss a'),
         'décembre 25e 1975, 7:15:16 pm',
@@ -149,9 +152,9 @@ void main() {
       expect(french.translatedFormat('jS \\d\\e F Y'), '25e de décembre 1975');
       Carbon.setLocale('ru');
       final russian = Carbon.parse('2019-05-15T12:00:00Z');
-      expect(russian.translatedFormat('jS'), '15th');
+      expect(russian.translatedFormat('jS'), '15-го');
       expect(russian.translatedFormat('t F'), '31 мая');
-      expect(russian.translatedFormat('n F'), '5 май');
+      expect(russian.translatedFormat('n F'), '5 мая');
     });
 
     test('setToStringFormat supports conditional closures', () {

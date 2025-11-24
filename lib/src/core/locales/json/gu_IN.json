@@ -1,0 +1,92 @@
+{
+    "translationStrings": {
+        "year": "એક વર્ષ|:count વર્ષ",
+        "y": ":countવર્ષ|:countવર્ષો",
+        "month": "એક મહિનો|:count મહિના",
+        "m": ":countમહિનો|:countમહિના",
+        "week": ":count અઠવાડિયું|:count અઠવાડિયા",
+        "w": ":countઅઠ.|:countઅઠ.",
+        "day": "એક દિવસ|:count દિવસ",
+        "d": ":countદિ.|:countદિ.",
+        "hour": "એક કલાક|:count કલાક",
+        "h": ":countક.|:countક.",
+        "minute": "એક મિનિટ|:count મિનિટ",
+        "min": ":countમિ.|:countમિ.",
+        "second": "અમુક પળો|:count સેકંડ",
+        "s": ":countસે.|:countસે.",
+        "ago": ":time પેહલા",
+        "from_now": ":time મા",
+        "after": ":time પછી",
+        "before": ":time પહેલા",
+        "diff_now": "હમણાં",
+        "diff_today": "આજ",
+        "diff_yesterday": "ગઇકાલે",
+        "diff_tomorrow": "કાલે"
+    },
+    "formats": {
+        "LT": "A h:mm વાગ્યે",
+        "LTS": "A h:mm:ss વાગ્યે",
+        "L": "DD\/MM\/YYYY",
+        "LL": "D MMMM YYYY",
+        "LLL": "D MMMM YYYY, A h:mm વાગ્યે",
+        "LLLL": "dddd, D MMMM YYYY, A h:mm વાગ્યે"
+    },
+    "months": [
+        "જાન્યુઆરી",
+        "ફેબ્રુઆરી",
+        "માર્ચ",
+        "એપ્રિલ",
+        "મે",
+        "જૂન",
+        "જુલાઈ",
+        "ઑગસ્ટ",
+        "સપ્ટેમ્બર",
+        "ઑક્ટ્બર",
+        "નવેમ્બર",
+        "ડિસેમ્બર"
+    ],
+    "monthsShort": [
+        "જાન્યુ.",
+        "ફેબ્રુ.",
+        "માર્ચ",
+        "એપ્રિ.",
+        "મે",
+        "જૂન",
+        "જુલા.",
+        "ઑગ.",
+        "સપ્ટે.",
+        "ઑક્ટ્.",
+        "નવે.",
+        "ડિસે."
+    ],
+    "weekdays": [
+        "રવિવાર",
+        "સોમવાર",
+        "મંગળવાર",
+        "બુધ્વાર",
+        "ગુરુવાર",
+        "શુક્રવાર",
+        "શનિવાર"
+    ],
+    "weekdaysShort": [
+        "રવિ",
+        "સોમ",
+        "મંગળ",
+        "બુધ્",
+        "ગુરુ",
+        "શુક્ર",
+        "શનિ"
+    ],
+    "weekdaysMin": [
+        "ર",
+        "સો",
+        "મં",
+        "બુ",
+        "ગુ",
+        "શુ",
+        "શ"
+    ],
+    "firstDayOfWeek": 0,
+    "dayOfFirstWeekOfYear": 1,
+    "meridiem_function": "    if (hour < 4) {\n      return 'રાત';\n    }\n    if (hour < 10) {\n      return 'સવાર';\n    }\n    if (hour < 17) {\n      return 'બપોર';\n    }\n    if (hour < 20) {\n      return 'સાંજ';\n    }\n    return 'રાત';\n"
+}

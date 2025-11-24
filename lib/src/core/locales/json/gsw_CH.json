@@ -1,0 +1,77 @@
+{
+    "translationStrings": {
+        "year": ":count Johr",
+        "month": ":count Monet",
+        "week": ":count Woche",
+        "day": ":count Tag",
+        "hour": ":count Schtund",
+        "minute": ":count Minute",
+        "second": ":count Sekunde",
+        "diff_now": "now",
+        "diff_yesterday": "geschter",
+        "diff_tomorrow": "moorn"
+    },
+    "formats": {
+        "LT": "HH:mm",
+        "LTS": "HH:mm:ss",
+        "L": "DD.MM.YYYY",
+        "LL": "Do MMMM YYYY",
+        "LLL": "Do MMMM, HH:mm [Uhr]",
+        "LLLL": "dddd, Do MMMM YYYY, HH:mm [Uhr]"
+    },
+    "months": [
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "Auguscht",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember"
+    ],
+    "monthsShort": [
+        "Jan",
+        "Feb",
+        "Mär",
+        "Apr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Dez"
+    ],
+    "weekdays": [
+        "Sunntig",
+        "Mäntig",
+        "Ziischtig",
+        "Mittwuch",
+        "Dunschtig",
+        "Friitig",
+        "Samschtig"
+    ],
+    "weekdaysShort": [
+        "Su",
+        "Mä",
+        "Zi",
+        "Mi",
+        "Du",
+        "Fr",
+        "Sa"
+    ],
+    "weekdaysMin": [
+        "Su",
+        "Mä",
+        "Zi",
+        "Mi",
+        "Du",
+        "Fr",
+        "Sa"
+    ]
+}

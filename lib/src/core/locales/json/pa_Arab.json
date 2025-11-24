@@ -1,0 +1,93 @@
+{
+    "translationStrings": {
+        "year": ":count سال",
+        "a_year": "ایک سال|:count سال",
+        "month": ":count ماہ",
+        "a_month": "ایک ماہ|:count ماہ",
+        "week": ":count ہفتے",
+        "day": ":count دن",
+        "a_day": "ایک دن|:count دن",
+        "hour": ":count گھنٹے",
+        "a_hour": "ایک گھنٹہ|:count گھنٹے",
+        "minute": ":count منٹ",
+        "a_minute": "ایک منٹ|:count منٹ",
+        "second": ":count سیکنڈ",
+        "a_second": "چند سیکنڈ|:count سیکنڈ",
+        "ago": ":time قبل",
+        "from_now": ":time بعد",
+        "after": ":time بعد",
+        "before": ":time پہلے",
+        "diff_now": "اب",
+        "diff_today": "آج",
+        "diff_today_regexp": "آج(?:\\s+بوقت)?",
+        "diff_yesterday": "گزشتہ کل",
+        "diff_yesterday_regexp": "گذشتہ(?:\\s+روز)?(?:\\s+بوقت)?",
+        "diff_tomorrow": "آئندہ کل",
+        "diff_tomorrow_regexp": "کل(?:\\s+بوقت)?"
+    },
+    "formats": {
+        "LT": "h:mm a",
+        "LTS": "h:mm:ss a",
+        "L": "DD\/MM\/YYYY",
+        "LL": "D MMM YYYY",
+        "LLL": "D MMMM YYYY h:mm a",
+        "LLLL": "dddd, DD MMMM YYYY h:mm a"
+    },
+    "months": [
+        "جنوری",
+        "فروری",
+        "مارچ",
+        "اپریل",
+        "مئ",
+        "جون",
+        "جولائی",
+        "اگست",
+        "ستمبر",
+        "اکتوبر",
+        "نومبر",
+        "دسمبر"
+    ],
+    "monthsShort": [
+        "جنوری",
+        "فروری",
+        "مارچ",
+        "اپریل",
+        "مئ",
+        "جون",
+        "جولائی",
+        "اگست",
+        "ستمبر",
+        "اکتوبر",
+        "نومبر",
+        "دسمبر"
+    ],
+    "weekdays": [
+        "اتوار",
+        "پیر",
+        "منگل",
+        "بُدھ",
+        "جمعرات",
+        "جمعہ",
+        "ہفتہ"
+    ],
+    "weekdaysShort": [
+        "اتوار",
+        "پیر",
+        "منگل",
+        "بُدھ",
+        "جمعرات",
+        "جمعہ",
+        "ہفتہ"
+    ],
+    "weekdaysMin": [
+        "اتوار",
+        "پیر",
+        "منگل",
+        "بُدھ",
+        "جمعرات",
+        "جمعہ",
+        "ہفتہ"
+    ],
+    "firstDayOfWeek": 1,
+    "dayOfFirstWeekOfYear": 4
+}

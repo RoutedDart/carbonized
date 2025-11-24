@@ -19,8 +19,22 @@ class CarbonPeriod extends Iterable<Carbon> {
   static bool hasMacro(String name) => _macros.containsKey(name);
   static void resetMacros() => _macros.clear();
 
-  CarbonPeriod._(this._instances, {int? recurrences})
-    : _recurrencesLimit = recurrences ?? _instances.length;
+  /// Sets the global default locale for Carbon operations.
+  static void setLocale(String locale) => CarbonBase.setDefaultLocale(locale);
+
+  /// Gets the current global default locale.
+  static String getLocale() => CarbonBase.defaultLocale;
+
+  /// Sets the fallback locale for the default locale.
+  static void setFallbackLocale(String locale) =>
+      CarbonTranslator.setFallbackLocale(locale);
+
+  /// Gets the fallback locale for the default locale.
+  static String? getFallbackLocale() => CarbonTranslator.getFallbackLocale();
+
+  CarbonPeriod._(this._instances, {int? recurrences, String? locale})
+    : _recurrencesLimit = recurrences ?? _instances.length,
+      _locale = locale ?? CarbonBase.defaultLocale;
 
   /// Invokes a registered macro by [name] for this period.
   dynamic carbon(
@@ -40,6 +54,17 @@ class CarbonPeriod extends Iterable<Carbon> {
 
   final List<Carbon> _instances;
   final int _recurrencesLimit;
+  final String _locale;
+
+  /// Gets the locale code for this period instance.
+  String get localeCode => _locale;
+
+  /// Creates a new CarbonPeriod with the specified locale.
+  CarbonPeriod locale(String locale) => CarbonPeriod._(
+        _instances,
+        recurrences: _recurrencesLimit,
+        locale: locale,
+      );
 
   @override
   bool get isEmpty => _instances.isEmpty;
@@ -66,7 +91,7 @@ class CarbonPeriod extends Iterable<Carbon> {
       throw ArgumentError.value(count, 'count', 'must be positive');
     }
     final truncated = _instances.take(count).toList();
-    return CarbonPeriod._(truncated, recurrences: count);
+    return CarbonPeriod._(truncated, recurrences: count, locale: _locale);
   }
 
   /// Alias for [recurrences].
@@ -76,7 +101,7 @@ class CarbonPeriod extends Iterable<Carbon> {
   CarbonPeriod filter(bool Function(Carbon) predicate) {
     final filtered = _instances.where(predicate).toList();
     final limited = filtered.take(_recurrencesLimit).toList();
-    return CarbonPeriod._(limited, recurrences: _recurrencesLimit);
+    return CarbonPeriod._(limited, recurrences: _recurrencesLimit, locale: _locale);
   }
 
   @override

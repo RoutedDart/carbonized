@@ -12,7 +12,7 @@ This table tracks every “Differences compared to the PHP docs” note from the
 | `comparison.md` | PHP’s `is()` -> Dart `matches()` and comparators accept intervals/periods. | Already implemented; documentation matches. | Closed |
 | `constants.md` | Weekday constants (`SUNDAY`, etc.) and numeric helpers (e.g., `YEARS_PER_DECADE`) are not defined. | Consider adding a constants helper object or document alternatives. | Pending |
 | `conversion.md` | PHP’s `cast()` helper is missing; Dart exposes `toMutable()`/`toImmutable()` and manual constructors. | Consider adding a `cast()` convenience or document the current equivalents. | Pending |
-| `difference.md` | `diff()` returns `Duration` instead of `DateInterval`; advanced CarbonInterval APIs like `cascade()`/`forHumans()` are missing. | Add CarbonInterval helpers or improve documentation around `diffAsCarbonInterval()`. | Pending |
+| `difference.md` | `diff()` returns `Duration` instead of `DateInterval`. `CarbonInterval.forHumans()` now matches PHP behavior. | Add `CarbonInterval` helpers or improve documentation around `diffAsCarbonInterval()`. | Pending |
 | `difference_for_humans.md` | `diffForHumans()` approximates months/years; PHP flags like `JUST_NOW` are missing. | Document the approximation and optionally add helper flags later. | Pending |
 | `fluent_setters.md` | No dynamic setters (`$date->year(...)`), no `setDateTime()`, and `setDateTimeFrom()` doesn’t copy tz/settings. | Consider DSL or helper method for copying date/time/tz together if demand arises. | Pending |
 | `json.md` | `serializeUsing()`, `fromJson()`, and `fromState()` exist, mirroring PHP. | Already implemented and documented. | Closed |

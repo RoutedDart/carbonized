@@ -15,48 +15,13 @@ const Object _handledPropertyMacro = Object();
 typedef CarbonTestNowGenerator =
     CarbonInterface Function(CarbonInterface current);
 
-const List<String> _weekdayShortNames = <String>[
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-  'Sun',
-];
-
-const List<String> _weekdayLongNames = <String>[
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
-const List<String> _monthShortNames = <String>[
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
 /// Abstract foundation shared by [Carbon] and [CarbonImmutable].
 ///
 /// Provides all common logic for calendar math, comparisons, and formatting.
 /// Subclasses implement mutability semantics (in-place vs. new objects).
 abstract class CarbonBase implements CarbonInterface {
   /// Creates a Carbon base instance with UTC conversion and defaults.
-  CarbonBase({
+  CarbonBase({ 
     required DateTime dateTime,
     String? locale,
     String? timeZone,
@@ -821,8 +786,9 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   String toLegacyString() {
     final local = _localDateTimeForFormatting();
-    final weekday = _weekdayShortNames[(local.weekday + 6) % 7];
-    final month = _monthShortNames[local.month - 1];
+    final localeData = CarbonTranslator.matchLocale('en');
+    final weekday = localeData.weekdaysShort[local.weekday % 7];
+    final month = localeData.monthsShort[local.month - 1];
     final day = _twoDigits(local.day);
     final time = _formatTimePart(local);
     final offset = _formatOffset(_currentOffset(), compact: true);
@@ -4371,8 +4337,9 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   String toCookieString() {
     final local = _localDateTimeForFormatting();
-    final weekday = _weekdayLongNames[(local.weekday + 6) % 7];
-    final month = _monthShortNames[local.month - 1];
+    final localeData = CarbonTranslator.matchLocale('en');
+    final weekday = localeData.weekdays[local.weekday % 7];
+    final month = localeData.monthsShort[local.month - 1];
     final day = _twoDigits(local.day);
     final base =
         '$weekday, $day-$month-${_padYear(local.year)} ${_formatTimePart(local)}';
@@ -4407,8 +4374,9 @@ abstract class CarbonBase implements CarbonInterface {
     final snapshot = _zoneSnapshot();
     final offset = snapshot?.offset ?? _currentOffset();
     final zone = _zoneAbbreviationFromSnapshot(snapshot, offset);
-    final weekday = _weekdayLongNames[(local.weekday + 6) % 7];
-    final month = _monthShortNames[local.month - 1];
+    final localeData = CarbonTranslator.matchLocale('en');
+    final weekday = localeData.weekdays[local.weekday % 7];
+    final month = localeData.monthsShort[local.month - 1];
     return '$weekday, ${_twoDigits(local.day)}-$month-${_twoDigitYear(local)} ${_formatTimePart(local)} $zone';
   }
 
@@ -4438,15 +4406,17 @@ abstract class CarbonBase implements CarbonInterface {
   @override
   String toRfc7231String() {
     final utc = _dateTime.toUtc();
-    final weekday = _weekdayShortNames[(utc.weekday + 6) % 7];
-    final month = _monthShortNames[utc.month - 1];
+    final localeData = CarbonTranslator.matchLocale('en');
+    final weekday = localeData.weekdaysShort[utc.weekday % 7];
+    final month = localeData.monthsShort[utc.month - 1];
     return '$weekday, ${_twoDigits(utc.day)} $month ${_padYear(utc.year)} ${_formatTimePart(utc)} GMT';
   }
 
   String _formatRfcFamily({required bool shortYear}) {
     final local = _localDateTimeForFormatting();
-    final weekday = _weekdayShortNames[(local.weekday + 6) % 7];
-    final month = _monthShortNames[local.month - 1];
+    final localeData = CarbonTranslator.matchLocale('en');
+    final weekday = localeData.weekdaysShort[local.weekday % 7];
+    final month = localeData.monthsShort[local.month - 1];
     final year = shortYear ? _twoDigitYear(local) : _padYear(local.year);
     return '$weekday, ${_twoDigits(local.day)} $month $year ${_formatTimePart(local)} ${_formatOffset(_currentOffset(), compact: true)}';
   }
@@ -4460,17 +4430,20 @@ abstract class CarbonBase implements CarbonInterface {
     String joiner = ' ',
   }) {
     final localeMatch = CarbonTranslator.matchLocale(locale ?? _locale);
-    final humanLocale = localeMatch.locale;
-    CarbonTranslator.ensureTimeagoLocale(humanLocale);
+    final humanLocale = localeMatch;
+    CarbonTranslator.ensureTimeagoLocale(humanLocale.localeCode);
     final base = (reference?.dateTime ?? clock.now()).toUtc();
     if (parts <= 1) {
       final result = timeago.format(
         _dateTime,
-        locale: humanLocale,
+        locale: humanLocale.localeCode,
         allowFromNow: true,
         clock: base,
       );
-      return CarbonTranslator.translateTimeString(result, locale: humanLocale);
+      return CarbonTranslator.translateTimeString(
+        result,
+        locale: humanLocale.localeCode,
+      );
     }
 
     final diff = _dateTime.difference(base);
@@ -4487,7 +4460,7 @@ abstract class CarbonBase implements CarbonInterface {
         .map(
           (segment) => CarbonTranslator.translateTimeString(
             segment,
-            locale: humanLocale,
+            locale: humanLocale.localeCode,
           ),
         )
         .toList();
@@ -4495,7 +4468,10 @@ abstract class CarbonBase implements CarbonInterface {
     final prefix = future ? 'in ' : '';
     final suffix = future ? 'from now' : 'ago';
     final text = '$prefix$joined $suffix'.trim();
-    return CarbonTranslator.translateTimeString(text, locale: humanLocale);
+    return CarbonTranslator.translateTimeString(
+      text,
+      locale: humanLocale.localeCode,
+    );
   }
 
   @override
@@ -5099,7 +5075,7 @@ abstract class CarbonBase implements CarbonInterface {
       }
       cursor = next;
     }
-    return CarbonPeriod._(items);
+    return CarbonPeriod._(items, locale: _locale);
   }
 
   int _weekIndex(DateTime origin, DateTime current) {
@@ -6392,12 +6368,24 @@ String _twoDigitYear(DateTime value) {
 
 String _twoDigits(int value) => value.abs().toString().padLeft(2, '0');
 
-String _localizedMonthShortName(String locale, int month) => _localizedToken(
-  locale: locale,
-  pattern: 'MMM',
-  sample: DateTime.utc(2000, month, 1),
-  fallback: _monthShortNames[month - 1],
-);
+String _localizedMonthShortName(String locale, int month) {
+  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
+  try {
+    final data = CarbonTranslator.matchLocale(locale);
+    if (data.localeCode == locale ||
+        data.localeCode.startsWith(locale.split('_')[0])) {
+      return data.monthsShort[month - 1];
+    }
+  } catch (_) {}
+  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
+  try {
+    return DateFormat('MMM', locale).format(DateTime.utc(2000, month, 1));
+  } catch (_) {
+    // Last resort: use English
+    final data = CarbonTranslator.matchLocale('en');
+    return data.monthsShort[month - 1];
+  }
+}
 
 String _localizedMonthLongName(
   String locale,
@@ -6412,32 +6400,43 @@ String _localizedMonthLongName(
       }
     }
   }
-  return _localizedToken(
-    locale: locale,
-    pattern: 'MMMM',
-    sample: sample,
-    fallback: _monthShortNames[sample.month - 1],
-  );
+  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
+  try {
+    final data = CarbonTranslator.matchLocale(locale);
+    if (data.localeCode == locale ||
+        data.localeCode.startsWith(locale.split('_')[0])) {
+      return data.months[sample.month - 1];
+    }
+  } catch (_) {}
+  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
+  try {
+    return DateFormat('MMMM', locale).format(sample);
+  } catch (_) {
+    // Last resort: use English
+    final data = CarbonTranslator.matchLocale('en');
+    return data.months[sample.month - 1];
+  }
 }
 
-String _localizedWeekdayShortName(String locale, int weekday) =>
-    _localizedToken(
-      locale: locale,
-      pattern: 'EEE',
-      sample: DateTime.utc(2000, 1, 3 + ((weekday - 1) % 7)),
-      fallback: _weekdayShortNames[(weekday + 6) % 7],
-    );
-
-String _localizedToken({
-  required String locale,
-  required String pattern,
-  required DateTime sample,
-  required String fallback,
-}) {
+String _localizedWeekdayShortName(String locale, int weekday) {
+  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
   try {
-    return DateFormat(pattern, locale).format(sample);
+    final data = CarbonTranslator.matchLocale(locale);
+    if (data.localeCode == locale ||
+        data.localeCode.startsWith(locale.split('_')[0])) {
+      return data.weekdaysShort[weekday % 7];
+    }
+  } catch (_) {}
+  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
+  try {
+    return DateFormat(
+      'EEE',
+      locale,
+    ).format(DateTime.utc(2000, 1, 3 + ((weekday - 1) % 7)));
   } catch (_) {
-    return fallback;
+    // Last resort: use English
+    final data = CarbonTranslator.matchLocale('en');
+    return data.weekdaysShort[weekday % 7];
   }
 }
 
