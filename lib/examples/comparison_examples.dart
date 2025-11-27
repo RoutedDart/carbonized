@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _orderingSource = r'''
 import 'package:carbon/carbon.dart';
@@ -38,7 +32,6 @@ Future<void> main() async {
 
 /// Shows timezone-aware equality/ordering helpers.
 Future<ExampleRun> runOrderingExample() async {
-  await _bootstrap();
   final first = Carbon.parse('2012-09-05T23:26:11Z');
   final second = Carbon.parse(
     '2012-09-05T20:26:11',
@@ -82,7 +75,6 @@ Future<void> main() async {
 
 /// Demonstrates `between`, `min`/`max`, and closest/farthest helpers.
 Future<ExampleRun> runRangeExample() async {
-  await _bootstrap();
   final start = Carbon.parse('2012-09-05T01:00:00Z');
   final end = Carbon.parse('2012-09-05T05:00:00Z');
   final dt1 = Carbon.parse('2010-04-01T00:00:00Z');
@@ -125,7 +117,6 @@ Future<void> main() async {
 
 /// Highlights boolean predicates such as `isFuture`, `isSameMonth`, and `isWeekend`.
 Future<ExampleRun> runPredicateExample() async {
-  await _bootstrap();
   final reference = Carbon.parse('2024-06-05T12:00:00Z');
   final birthday = Carbon.parse('1987-04-23T00:00:00Z');
   final buffer = StringBuffer()
@@ -158,7 +149,6 @@ Future<void> main() async {
 
 /// Demonstrates the Dart replacement for PHP's `is()` helper.
 Future<ExampleRun> runStringMatcherExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2019-06-02T12:23:45Z');
   final buffer = StringBuffer()
     ..writeln("matches('2019') -> ${dt.matches('2019')}")

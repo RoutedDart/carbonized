@@ -8,11 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
-
 const _diffUnitsSource = r'''
 import 'package:carbon/carbon.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -37,7 +32,6 @@ Future<void> main() async {
 
 /// Shows `diffIn*` helpers with absolute vs signed outputs.
 Future<ExampleRun> runDiffUnitsExample() async {
-  await _bootstrap();
   final ottawa = Carbon.parse(
     '2000-01-01T00:00:00',
     timeZone: 'America/Toronto',
@@ -118,7 +112,6 @@ Future<void> main() async {
 
 /// Demonstrates converting a difference into a [CarbonInterval].
 Future<ExampleRun> runDiffIntervalExample() async {
-  await _bootstrap();
   final base = Carbon.parse('2012-01-15T12:00:00Z');
   final earlier = base.copy()
     ..subYears(2)
@@ -201,7 +194,6 @@ Future<void> main() async {
 
 /// Demonstrates `floatDiffIn*` helpers for fractional deltas.
 Future<ExampleRun> runFloatDiffExample() async {
-  await _bootstrap();
   final secondsStart = Carbon.parse('2000-01-01T06:01:23.252987Z');
   final secondsEnd = Carbon.parse('2000-01-01T06:02:34.321450Z');
   final minutesStart = Carbon.parse('2000-01-01T06:01:23Z');
@@ -309,7 +301,6 @@ Future<void> main() async {
 
 /// Shows the flexible `diffInUnit()` helper for mixed units.
 Future<ExampleRun> runDiffInUnitExample() async {
-  await _bootstrap();
   final base = Carbon.parse('2000-01-15T00:00:00Z');
   final target = base.copy()
     ..addYears(1)

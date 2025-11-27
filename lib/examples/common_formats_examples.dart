@@ -7,10 +7,6 @@ import 'package:carbon/carbon.dart';
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await Carbon.configureTimeMachine(testing: true);
-}
-
 const _commonFormatsSource = r'''
 import 'package:carbon/carbon.dart';
 
@@ -32,7 +28,6 @@ Future<void> main() async {
 
 /// Demonstrates Carbon's `toXXXString` helpers for standard RFC/ISO outputs.
 Future<ExampleRun> runCommonFormatsExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
   final buffer = StringBuffer()
     ..writeln('toAtomString -> ${dt.toAtomString()}')

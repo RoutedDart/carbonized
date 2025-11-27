@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _periodBasicsSource = r'''
 import 'package:carbon/carbon.dart';
@@ -31,7 +25,6 @@ Future<void> main() async {
 
 /// Demonstrates constructing and iterating a `CarbonPeriod` via `daysUntil`.
 Future<ExampleRun> runPeriodBasicsExample() async {
-  await _bootstrap();
   final start = Carbon.parse('2024-06-01T00:00:00Z');
   final period = start.daysUntil('2024-06-07', 2);
   final buffer = StringBuffer();
@@ -65,7 +58,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runPeriodAdvancedExample() async {
-  await _bootstrap();
   final start = Carbon.parse('2024-12-23T00:00:00Z');
   final period = start.daysUntil('2025-01-05T00:00:00Z');
   final weekdays = period.filter((date) => !date.isWeekend()).recurrences(5);
@@ -107,7 +99,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runPeriodFormattingExample() async {
-  await _bootstrap();
   Carbon.setLocale('en');
   CarbonPeriod.setLocale('en');
 
@@ -117,8 +108,9 @@ Future<ExampleRun> runPeriodFormattingExample() async {
 
   Carbon.setLocale('so');
   CarbonPeriod.setLocale('so');
-  final somali =
-      Carbon.parse('2024-12-01T00:00:00Z').daysUntil('2024-12-05T00:00:00Z');
+  final somali = Carbon.parse(
+    '2024-12-01T00:00:00Z',
+  ).daysUntil('2024-12-05T00:00:00Z');
 
   final buffer = StringBuffer()
     ..writeln(basic)

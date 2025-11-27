@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _typedSettersSource = r'''
 import 'package:carbon/carbon.dart';
@@ -37,7 +31,6 @@ Future<void> main() async {
 
 /// Chains the typed setter helpers to mirror PHP's fluent setters.
 Future<ExampleRun> runTypedSettersExample() async {
-  await _bootstrap();
   final value = Carbon.parse('2001-01-01T01:01:01.200000Z');
   value
     ..setYear(1975)
@@ -74,7 +67,6 @@ Future<void> main() async {
 
 /// Demonstrates grouped setters such as `setDate`/`setTime` and time strings.
 Future<ExampleRun> runGroupedSettersExample() async {
-  await _bootstrap();
   final base = Carbon.parse('2001-01-01T01:01:01.200000Z');
   final setDateTime = base.copy()
     ..setDate(1975, 5, 21)
@@ -116,7 +108,6 @@ Future<void> main() async {
 
 /// Copies date/time components from other `CarbonInterface` or `DateTime` values.
 Future<ExampleRun> runCopyFromExample() async {
-  await _bootstrap();
   final source = Carbon.parse('2010-05-16T22:40:10.100000Z');
   final target = Carbon.parse('2001-01-01T01:01:01.200000Z');
   final fromTime = target.copy()..setTimeFrom(source);

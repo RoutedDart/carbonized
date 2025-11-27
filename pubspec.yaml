@@ -12,7 +12,12 @@ dependencies:
   intl: ^0.20.2
   timeago: ^3.7.1
   time_machine: ^0.9.17
+  markdown: ^7.3.0
+  web: ^1.1.1
+  html_web_components: ^0.1.0
 
 dev_dependencies:
   lints: ^6.0.0
-  test: ^1.25.6
+  test: ^1.28.0
+  build_runner: ^2.10.4
+  build_web_compilers: ^4.1.6

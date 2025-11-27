@@ -8,11 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
-
 const _basicFormattingSource = r'''
 import 'package:carbon/carbon.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -35,7 +30,6 @@ Future<void> main() async {
 
 /// Mirrors the PHP docs' toXXXString helpers and `format()` usage.
 Future<ExampleRun> runBasicFormattingExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('1975-12-25T14:15:16-05:00');
   final buffer = StringBuffer()
     ..writeln('toDateString -> ${dt.toDateString()}')
@@ -76,7 +70,6 @@ Future<void> main() async {
 
 /// Shows `setToStringFormat`, `withToStringFormat`, and settings exposure.
 Future<ExampleRun> runCustomToStringExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('1975-12-25T14:15:16Z');
   final buffer = StringBuffer()..writeln('default toString -> $dt');
   Carbon.setToStringFormat('EEEE, MMMM d, y h:mm:ss a');
@@ -145,7 +138,6 @@ Future<void> main() async {
 
 /// Demonstrates `hasFormat`, `hasFormatWithModifiers`, and creation probing.
 Future<ExampleRun> runFormatProbeExample() async {
-  await _bootstrap();
   final buffer = StringBuffer()
     ..writeln(
       "hasFormatWithModifiers('21/05/1975', 'd#m#Y!') -> "

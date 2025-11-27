@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _intervalBasicsSource = r'''
 import 'package:carbon/carbon.dart';
@@ -31,7 +25,6 @@ Future<void> main() async {
 
 /// Shows the limited CarbonInterval API available in Dart.
 Future<ExampleRun> runIntervalBasicsExample() async {
-  await _bootstrap();
   final interval = CarbonInterval.fromComponents(
     days: 3,
     hours: 5,
@@ -59,7 +52,6 @@ Future<void> main() async {
 
 /// Demonstrates `CarbonInterval.forHumans()`.
 Future<ExampleRun> runIntervalForHumansExample() async {
-  await _bootstrap();
   final interval = CarbonInterval.fromComponents(days: 3, hours: 5);
   final buffer = StringBuffer()
     ..writeln('forHumans -> ${interval.forHumans()}');

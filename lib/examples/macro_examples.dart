@@ -4,15 +4,7 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-  Carbon.resetMacros();
-}
 
 const _macroSource = r'''
 import 'package:carbon/carbon.dart';
@@ -36,7 +28,6 @@ Carbon.registerMacro('businessEndOfWeek', (carbon, positionalArguments, namedArg
 
 /// Demonstrates registering and invoking a macro.
 Future<ExampleRun> runMacroExample() async {
-  await _bootstrap();
   Carbon.registerMacro('businessEndOfWeek', (
     carbon,
     positionalArguments,

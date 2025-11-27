@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _snapshotSource = r'''
 import 'package:carbon/carbon.dart';
@@ -33,7 +27,6 @@ Future<void> main() async {
 
 /// Demonstrates `toArray()`/`toObject()` parity with PHP Carbon.
 Future<ExampleRun> runConversionSnapshotExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
   final array = dt.toArray();
   final components = dt.toObject();
@@ -73,7 +66,6 @@ Future<void> main() async {
 
 /// Converts to `DateTime`, `DateTimeImmutable`, and between mutable/immutable Carbon.
 Future<ExampleRun> runDateTimeConversionExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2019-02-01T03:45:27Z', timeZone: 'Europe/Paris');
   final asDateTime = dt.toDateTime();
   final asImmutable = dt.toDateTimeImmutable();
@@ -118,7 +110,6 @@ Future<void> main() async {
 
 /// Demonstrates PHP-style `carbonize()` inputs.
 Future<ExampleRun> runCarbonizeExample() async {
-  await _bootstrap();
   final base = Carbon.parse(
     '2019-02-01T03:45:27.612584',
     timeZone: 'Europe/Paris',
@@ -162,7 +153,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runCastExample() async {
-  await _bootstrap();
   final source = Carbon.parse('2015-01-01T00:00:00Z');
   final casted = Carbon.cast(source);
   final immutable = CarbonImmutable.cast(source);

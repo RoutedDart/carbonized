@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _serializeSource = r'''
 import 'package:carbon/carbon.dart';
@@ -33,7 +27,6 @@ Future<void> main() async {
 
 /// Demonstrates `serialize()` / `Carbon.fromSerialized()` round-trip.
 Future<ExampleRun> runSerializationExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2012-12-25T20:30:00Z', timeZone: 'Europe/Moscow');
   final serialized = dt.serialize();
   final roundTrip = Carbon.fromSerialized(serialized);
@@ -64,7 +57,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runCustomSerializationExample() async {
-  await _bootstrap();
   Carbon.serializeUsing((date) => 'CUSTOM:${date.toIso8601String()}');
   final dt = Carbon.parse('2024-01-01T00:00:00Z');
   final buffer = StringBuffer()

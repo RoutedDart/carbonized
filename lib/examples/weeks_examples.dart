@@ -4,15 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await initializeDateFormatting('ar');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _localeWeekSource = r'''
 import 'package:carbon/carbon.dart';
@@ -37,7 +30,6 @@ Future<void> main() async {
 
 /// Shows how locale metadata drives start/end of week calculations.
 Future<ExampleRun> runLocaleWeekExample() async {
-  await _bootstrap();
   Carbon.setLocale('en_US');
   final en = Carbon.parse('2025-11-12T00:00:00Z');
   Carbon.setLocale('ar');
@@ -75,7 +67,6 @@ Future<void> main() async {
 
 /// Outputs the locale-aware week and ISO week numbers for a sample date.
 Future<ExampleRun> runWeekNumbersExample() async {
-  await _bootstrap();
   final date = Carbon.parse('2017-02-05T00:00:00Z');
   final buffer = StringBuffer()
     ..writeln('localeWeek -> ${date.localeWeek}')
@@ -109,7 +100,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runWeekSetterExample() async {
-  await _bootstrap();
   final date = Carbon.parse('2024-06-05T00:00:00Z');
   final week = date.weekNumber();
   final moved = date.copy().setWeekNumber(week + 2);
@@ -140,7 +130,6 @@ Future<void> main() async {
 
 /// Reprojects an instant onto a different weekday without touching other parts.
 Future<ExampleRun> runWeekdayAdjustExample() async {
-  await _bootstrap();
   final date = Carbon.parse('2017-02-05T00:00:00Z');
   final weekday = date.copy()..setDayOfWeek(DateTime.wednesday);
   final buffer = StringBuffer()
@@ -172,7 +161,6 @@ Future<void> main() async {
 
 /// Demonstrates `getDaysFromStartOfWeek()` / `setDaysFromStartOfWeek()` parity.
 Future<ExampleRun> runDaysFromStartExample() async {
-  await _bootstrap();
   final date = Carbon.parse('2024-06-05T00:00:00Z');
   final buffer = StringBuffer()
     ..writeln('default days -> ${date.getDaysFromStartOfWeek()}')

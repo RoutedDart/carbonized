@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _basicTestNowSource = r'''
 import 'package:carbon/carbon.dart';
@@ -36,8 +30,6 @@ Future<void> main() async {
 
 /// Recreates the PHP docs example for freezing `now()` via `setTestNow`.
 Future<ExampleRun> runBasicTestNowExample() async {
-  await _bootstrap();
-
   Carbon.setTestNow(Carbon.parse('2001-05-21T12:00:00Z'));
   final buffer = StringBuffer()
     ..writeln('has test now: ${Carbon.hasTestNow()}')
@@ -74,7 +66,6 @@ Future<void> main() async {
 
 /// Shows scoped overrides using `Carbon.withTestNow()`.
 Future<ExampleRun> runWithTestNowExample() async {
-  await _bootstrap();
   final buffer = StringBuffer();
   Carbon.withTestNow('2010-09-15T00:00:00Z', () {
     buffer.writeln('inside callback: ${Carbon.now().toIso8601String()}');
@@ -103,7 +94,6 @@ Future<void> main() async {
 
 /// Freezes both the instant and timezone using `setTestNowAndTimezone`.
 Future<ExampleRun> runTimezoneTestNowExample() async {
-  await _bootstrap();
   Carbon.setTestNowAndTimezone('2022-01-24 10:45', timeZone: 'America/Toronto');
   final buffer = StringBuffer()
     ..writeln("now: ${Carbon.now().isoFormat('YYYY-MM-DD HH:mm zz')}");
@@ -150,8 +140,6 @@ Future<void> main() async {
 
 /// Mirrors the SeasonalProduct test helper from the PHP docs.
 Future<ExampleRun> runSeasonalProductExample() async {
-  await _bootstrap();
-
   final product = _SeasonalProduct(100);
   Carbon.setTestNow('2000-03-01');
   final march = product.priceWithSeasonalMultiplier;

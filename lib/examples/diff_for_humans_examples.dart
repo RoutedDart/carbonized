@@ -9,11 +9,6 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
-
 const _humanReadableSource = r'''
 import 'package:carbon/carbon.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -33,7 +28,6 @@ Future<void> main() async {
 
 /// Demonstrates the basic `diffForHumans` usage backed by `timeago`.
 Future<ExampleRun> runHumanReadableExample() async {
-  await _bootstrap();
   final now = Carbon.parse('2024-06-05T12:00:00Z');
   final fiveHoursAgo = now.copy()..subHours(5);
   final nextWeek = now.copy()..addWeek();
@@ -68,7 +62,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runHumanReadableDetailExample() async {
-  await _bootstrap();
   final now = Carbon.parse('2024-01-01T00:00:00Z');
   final horizon = now.copy()
     ..addYears(1)

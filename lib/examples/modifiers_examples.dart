@@ -8,11 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
-
 const _startEndSource = r'''
 import 'package:carbon/carbon.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -64,7 +59,6 @@ Future<void> main() async {
 
 /// Demonstrates `next()`, `previous()`, and `average()` helpers.
 Future<ExampleRun> runNavigationExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2014-05-30T00:00:00Z');
   final start = Carbon.parse('2014-01-01T00:00:00Z');
   final end = Carbon.parse('2014-01-30T00:00:00Z');

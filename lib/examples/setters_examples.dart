@@ -4,14 +4,8 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
-
-Future<void> _bootstrap() async {
-  await initializeDateFormatting('en');
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _basicSettersSource = r'''
 import 'package:carbon/carbon.dart';
@@ -40,7 +34,6 @@ Future<void> main() async {
 
 /// Mirrors the base setter example from the PHP docs, including tz changes.
 Future<ExampleRun> runBasicSettersExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2024-01-15T12:34:56Z');
   dt
     ..setYear(1975)
@@ -82,7 +75,6 @@ Future<void> main() async {
 
 /// Highlights alias helpers like `years()` and `setDayOfWeek`.
 Future<ExampleRun> runMethodAliasesExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2024-01-15T12:00:00Z');
   dt.setYear(2001);
   dt.years(2002);
@@ -121,7 +113,6 @@ Future<void> main() async {
 
 /// Demonstrates the PHP-style `set()`/`get()` helpers plus `dayOfYear`.
 Future<ExampleRun> runDynamicSettersExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2024-01-01T12:00:00Z');
   dt
     ..set('year', 2003)
@@ -154,7 +145,6 @@ Future<void> main() async {
 
 /// Shows how setter overflow matches PHP Carbon's behavior.
 Future<ExampleRun> runOverflowExample() async {
-  await _bootstrap();
   final dt = Carbon.parse('2024-01-31T00:00:00Z');
   dt.setMonth(2);
 

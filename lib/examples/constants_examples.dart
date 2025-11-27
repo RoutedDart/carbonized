@@ -7,9 +7,6 @@ import 'package:carbon/carbon.dart';
 
 import 'example_runner.dart';
 
-Future<void> _bootstrap() async {
-  await Carbon.configureTimeMachine(testing: true);
-}
 
 const _constantsSource = r'''
 import 'package:carbon/carbon.dart';
@@ -24,7 +21,6 @@ Future<void> main() async {
 
 /// Shows how to reuse Dart's built-in weekday constants and `CarbonUnit` enum.
 Future<ExampleRun> runConstantsExample() async {
-  await _bootstrap();
   final buffer = StringBuffer()
     ..writeln('DateTime.saturday -> ${DateTime.saturday}')
     ..writeln('DateTime.sunday -> ${DateTime.sunday}')

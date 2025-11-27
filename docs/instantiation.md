@@ -7,6 +7,11 @@ Effective Dart idioms. Every example below calls
 `Carbon.configureTimeMachine(testing: true)` so IANA timezone names (like
 `America/Vancouver`) resolve the same way they do in PHP.
 
+> **⚠️ IMPORTANT:** Before using IANA timezone names (like `America/Vancouver`, `Europe/Paris`, etc.), 
+> you **must** call `await Carbon.configureTimeMachine()` in your application's initialization.
+> This loads the timezone database asynchronously. Without this, you'll get an error: 
+> `Unknown timezone "America/Vancouver"`. Fixed offset strings like `+05:00` work without configuration.
+
 
 ## Constructors and timezone arguments
 
