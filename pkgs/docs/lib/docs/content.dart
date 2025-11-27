@@ -1,40 +1,40 @@
-import 'package:carbon/examples/addition_examples.dart' as addition_examples;
-import 'package:carbon/examples/carbon_interval_examples.dart'
+import '../examples/addition_examples.dart' as addition_examples;
+import '../examples/carbon_interval_examples.dart'
     as carbon_interval_examples;
-import 'package:carbon/examples/carbon_period_examples.dart'
+import '../examples/carbon_period_examples.dart'
     as carbon_period_examples;
-import 'package:carbon/examples/carbon_timezone_examples.dart'
+import '../examples/carbon_timezone_examples.dart'
     as carbon_timezone_examples;
-import 'package:carbon/examples/common_formats_examples.dart'
+import '../examples/common_formats_examples.dart'
     as common_formats_examples;
-import 'package:carbon/examples/comparison_examples.dart'
+import '../examples/comparison_examples.dart'
     as comparison_examples;
-import 'package:carbon/examples/constants_examples.dart' as constants_examples;
-import 'package:carbon/examples/conversion_examples.dart'
+import '../examples/constants_examples.dart' as constants_examples;
+import '../examples/conversion_examples.dart'
     as conversion_examples;
-import 'package:carbon/examples/diff_for_humans_examples.dart'
+import '../examples/diff_for_humans_examples.dart'
     as diff_for_humans_examples;
-import 'package:carbon/examples/difference_examples.dart'
+import '../examples/difference_examples.dart'
     as difference_examples;
-import 'package:carbon/examples/fluent_setters_examples.dart'
+import '../examples/fluent_setters_examples.dart'
     as fluent_setters_examples;
-import 'package:carbon/examples/getters_examples.dart' as getters_examples;
-import 'package:carbon/examples/instantiation_examples.dart'
+import '../examples/getters_examples.dart' as getters_examples;
+import '../examples/instantiation_examples.dart'
     as instantiation_examples;
-import 'package:carbon/examples/intro_example.dart' as intro_example;
-import 'package:carbon/examples/localization_examples.dart'
+import '../examples/intro_example.dart' as intro_example;
+import '../examples/localization_examples.dart'
     as localization_examples;
-import 'package:carbon/examples/macro_examples.dart' as macro_examples;
-import 'package:carbon/examples/modifiers_examples.dart' as modifiers_examples;
-import 'package:carbon/examples/json_examples.dart' as json_examples;
-import 'package:carbon/examples/serialization_examples.dart'
+import '../examples/macro_examples.dart' as macro_examples;
+import '../examples/modifiers_examples.dart' as modifiers_examples;
+import '../examples/json_examples.dart' as json_examples;
+import '../examples/serialization_examples.dart'
     as serialization_examples;
-import 'package:carbon/examples/setters_examples.dart' as setters_examples;
-import 'package:carbon/examples/string_formatting_examples.dart'
+import '../examples/setters_examples.dart' as setters_examples;
+import '../examples/string_formatting_examples.dart'
     as string_formatting_examples;
-import 'package:carbon/examples/testing_aids_examples.dart'
+import '../examples/testing_aids_examples.dart'
     as testing_aids_examples;
-import 'package:carbon/examples/weeks_examples.dart' as weeks_examples;
+import '../examples/weeks_examples.dart' as weeks_examples;
 
 import 'model.dart';
 
@@ -66,8 +66,6 @@ final Map<String, SectionBuilder> _sectionBuilders = {
   'CarbonInterval': _buildCarbonInterval,
   'CarbonPeriod': _buildCarbonPeriod,
   'CarbonTimeZone': _buildCarbonTimeZone,
-  'Migrate to Carbon 3': _buildMigrateToCarbon3,
-  'Migrate to Carbon 2': _buildMigrateToCarbon2,
 };
 
 Future<List<DocSection>> getAllSections() async {
@@ -1378,83 +1376,3 @@ database.
   ];
 }
 
-Future<List<DocItem>> _buildMigrateToCarbon3() async {
-  return [
-    TextItem('''
-# Migrate to Carbon 3
-
-The PHP docs highlight the breaking changes between Carbon 2 and 3. Dart Carbon
-already follows the Carbon 3 semantics, but this section summarizes the PHP
-changes and explains which behaviors differ (or are not implemented) in Dart.
-'''),
-    TextItem('''
-## Highlights from the PHP release notes
-
-- `createFromTimestamp()` defaults to UTC.
-- `diffIn*` helpers now return floats (and can be negative unless `absolute`
-  is set).
-- Comparison helpers gained strict typing; `false`/`null` are no longer valid
-  arguments.
-- `create*` helpers return `null` (instead of `false`) on invalid input.
-- Several deprecated helpers were removed (`formatLocalized`, `setUtf8`,
-  `setWeekStartsAt/EndsAt`, `minValue`/`maxValue`, etc.).
-- CarbonPeriod now mirrors PHP's `DatePeriod` immutability rules.
-- `isSame*` helpers require an explicit comparison target.
-- Timezone APIs are stricter—unknown names throw in all modes.
-'''),
-    TextItem('''
-## Dart status and gaps
-
-- Dart Carbon already defaults `createFromTimestamp()` to UTC, so no migration
-  work is needed.
-- `diffIn*` has always returned doubles; use `diff().inSeconds` or cast to
-  `int` if you need truncated values. PHP's `floatDiffIn*` helpers are not
-  implemented.
-- Comparison helpers already require a `CarbonInterface`/`DateTime`; passing
-  booleans throws a `TypeError` at compile time.
-- `Carbon.create*` returns `null` when parsing fails (matching the Carbon 3
-  behavior). There is no `createStrict` toggle; call `Carbon.useStrictMode(true)`
-  before parsing if you need exceptions.
-- Removed PHP methods never existed in Dart (`formatLocalized`, `setUtf8`,
-  `setWeekStartsAt/EndsAt`, `minValue`/`maxValue`). Locales control week starts
-  and `isoFormat` replaces `formatLocalized`.
-- CarbonPeriod instances are immutable in Dart because the iterable is produced
-  eagerly. Use the `*_Until` helpers to rebuild another period instead of
-  mutating `start`/`end`.
-- `isSame*` helpers always require an explicit comparison object, and the
-  `isCurrent*` helpers cover the "relative to now" use case.
-- Strict timezone behavior is already enforced—unknown names throw immediately.
-- Translator-level overrides (e.g., `Translator::setTranslations`) are not
-  implemented; customizing locales still requires editing the generated tables.
-'''),
-  ];
-}
-
-Future<List<DocItem>> _buildMigrateToCarbon2() async {
-  return [
-    TextItem('''
-# Migrate to Carbon 2
-
-For completeness, this section summarizes the Carbon 1 → Carbon 2 migration
-notes from the PHP docs and states how Dart Carbon behaves.
-'''),
-    TextItem('''
-## Highlights from the PHP release notes
-
-- `Carbon` is now macroable.
-- `CarbonInterval` was added.
-- `CarbonPeriod` was added.
-- `CarbonTimeZone` was added.
-- `Carbon` now implements `DateTimeInterface`.
-'''),
-    TextItem('''
-## Dart status
-
-- Macros are supported via `Carbon.registerMacro()`.
-- `CarbonInterval` is fully supported.
-- `CarbonPeriod` is fully supported.
-- `CarbonTimeZone` logic is embedded in `Carbon` and `Carbon.configureTimeMachine()`.
-- Dart's `Carbon` implements `CarbonInterface` which mimics `DateTimeInterface`.
-'''),
-  ];
-}

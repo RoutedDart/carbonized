@@ -1,7 +1,7 @@
+import 'package:docs/docs/model.dart';
 import 'package:web/web.dart' as html;
 import 'dart:js_interop';
 import 'dart:async';
-import 'package:carbon/docs/model.dart';
 
 import 'live_sections.dart';
 import 'section_renderer.dart';

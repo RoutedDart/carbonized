@@ -1,7 +1,7 @@
 import 'package:web/web.dart' as html;
 import 'dart:js_interop';
 import 'package:markdown/markdown.dart' as md;
-import 'package:carbon/docs/model.dart';
+import 'package:docs/docs/model.dart';
 
 /// Renders documentation section content (markdown text and code examples).
 class SectionRenderer {

@@ -1,43 +1,43 @@
 import 'dart:io';
 
-import 'package:carbon/examples/example_runner.dart';
-import 'package:carbon/examples/addition_examples.dart' as addition_examples;
-import 'package:carbon/examples/carbon_interval_examples.dart'
+import 'package:docs/examples/example_runner.dart';
+import 'package:docs/examples/addition_examples.dart' as addition_examples;
+import 'package:docs/examples/carbon_interval_examples.dart'
     as carbon_interval_examples;
-import 'package:carbon/examples/carbon_period_examples.dart'
+import 'package:docs/examples/carbon_period_examples.dart'
     as carbon_period_examples;
-import 'package:carbon/examples/carbon_timezone_examples.dart'
+import 'package:docs/examples/carbon_timezone_examples.dart'
     as carbon_timezone_examples;
-import 'package:carbon/examples/common_formats_examples.dart'
+import 'package:docs/examples/common_formats_examples.dart'
     as common_formats_examples;
-import 'package:carbon/examples/comparison_examples.dart'
+import 'package:docs/examples/comparison_examples.dart'
     as comparison_examples;
-import 'package:carbon/examples/constants_examples.dart' as constants_examples;
-import 'package:carbon/examples/conversion_examples.dart'
+import 'package:docs/examples/constants_examples.dart' as constants_examples;
+import 'package:docs/examples/conversion_examples.dart'
     as conversion_examples;
-import 'package:carbon/examples/diff_for_humans_examples.dart'
+import 'package:docs/examples/diff_for_humans_examples.dart'
     as diff_for_humans_examples;
-import 'package:carbon/examples/difference_examples.dart'
+import 'package:docs/examples/difference_examples.dart'
     as difference_examples;
-import 'package:carbon/examples/fluent_setters_examples.dart'
+import 'package:docs/examples/fluent_setters_examples.dart'
     as fluent_setters_examples;
-import 'package:carbon/examples/getters_examples.dart' as getters_examples;
-import 'package:carbon/examples/instantiation_examples.dart'
+import 'package:docs/examples/getters_examples.dart' as getters_examples;
+import 'package:docs/examples/instantiation_examples.dart'
     as instantiation_examples;
-import 'package:carbon/examples/intro_example.dart' as intro_example;
-import 'package:carbon/examples/localization_examples.dart'
+import 'package:docs/examples/intro_example.dart' as intro_example;
+import 'package:docs/examples/localization_examples.dart'
     as localization_examples;
-import 'package:carbon/examples/macro_examples.dart' as macro_examples;
-import 'package:carbon/examples/modifiers_examples.dart' as modifiers_examples;
-import 'package:carbon/examples/json_examples.dart' as json_examples;
-import 'package:carbon/examples/serialization_examples.dart'
+import 'package:docs/examples/macro_examples.dart' as macro_examples;
+import 'package:docs/examples/modifiers_examples.dart' as modifiers_examples;
+import 'package:docs/examples/json_examples.dart' as json_examples;
+import 'package:docs/examples/serialization_examples.dart'
     as serialization_examples;
-import 'package:carbon/examples/setters_examples.dart' as setters_examples;
-import 'package:carbon/examples/string_formatting_examples.dart'
+import 'package:docs/examples/setters_examples.dart' as setters_examples;
+import 'package:docs/examples/string_formatting_examples.dart'
     as string_formatting_examples;
-import 'package:carbon/examples/testing_aids_examples.dart'
+import 'package:docs/examples/testing_aids_examples.dart'
     as testing_aids_examples;
-import 'package:carbon/examples/weeks_examples.dart' as weeks_examples;
+import 'package:docs/examples/weeks_examples.dart' as weeks_examples;
 
 const _phpSectionTitles = <String>[
   'Instantiation',

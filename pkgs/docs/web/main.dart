@@ -1,5 +1,5 @@
 import 'package:carbon/carbon.dart';
-import 'package:carbon/docs/content.dart';
+import 'package:docs/docs/content.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'components/analog_clock_component.dart';
