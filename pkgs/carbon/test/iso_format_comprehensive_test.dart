@@ -52,16 +52,18 @@ void main() {
       final date1 = Carbon.create(year: 2024, month: 11, day: 5);
       final date2 = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date1.format('D'), '5');
-      expect(date2.format('D'), '26');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date1.isoFormat('D'), '5');
+      expect(date2.isoFormat('D'), '26');
     });
 
     test('DD - day of month with padding', () {
       final date1 = Carbon.create(year: 2024, month: 11, day: 5);
       final date2 = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date1.format('DD'), '05');
-      expect(date2.format('DD'), '26');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date1.isoFormat('DD'), '05');
+      expect(date2.isoFormat('DD'), '26');
     });
 
     test('DDD - day of year without padding', () {
@@ -69,9 +71,10 @@ void main() {
       final nov26 = Carbon.create(year: 2024, month: 11, day: 26);
       final dec31 = Carbon.create(year: 2024, month: 12, day: 31);
 
-      expect(jan5.format('DDD'), '5');
-      expect(nov26.format('DDD'), '331'); // 2024 is a leap year
-      expect(dec31.format('DDD'), '366');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(jan5.isoFormat('DDD'), '5');
+      expect(nov26.isoFormat('DDD'), '331'); // 2024 is a leap year
+      expect(dec31.isoFormat('DDD'), '366');
     });
 
     test('DDDD - day of year with padding', () {
@@ -79,9 +82,10 @@ void main() {
       final nov26 = Carbon.create(year: 2024, month: 11, day: 26);
       final dec31 = Carbon.create(year: 2024, month: 12, day: 31);
 
-      expect(jan5.format('DDDD'), '005');
-      expect(nov26.format('DDDD'), '331');
-      expect(dec31.format('DDDD'), '366');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(jan5.isoFormat('DDDD'), '005');
+      expect(nov26.isoFormat('DDDD'), '331');
+      expect(dec31.isoFormat('DDDD'), '366');
     });
 
     test('d - single lowercase d token behavior', () {
@@ -110,16 +114,18 @@ void main() {
       final monday = Carbon.create(year: 2024, month: 11, day: 25); // Monday
       final tuesday = Carbon.create(year: 2024, month: 11, day: 26); // Tuesday
 
-      expect(monday.format('ddd'), 'Mon');
-      expect(tuesday.format('ddd'), 'Tue');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(monday.isoFormat('ddd'), 'Mon');
+      expect(tuesday.isoFormat('ddd'), 'Tue');
     });
 
     test('dddd - full weekday name', () {
       final monday = Carbon.create(year: 2024, month: 11, day: 25); // Monday
       final tuesday = Carbon.create(year: 2024, month: 11, day: 26); // Tuesday
 
-      expect(monday.format('dddd'), 'Monday');
-      expect(tuesday.format('dddd'), 'Tuesday');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(monday.isoFormat('dddd'), 'Monday');
+      expect(tuesday.isoFormat('dddd'), 'Tuesday');
     });
 
     test('Do - day of month with ordinal', () {
@@ -128,10 +134,11 @@ void main() {
       final third = Carbon.create(year: 2024, month: 11, day: 3);
       final twentyFirst = Carbon.create(year: 2024, month: 11, day: 21);
 
-      expect(first.format('Do'), '1st');
-      expect(second.format('Do'), '2nd');
-      expect(third.format('Do'), '3rd');
-      expect(twentyFirst.format('Do'), '21st');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(first.isoFormat('Do'), '1st');
+      expect(second.isoFormat('Do'), '2nd');
+      expect(third.isoFormat('Do'), '3rd');
+      expect(twentyFirst.isoFormat('Do'), '21st');
     });
   });
 
@@ -174,8 +181,9 @@ void main() {
       final jan = Carbon.create(year: 2024, month: 1, day: 15);
       final dec = Carbon.create(year: 2024, month: 12, day: 15);
 
-      expect(jan.format('Mo'), '1st');
-      expect(dec.format('Mo'), '12th');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(jan.isoFormat('Mo'), '1st');
+      expect(dec.isoFormat('Mo'), '12th');
     });
   });
 
@@ -183,19 +191,22 @@ void main() {
     test('YY - 2-digit year', () {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date.format('YY'), '24');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date.isoFormat('YY'), '24');
     });
 
     test('YYYY - 4-digit year', () {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date.format('YYYY'), '2024');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date.isoFormat('YYYY'), '2024');
     });
 
     test('YYYYY - 5-digit year with padding', () {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date.format('YYYYY'), '02024');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date.isoFormat('YYYYY'), '02024');
     });
   });
 
@@ -340,8 +351,9 @@ void main() {
       final morning = Carbon.create(year: 2024, month: 11, day: 26, hour: 9);
       final afternoon = Carbon.create(year: 2024, month: 11, day: 26, hour: 14);
 
-      expect(morning.format('H'), '9');
-      expect(afternoon.format('H'), '14');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(morning.isoFormat('H'), '9');
+      expect(afternoon.isoFormat('H'), '14');
     });
 
     test('hh - 12-hour with padding', () {
@@ -402,10 +414,11 @@ void main() {
       final morning = Carbon.create(year: 2024, month: 11, day: 26, hour: 9);
       final afternoon = Carbon.create(year: 2024, month: 11, day: 26, hour: 14);
 
-      expect(morning.format('A'), 'AM');
-      expect(afternoon.format('A'), 'PM');
-      expect(morning.format('a'), 'am');
-      expect(afternoon.format('a'), 'pm');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(morning.isoFormat('A'), 'AM');
+      expect(afternoon.isoFormat('A'), 'PM');
+      expect(morning.isoFormat('a'), 'am');
+      expect(afternoon.isoFormat('a'), 'pm');
     });
   });
 
@@ -414,16 +427,18 @@ void main() {
       final jan31 = Carbon.create(year: 2024, month: 1, day: 31);
       final feb1 = jan31.copy().addDay();
 
-      expect(jan31.format('MMM DD'), 'Jan 31');
-      expect(feb1.format('MMM DD'), 'Feb 01');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(jan31.isoFormat('MMM DD'), 'Jan 31');
+      expect(feb1.isoFormat('MMM DD'), 'Feb 01');
     });
 
     test('End of year transitions', () {
       final dec31 = Carbon.create(year: 2024, month: 12, day: 31);
       final jan1 = dec31.copy().addDay();
 
-      expect(dec31.format('MMM DD'), 'Dec 31');
-      expect(jan1.format('MMM DD'), 'Jan 01');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(dec31.isoFormat('MMM DD'), 'Dec 31');
+      expect(jan1.isoFormat('MMM DD'), 'Jan 01');
       expect(dec31.dayOfYear, 366); // Leap year
       expect(jan1.dayOfYear, 1);
     });
@@ -432,8 +447,9 @@ void main() {
       final leapDay = Carbon.create(year: 2024, month: 2, day: 29);
       final dayAfter = leapDay.copy().addDay();
 
-      expect(leapDay.format('MMM DD'), 'Feb 29');
-      expect(dayAfter.format('MMM DD'), 'Mar 01');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(leapDay.isoFormat('MMM DD'), 'Feb 29');
+      expect(dayAfter.isoFormat('MMM DD'), 'Mar 01');
       expect(leapDay.dayOfYear, 60);
       expect(dayAfter.dayOfYear, 61);
     });
@@ -442,8 +458,9 @@ void main() {
       final feb28 = Carbon.create(year: 2023, month: 2, day: 28);
       final mar1 = feb28.copy().addDay();
 
-      expect(feb28.format('MMM DD'), 'Feb 28');
-      expect(mar1.format('MMM DD'), 'Mar 01');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(feb28.isoFormat('MMM DD'), 'Feb 28');
+      expect(mar1.isoFormat('MMM DD'), 'Mar 01');
       expect(feb28.dayOfYear, 59);
       expect(mar1.dayOfYear, 60);
     });
@@ -453,15 +470,17 @@ void main() {
     test('Brackets preserve literal text', () {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
-      expect(date.format('[Today is] MMM DD'), 'Today is Nov 26');
-      expect(date.format('MMM DD [is the date]'), 'Nov 26 is the date');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date.isoFormat('[Today is] MMM DD'), 'Today is Nov 26');
+      expect(date.isoFormat('MMM DD [is the date]'), 'Nov 26 is the date');
     });
 
     test('Backslash escapes single character', () {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
+      // Using isoFormat() for PHP Carbon compatible behavior
       // Escaping a token character should make it literal
-      final result = date.format(r'MMM \D\D');
+      final result = date.isoFormat(r'MMM \D\D');
       print('Escaped DD result: $result');
 
       // Document the behavior
@@ -477,7 +496,8 @@ void main() {
         minute: 32,
       );
 
-      expect(date.format('YYYY-MM-DD [at] HH:mm'), '2024-11-26 at 14:32');
+      // Using isoFormat() for PHP Carbon compatible behavior
+      expect(date.isoFormat('YYYY-MM-DD [at] HH:mm'), '2024-11-26 at 14:32');
     });
   });
 
@@ -589,7 +609,8 @@ void main() {
       final date = Carbon.create(year: 2024, month: 11, day: 26);
 
       // In isoFormat: DDDD should be matched before DDD, DD, or D
-      expect(date.isoFormat('DDDD'), '0331'); // Padded day of year
+      // Per PHP Carbon: DDDD is day of year with padding (3 digits minimum)
+      expect(date.isoFormat('DDDD'), '331'); // Day 331 of year (no leading zero needed)
       expect(date.isoFormat('DDD'), '331'); // Day of year
       expect(date.isoFormat('DD'), '26'); // Day of month
       expect(date.isoFormat('D'), '26'); // Day of month
@@ -623,22 +644,19 @@ void main() {
     test('dddd vs ddd vs dd vs d - weekday vs day tokens', () {
       final tuesday = Carbon.create(year: 2024, month: 11, day: 26);
 
-      // In format() (Dart's DateFormat):
-      // dddd/ddd = weekday name
-      // dd/d = day of month
-      expect(tuesday.format('dddd'), 'Tuesday');
-      expect(tuesday.format('ddd'), 'Tue');
-      expect(tuesday.format('dd'), '26'); // Day of month
-      expect(tuesday.format('d'), '26'); // Day of month
-
-      // In isoFormat() (Carbon's formatter):
-      // dddd/ddd = weekday name
-      // dd/d = treated as literals (not implemented as day tokens)
+      // In isoFormat() (Carbon's formatter) - PHP Carbon compatible:
+      // dddd = full weekday name, ddd = short weekday name
+      // dd = min weekday name, d = day of week number
       expect(tuesday.isoFormat('dddd'), 'Tuesday');
       expect(tuesday.isoFormat('ddd'), 'Tue');
       // Use DD for day of month in isoFormat
       expect(tuesday.isoFormat('DD'), '26');
       expect(tuesday.isoFormat('D'), '26');
+
+      // In format() (Dart's DateFormat):
+      // dd/d = day of month
+      expect(tuesday.format('dd'), '26'); // Day of month
+      expect(tuesday.format('d'), '26'); // Day of month
     });
   });
 }
