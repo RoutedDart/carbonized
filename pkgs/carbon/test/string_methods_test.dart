@@ -165,8 +165,9 @@ void main() {
       });
       final leap = Carbon.parse('1976-12-25T14:15:16');
       final normal = Carbon.parse('1975-12-25T14:15:16');
-      expect(leap.toString(), '25th of December 7:15:16 pm');
-      expect(normal.toString(), '25th of December, 1975 7:15:16 pm');
+      // g = 12-hour format without leading zeros, so 14:15:16 -> 2:15:16 pm
+      expect(leap.toString(), '25th of December 2:15:16 pm');
+      expect(normal.toString(), '25th of December, 1975 2:15:16 pm');
       Carbon.resetToStringFormat();
     });
 

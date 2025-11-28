@@ -12,14 +12,18 @@ import 'package:intl/intl.dart';
 // Import generated locales first
 import 'core/locales/generated/all_generated.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:time_machine/time_machine.dart' as tm;
+import 'package:time_machine2/time_machine2.dart' as tm;
 // Import internal API needed to load timezone data on web
 // ignore: implementation_imports
-import 'package:time_machine/src/timezones/tzdb_datetimezone_source.dart'
-        // ignore: invalid_use_of_internal_member
-        show
-        // ignore: invalid_use_of_internal_member
-        ITzdbDateTimeZoneSource;
+// import 'package:time_machine/src/timezones/tzdb_datetimezone_source.dart'
+//         // ignore: invalid_use_of_internal_member
+//         show
+//         // ignore: invalid_use_of_internal_member
+//         ITzdbDateTimeZoneSource;import 'package:time_machine/src/timezones/tzdb_datetimezone_source.dart'
+//         // ignore: invalid_use_of_internal_member
+//         show
+//         // ignore: invalid_use_of_internal_member
+//         ITzdbDateTimeZoneSource;
 
 part 'core/carbon_macro.dart';
 part 'core/carbon_settings.dart';

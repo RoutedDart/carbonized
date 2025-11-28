@@ -444,13 +444,23 @@ class Carbon extends CarbonBase {
           resolved = formatter.parseUtc(input);
         } else {
           final parsed = DateTime.parse(input);
+          // Extract microseconds from the original string to preserve precision on web
+          final extractedMicros = extractMicrosecondsFromIsoString(input);
+
           // If input doesn't have timezone info (Z or offset) and we have an explicit timezone,
           // we should interpret the time as being in that timezone
-          final hasTimezoneInInput = input.contains('Z') || 
+          final hasTimezoneInInput =
+              input.contains('Z') ||
               RegExp(r'[+-]\d{2}:\d{2}$').hasMatch(input) ||
               RegExp(r'[+-]\d{4}$').hasMatch(input);
           if (timeZone != null && !hasTimezoneInInput && !parsed.isUtc) {
             // Keep raw components for interpretation in target timezone
+            // Use extracted microseconds if available to preserve precision on web
+            final micros =
+                extractedMicros ??
+                (parsed.millisecond * 1000 + parsed.microsecond);
+            final millis = micros ~/ 1000;
+            final microRemainder = micros % 1000;
             resolved = DateTime.utc(
               parsed.year,
               parsed.month,
@@ -458,12 +468,29 @@ class Carbon extends CarbonBase {
               parsed.hour,
               parsed.minute,
               parsed.second,
-              parsed.millisecond,
-              parsed.microsecond,
+              millis,
+              microRemainder,
             );
             shouldInterpretInZone = true;
           } else {
-            resolved = parsed.isUtc ? parsed : parsed.toUtc();
+            // For non-timezone cases, still preserve microseconds if extracted
+            if (extractedMicros != null) {
+              final millis = extractedMicros ~/ 1000;
+              final microRemainder = extractedMicros % 1000;
+              final base = parsed.isUtc ? parsed : parsed.toUtc();
+              resolved = DateTime.utc(
+                base.year,
+                base.month,
+                base.day,
+                base.hour,
+                base.minute,
+                base.second,
+                millis,
+                microRemainder,
+              );
+            } else {
+              resolved = parsed.isUtc ? parsed : parsed.toUtc();
+            }
           }
         }
       } on FormatException catch (error) {
@@ -1699,9 +1726,7 @@ class Carbon extends CarbonBase {
       hour: value.hour,
       minute: value.minute,
       second: value.second,
-      microsecond:
-          value.microsecond +
-          value.millisecond * Duration.microsecondsPerMillisecond,
+      microsecond: value.microsecond,
       timeZone: timeZone,
     );
     return _fromUtc(

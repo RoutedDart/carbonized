@@ -1239,3 +1239,24 @@ class _LocaleNameIndex {
   String _normalize(String value) =>
       value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
 }
+
+/// Extracts microseconds from an ISO 8601 string.
+///
+/// On web, JavaScript's Date only supports millisecond precision, so
+/// DateTime.parse() will truncate microseconds. This function extracts
+/// the full microsecond value directly from the string before parsing.
+///
+/// Returns null if no fractional seconds are found in the input string.
+int? extractMicrosecondsFromIsoString(String input) {
+  // Match fractional seconds in ISO 8601 format: .123456 or ,123456
+  final match = RegExp(r'[.,](\d+)').firstMatch(input);
+  if (match == null) return null;
+
+  final fractional = match.group(1)!;
+  // Pad to 6 digits (microseconds) or truncate if longer
+  if (fractional.length >= 6) {
+    return int.parse(fractional.substring(0, 6));
+  } else {
+    return int.parse(fractional.padRight(6, '0'));
+  }
+}

@@ -169,8 +169,8 @@ class LiveSections {
           <div class="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
             <div><span class="relative-label">1 hour ago:</span> <span class="font-mono relative-value">${hourAgo.format('HH:mm')}</span></div>
             <div><span class="relative-label">In 1 hour:</span> <span class="font-mono relative-value">${hourAhead.format('HH:mm')}</span></div>
-            <div><span class="relative-label">Yesterday:</span> <span class="font-mono relative-value">${yesterday.format('MMM DD')}</span></div>
-            <div><span class="relative-label">Tomorrow:</span> <span class="font-mono relative-value">${tomorrow.format('MMM DD')}</span></div>
+            <div><span class="relative-label">Yesterday:</span> <span class="font-mono relative-value">${yesterday.format('MMM dd')}</span></div>
+            <div><span class="relative-label">Tomorrow:</span> <span class="font-mono relative-value">${tomorrow.format('MMM dd')}</span></div>
           </div>
         </div>
       </div>
