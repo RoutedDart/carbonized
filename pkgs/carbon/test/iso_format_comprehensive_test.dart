@@ -610,7 +610,10 @@ void main() {
 
       // In isoFormat: DDDD should be matched before DDD, DD, or D
       // Per PHP Carbon: DDDD is day of year with padding (3 digits minimum)
-      expect(date.isoFormat('DDDD'), '331'); // Day 331 of year (no leading zero needed)
+      expect(
+        date.isoFormat('DDDD'),
+        '331',
+      ); // Day 331 of year (no leading zero needed)
       expect(date.isoFormat('DDD'), '331'); // Day of year
       expect(date.isoFormat('DD'), '26'); // Day of month
       expect(date.isoFormat('D'), '26'); // Day of month
