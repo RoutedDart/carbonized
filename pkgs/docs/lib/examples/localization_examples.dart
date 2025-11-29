@@ -4,27 +4,16 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:timeago/timeago.dart' as timeago;
-
 import 'example_runner.dart';
-
-Future<void> _ensureLocales(Iterable<String> locales) async {
-  for (final locale in locales) {
-    await initializeDateFormatting(locale);
-  }
-}
 
 const _localeFormattingSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-Future<void> main() async {
-  await initializeDateFormatting('en');
-  await initializeDateFormatting('fr');
-
+void main() {
+  // No need for initializeDateFormatting() - Carbon handles it automatically!
+  
   Intl.defaultLocale = 'fr';
   Carbon.setLocale('fr');
   final defaultLocale = Carbon.now().localeCode;
@@ -45,8 +34,6 @@ Future<void> main() async {
 
 /// Mirrors the PHP docs' locale formatting showcase using isoFormat presets.
 Future<ExampleRun> runLocaleFormattingExample() async {
-  await _ensureLocales(const ['en', 'fr']);
-
   Intl.defaultLocale = 'fr';
   Carbon.setLocale('fr');
   final defaultLocale = Carbon.now().localeCode;
@@ -72,7 +59,6 @@ Future<ExampleRun> runLocaleFormattingExample() async {
 
 const _localeWeekSettingsSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 String describeWeekend(List<int> days) {
   const labels = <int, String>{
@@ -87,10 +73,7 @@ String describeWeekend(List<int> days) {
   return days.map((day) => labels[day] ?? '$day').join(', ');
 }
 
-Future<void> main() async {
-  await initializeDateFormatting('en');
-  await initializeDateFormatting('en_GB');
-
+void main() {
   final sample = Carbon.parse('2024-06-05T12:00:00Z');
 
   Carbon.setLocale('en_US');
@@ -112,8 +95,6 @@ Future<void> main() async {
 
 /// Demonstrates how locale metadata changes week starts and weekend days.
 Future<ExampleRun> runLocaleWeekSettingsExample() async {
-  await _ensureLocales(const ['en', 'en_GB']);
-
   final sample = Carbon.parse('2024-06-05T12:00:00Z');
 
   Carbon.setLocale('en_US');
@@ -153,12 +134,8 @@ String _describeWeekend(List<int> days) {
 
 const _translatorSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
-Future<void> main() async {
-  await initializeDateFormatting('fr');
-
+void main() {
   CarbonTranslator.registerLocale(
     'fr',
     CarbonLocaleData(
@@ -179,7 +156,6 @@ Future<void> main() async {
         'now': "à l'instant",
         'in ': 'dans ',
       },
-      timeagoMessages: timeago.FrMessages(),
     ),
   );
 
@@ -193,8 +169,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runTranslatorExample() async {
-  await _ensureLocales(const ['fr']);
-
   CarbonTranslator.registerLocale(
     'fr',
     CarbonLocaleData(
@@ -210,7 +184,6 @@ Future<ExampleRun> runTranslatorExample() async {
         'now': "à l'instant",
         'in ': 'dans ',
       },
-      timeagoMessages: timeago.FrMessages(),
     ),
   );
 

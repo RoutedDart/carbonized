@@ -12,10 +12,8 @@ const _jsonSource = r'''
 import 'dart:convert';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final dt = Carbon.parse('2012-12-25T20:30:00Z', timeZone: 'Europe/Moscow');

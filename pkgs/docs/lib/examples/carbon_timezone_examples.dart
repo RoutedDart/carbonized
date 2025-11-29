@@ -9,10 +9,8 @@ import 'example_runner.dart';
 
 const _timezoneSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final paris = Carbon.parse('2024-06-01T12:00:00', timeZone: 'Europe/Paris');

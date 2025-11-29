@@ -9,10 +9,8 @@ import 'example_runner.dart';
 
 const _incrementSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final base = Carbon.parse('2012-01-31T00:00:00Z');
@@ -47,10 +45,8 @@ Future<ExampleRun> runIncrementExample() async {
 
 const _genericAddSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final dt = Carbon.parse('2012-02-03T00:00:00Z');
@@ -110,10 +106,8 @@ Future<ExampleRun> runShiftTimezoneExample() async {
 
 const _rawAddSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final base = Carbon.parse('2024-01-01T00:00:00Z');

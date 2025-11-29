@@ -9,10 +9,8 @@ import 'example_runner.dart';
 
 const _periodBasicsSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final start = Carbon.parse('2024-06-01T00:00:00Z');
@@ -39,10 +37,8 @@ Future<ExampleRun> runPeriodBasicsExample() async {
 
 const _periodAdvancedSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final start = Carbon.parse('2024-12-23T00:00:00Z');
@@ -73,10 +69,8 @@ Future<ExampleRun> runPeriodAdvancedExample() async {
 
 const _periodStringsSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   Carbon.setLocale('en');

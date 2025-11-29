@@ -9,10 +9,8 @@ import 'example_runner.dart';
 
 const _snapshotSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final dt = Carbon.parse('2019-02-01T03:45:27.612584Z');
   final array = dt.toArray();
@@ -43,10 +41,8 @@ Future<ExampleRun> runConversionSnapshotExample() async {
 
 const _dateTimeConversionSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final dt = Carbon.parse('2019-02-01T03:45:27Z', timeZone: 'Europe/Paris');
@@ -86,10 +82,8 @@ Future<ExampleRun> runDateTimeConversionExample() async {
 
 const _carbonizeSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final base = Carbon.parse(
@@ -137,10 +131,8 @@ Future<ExampleRun> runCarbonizeExample() async {
 
 const _castSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final source = Carbon.parse('2015-01-01T00:00:00Z');
   final casted = Carbon.cast(source);

@@ -6,8 +6,6 @@ resolution: workspace
 environment:
   sdk: ">=3.9.2 <4.0.0"
 
-publish_to: none
-
 # Add regular dependencies here.
 dependencies:
   clock: ^1.1.2

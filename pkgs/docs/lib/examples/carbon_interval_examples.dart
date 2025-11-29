@@ -44,7 +44,7 @@ Future<ExampleRun> runIntervalBasicsExample() async {
 const _intervalForHumansSource = r'''
 import 'package:carbon/carbon.dart';
 
-Future<void> main() async {
+void main() {
   final interval = CarbonInterval.fromComponents(days: 3, hours: 5);
   print('forHumans -> ${interval.forHumans()}');
 }

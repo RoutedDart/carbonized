@@ -3,16 +3,13 @@ library;
 
 import 'dart:async';
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
 const introductionExampleSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final mutable = Carbon.parse('2025-01-10T00:00:00Z');
   final immutable = CarbonImmutable.parse('2025-01-10T00:00:00Z');
@@ -48,7 +45,6 @@ Future<void> main() async {
 
 /// Recreates the PHP docs' mutability example with Carbon/CarbonImmutable.
 Future<ExampleRun> runIntroductionExample() async {
-  await initializeDateFormatting('en');
   final buffer = StringBuffer();
 
   final mutable = Carbon.parse('2025-01-10T00:00:00Z');

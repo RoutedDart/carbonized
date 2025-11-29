@@ -4,16 +4,13 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
 const _constructorsSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
   Carbon.setTestNow('2024-01-15T10:00:00Z');
 
@@ -38,7 +35,6 @@ Future<void> main() async {
 
 /// Demonstrates constructors plus timezone arguments from the PHP docs.
 Future<ExampleRun> runConstructorsExample() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
   Carbon.setTestNow('2024-01-15T10:00:00Z');
 
@@ -68,10 +64,8 @@ Future<ExampleRun> runConstructorsExample() async {
 
 const _componentFactoriesSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
   Carbon.setTestNow('2024-06-15T09:30:00-05:00');
 
@@ -105,7 +99,6 @@ Future<void> main() async {
 
 /// Shows `create*` helpers, PHP-style factories, and the null-returning `make`.
 Future<ExampleRun> runComponentFactoriesExample() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
   Carbon.setTestNow('2024-06-15T09:30:00-05:00');
 
@@ -147,10 +140,8 @@ Future<ExampleRun> runComponentFactoriesExample() async {
 
 const _safeCreationSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final previousStrict = Carbon.isStrictModeEnabled();
@@ -178,7 +169,6 @@ Future<void> main() async {
 
 /// Compares `create`, `createSafe`, and `createStrict`, including DST gaps.
 Future<ExampleRun> runSafeCreationExample() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final previousStrict = Carbon.isStrictModeEnabled();
@@ -221,10 +211,8 @@ Future<ExampleRun> runSafeCreationExample() async {
 
 const _utcOffsetSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final date = Carbon.parse('2024-01-01T00:00:00Z');
   print('initial offset -> ${date.utcOffset}');
@@ -235,7 +223,6 @@ Future<void> main() async {
 ''';
 
 Future<ExampleRun> runUtcOffsetExample() async {
-  await initializeDateFormatting('en');
   final date = Carbon.parse('2024-01-01T00:00:00Z');
   final buffer = StringBuffer()
     ..writeln('initial offset -> ${date.utcOffset}')
@@ -249,10 +236,8 @@ Future<ExampleRun> runUtcOffsetExample() async {
 
 const _timestampSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final seconds = Carbon.createFromTimestamp(-1);
@@ -269,7 +254,6 @@ Future<void> main() async {
 
 /// Highlights the timestamp factory family (seconds, millis, UTC, fractional).
 Future<ExampleRun> runTimestampExample() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final seconds = Carbon.createFromTimestamp(-1);
