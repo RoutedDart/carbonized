@@ -12,10 +12,8 @@ publish_to: none
 dependencies:
   clock: ^1.1.2
   intl: ^0.20.2
-  timeago: ^3.7.1
-  time_machine2:
-    git: https://github.com/RoutedDart/time_machine2.git
-
+  meta: ^1.17.0
+  time_machine2: ^0.13.1
 
 dev_dependencies:
   lints: ^6.0.0

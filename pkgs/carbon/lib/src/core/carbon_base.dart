@@ -41,6 +41,7 @@ abstract class CarbonBase implements CarbonInterface {
       <String, tm.DateTimeZone>{};
   static bool _timeMachineInitialized = false;
   static bool _strictMode = true;
+  static final Set<String> _initializedIntlLocales = <String>{};
   static final Map<String, String Function(CarbonInterface)>
   _isoFormatOverrides = <String, String Function(CarbonInterface)>{};
   static final RegExp _fixedOffsetPattern = RegExp(
@@ -206,6 +207,28 @@ abstract class CarbonBase implements CarbonInterface {
   static void resetTimeMachine() {
     _zoneProvider = null;
     _zoneCache.clear();
+  }
+
+  /// Ensures the given locale is initialized for intl's DateFormat.
+  ///
+  /// This is called internally when [_autoInitializeIntl] is true.
+  /// You can also call this manually to pre-initialize specific locales.
+  static Future<void> ensureLocaleInitialized(String locale) async {
+    if (_initializedIntlLocales.contains(locale)) {
+      return;
+    }
+    try {
+      await initializeDateFormatting(locale);
+      _initializedIntlLocales.add(locale);
+    } catch (_) {
+      // Locale might not be available in intl, that's okay
+      // Carbon will fall back to CarbonTranslator or English
+    }
+  }
+
+  /// Clears the tracking of initialized intl locales (primarily for tests).
+  static void resetIntlInitialization() {
+    _initializedIntlLocales.clear();
   }
 
   /// Enables PHP-style strict mode (throws on invalid operations).
@@ -1938,7 +1961,7 @@ abstract class CarbonBase implements CarbonInterface {
   int get dayOfMonth => day;
 
   @override
-  int get dayOfYear => _daysSince(DateTime.utc(_dateTime.year, 1, 1)) + 1;
+  int get dayOfYear => CarbonBase.dayOfYearFor(_dateTime);
 
   @override
   int get dayOfWeek {
@@ -4305,12 +4328,14 @@ abstract class CarbonBase implements CarbonInterface {
 
   @override
   String format(String pattern, {String? locale}) {
+    final targetLocale = locale ?? _locale;
     final snapshot = _zoneSnapshot();
+
     if (snapshot == null) {
-      final formatter = DateFormat(pattern, locale ?? _locale);
-      return formatter.format(_dateTime.toUtc());
+      // Use Carbon's built-in translation formatting
+      return _formatWithCarbonLocale(_dateTime.toUtc(), pattern, targetLocale);
     }
-    return _formatWithZone(pattern, snapshot, locale ?? _locale);
+    return _formatWithZone(pattern, snapshot, targetLocale);
   }
 
   @override
@@ -4529,19 +4554,11 @@ abstract class CarbonBase implements CarbonInterface {
   }) {
     final localeMatch = CarbonTranslator.matchLocale(locale ?? _locale);
     final humanLocale = localeMatch;
-    CarbonTranslator.ensureTimeagoLocale(humanLocale.localeCode);
     final base = (reference?.dateTime ?? clock.now()).toUtc();
     if (parts <= 1) {
-      final result = timeago.format(
-        _dateTime,
-        locale: humanLocale.localeCode,
-        allowFromNow: true,
-        clock: base,
-      );
-      return CarbonTranslator.translateTimeString(
-        result,
-        locale: humanLocale.localeCode,
-      );
+      // Use Carbon's own simple relative time formatter
+      final result = _formatSimpleRelativeTime(_dateTime, base, humanLocale);
+      return result;
     }
 
     final diff = _dateTime.difference(base);
@@ -4785,8 +4802,9 @@ abstract class CarbonBase implements CarbonInterface {
     final timezoneName = _timeZone ?? snapshot?.abbreviation ?? 'UTC';
     final abbreviation = snapshot?.abbreviation ?? timezoneName;
     final map = <String, Object?>{
-      'date': DateFormat(
+      'date': _createDateFormat(
         'yyyy-MM-dd HH:mm:ss.SSSSSS',
+        null,
       ).format(_localDateTimeForFormatting()),
       'timezone': {
         'name': timezoneName,
@@ -5031,8 +5049,12 @@ abstract class CarbonBase implements CarbonInterface {
           : _formatOffset(snapshot.offset, includePrefix: true);
       matchIndex++;
     }
-    final formatter = DateFormat(sanitizedPattern, locale);
-    var result = formatter.format(snapshot.localDateTime);
+    // Use Carbon's built-in translation formatting
+    var result = _formatWithCarbonLocale(
+      snapshot.localDateTime,
+      sanitizedPattern,
+      locale,
+    );
     replacements.forEach((token, value) {
       result = result.replaceAll(token, value);
     });
@@ -5281,6 +5303,13 @@ abstract class CarbonBase implements CarbonInterface {
   int _hoursSince(DateTime anchor) => _dateTime.difference(anchor).inHours;
 
   int _daysSince(DateTime anchor) => _dateTime.difference(anchor).inDays;
+
+  /// Returns the ordinal day for any [DateTime], normalizing to UTC.
+  static int dayOfYearFor(DateTime date) {
+    final utc = date.isUtc ? date : date.toUtc();
+    final startOfYear = DateTime.utc(utc.year, 1, 1);
+    return utc.difference(startOfYear).inDays + 1;
+  }
 
   int _millisecondsSince(DateTime anchor) =>
       _dateTime.difference(anchor).inMilliseconds;
@@ -6337,6 +6366,134 @@ abstract class CarbonBase implements CarbonInterface {
       end.difference(start).inMicroseconds.toDouble() /
       Duration.microsecondsPerDay;
 
+  /// Format a simple relative time string using Carbon's locale data.
+  /// This replaces the timeago package functionality.
+  String _formatSimpleRelativeTime(
+    DateTime target,
+    DateTime base,
+    CarbonLocaleData locale,
+  ) {
+    final diff = target.difference(base);
+
+    // Handle "just now" case
+    if (diff.abs() < const Duration(seconds: 45)) {
+      final count = diff.inSeconds.abs();
+      if (count == 0) {
+        return locale.translationStrings['diff_now'] ?? 'just now';
+      }
+      final key = count == 1 ? 'a_second' : 'second';
+      final timeStr = CarbonLookupMessages.pluralize(
+        key,
+        count,
+        locale.translationStrings,
+      );
+      return _wrapWithTense(timeStr, diff.isNegative, locale);
+    }
+
+    final future = diff > Duration.zero;
+    final absDiff = diff.abs();
+
+    // Determine which unit to use
+    String timeStr;
+    if (absDiff < const Duration(minutes: 1, seconds: 30)) {
+      // < 90 seconds: use "a minute"
+      final count = 1;
+      timeStr = CarbonLookupMessages.pluralize(
+        'a_minute',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(minutes: 45)) {
+      // < 45 minutes: use minutes
+      final count = absDiff.inMinutes;
+      timeStr = CarbonLookupMessages.pluralize(
+        'minute',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(hours: 1, minutes: 30)) {
+      // < 90 minutes: use "an hour"
+      final count = 1;
+      timeStr = CarbonLookupMessages.pluralize(
+        'a_hour',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(hours: 22)) {
+      // < 22 hours: use hours
+      final count = absDiff.inHours;
+      timeStr = CarbonLookupMessages.pluralize(
+        'hour',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(hours: 36)) {
+      // < 36 hours: use "a day"
+      final count = 1;
+      timeStr = CarbonLookupMessages.pluralize(
+        'a_day',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(days: 25)) {
+      // < 25 days: use days
+      final count = absDiff.inDays;
+      timeStr = CarbonLookupMessages.pluralize(
+        'day',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(days: 45)) {
+      // < 45 days: use "a month"
+      final count = 1;
+      timeStr = CarbonLookupMessages.pluralize(
+        'a_month',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(days: 320)) {
+      // < 320 days: use months
+      final count = (absDiff.inDays / 30).round();
+      timeStr = CarbonLookupMessages.pluralize(
+        'month',
+        count,
+        locale.translationStrings,
+      );
+    } else if (absDiff < const Duration(days: 547)) {
+      // < 547 days (1.5 years): use "a year"
+      final count = 1;
+      timeStr = CarbonLookupMessages.pluralize(
+        'a_year',
+        count,
+        locale.translationStrings,
+      );
+    } else {
+      // >= 547 days: use years
+      final count = (absDiff.inDays / 365).round();
+      timeStr = CarbonLookupMessages.pluralize(
+        'year',
+        count,
+        locale.translationStrings,
+      );
+    }
+
+    return _wrapWithTense(timeStr, !future, locale);
+  }
+
+  /// Wrap a time string with past/future tense based on locale data.
+  String _wrapWithTense(String timeStr, bool isPast, CarbonLocaleData locale) {
+    final template = isPast
+        ? locale.translationStrings['ago']
+        : locale.translationStrings['from_now'];
+
+    if (template != null && template.contains(':time')) {
+      return template.replaceAll(':time', timeStr);
+    }
+
+    // Fallback to English pattern
+    return isPast ? '$timeStr ago' : '$timeStr from now';
+  }
+
   List<String> _buildHumanDiffSegments(
     Duration delta, {
     required bool short,
@@ -6551,22 +6708,212 @@ String _twoDigitYear(DateTime value) {
 
 String _twoDigits(int value) => value.abs().toString().padLeft(2, '0');
 
+/// Creates a simple DateFormat for non-locale-specific patterns.
+/// For locale-specific formatting, use _formatWithCarbonLocale instead.
+DateFormat _createDateFormat(String pattern, [String? locale]) {
+  try {
+    // Try without locale first to avoid initialization issues
+    return DateFormat(pattern);
+  } catch (_) {
+    // If that fails and locale was provided, try with locale
+    if (locale != null) {
+      try {
+        return DateFormat(pattern, locale);
+      } catch (_) {}
+    }
+    // Last resort: basic formatter
+    try {
+      return DateFormat();
+    } catch (_) {
+      return DateFormat('yyyy-MM-dd');
+    }
+  }
+}
+
+/// Formats a DateTime using Carbon's built-in translations for ALL locale-specific tokens.
+///
+/// This function comprehensively intercepts ALL locale-specific pattern tokens that
+/// DateFormat supports and replaces them with Carbon's CarbonTranslator data,
+/// avoiding the need for initializeDateFormatting().
+///
+/// Supported locale-specific tokens:
+/// - Month names: MMMM, MMM, LLLL, LLL
+/// - Weekday names: EEEE, EEE, cccc, ccc, E
+/// - Meridiem: a (AM/PM)
+///
+/// Note: Quarter tokens (Q, QQQ, QQQQ) are NOT intercepted and will be
+/// handled by intl's DateFormat, as CarbonTranslator doesn't have quarter data.
+///
+/// Strategy:
+/// 1. Parse pattern to identify ALL locale-specific tokens
+/// 2. Replace them with unique placeholders
+/// 3. Get localized values from CarbonTranslator
+/// 4. Format using DateFormat with placeholder pattern (structural only)
+/// 5. Substitute placeholders with Carbon's localized values
+String _formatWithCarbonLocale(
+  DateTime dateTime,
+  String pattern,
+  String locale,
+) {
+  // Get Carbon's locale data once
+  final CarbonLocaleData localeData;
+  try {
+    localeData = CarbonTranslator.matchLocale(locale);
+  } catch (_) {
+    // If we can't get locale data, fall back to plain DateFormat
+    try {
+      return DateFormat(pattern, locale).format(dateTime);
+    } catch (_) {
+      try {
+        return DateFormat(pattern).format(dateTime);
+      } catch (_) {
+        return dateTime.toIso8601String();
+      }
+    }
+  }
+
+  // Map to store replacements: placeholder -> localized value
+  final replacements = <String, String>{};
+  var modifiedPattern = pattern;
+  var placeholderIndex = 0;
+
+  // Helper to create unique placeholders
+  String nextPlaceholder() {
+    return '<<<C${placeholderIndex++}>>>';
+  }
+
+  // Helper to replace token if found (order matters - longest first!)
+  // Avoids replacing tokens inside single-quoted strings (e.g., 'at' in pattern)
+  void replaceToken(String token, String value) {
+    if (!modifiedPattern.contains(token)) return;
+
+    final placeholder = nextPlaceholder();
+    replacements[placeholder] = value;
+
+    // Simple approach: replace tokens outside of single-quoted strings
+    // For a more robust solution, we'd need a full pattern parser
+    // but this handles most common cases
+    final result = StringBuffer();
+    var inQuotes = false;
+    var i = 0;
+
+    while (i < modifiedPattern.length) {
+      if (modifiedPattern[i] == "'") {
+        inQuotes = !inQuotes;
+        result.write(modifiedPattern[i]);
+        i++;
+      } else if (!inQuotes &&
+          i + token.length <= modifiedPattern.length &&
+          modifiedPattern.substring(i, i + token.length) == token) {
+        result.write(placeholder);
+        i += token.length;
+      } else {
+        result.write(modifiedPattern[i]);
+        i++;
+      }
+    }
+
+    modifiedPattern = result.toString();
+  }
+
+  // MONTH NAMES (process longest patterns first to avoid partial matches)
+  // LLLL = stand-alone long month name (same as MMMM in most locales)
+  replaceToken('LLLL', localeData.months[dateTime.month - 1]);
+
+  // MMMM = long month name
+  replaceToken('MMMM', _localizedMonthLongName(locale, dateTime));
+
+  // LLL = stand-alone short month name (same as MMM in most locales)
+  replaceToken('LLL', localeData.monthsShort[dateTime.month - 1]);
+
+  // MMM = short month name
+  replaceToken('MMM', _localizedMonthShortName(locale, dateTime.month));
+
+  // WEEKDAY NAMES (process longest patterns first)
+  // cccc = stand-alone long weekday name
+  replaceToken('cccc', localeData.weekdays[dateTime.weekday % 7]);
+
+  // EEEE = long weekday name
+  replaceToken('EEEE', localeData.weekdays[dateTime.weekday % 7]);
+
+  // ccc = stand-alone short weekday name
+  replaceToken('ccc', localeData.weekdaysShort[dateTime.weekday % 7]);
+
+  // EEE = short weekday name
+  replaceToken('EEE', _localizedWeekdayShortName(locale, dateTime.weekday));
+
+  // E = minimal weekday name (use short)
+  replaceToken('E', localeData.weekdaysShort[dateTime.weekday % 7]);
+
+  // MERIDIEM (AM/PM)
+  // a = AM/PM marker
+  if (modifiedPattern.contains('a')) {
+    final hour = dateTime.hour;
+    final minute = dateTime.minute;
+    // meridiem is a function: (hour, minute, isLower) => String
+    final meridiemValue = localeData.meridiem != null
+        ? localeData.meridiem!(hour, minute, false)
+        : (hour < 12 ? 'AM' : 'PM');
+    replaceToken('a', meridiemValue);
+  }
+
+  // Note: Quarter tokens (Q, QQQ, QQQQ) are NOT replaced here.
+  // CarbonTranslator doesn't have quarter strings, so we let intl's DateFormat
+  // handle quarter formatting with its locale-specific data.
+  // This means quarter tokens will use intl's formatting (which may require
+  // initializeDateFormatting for proper localization).
+
+  // Now format using DateFormat WITHOUT locale (avoids initialization issues)
+  String result;
+  try {
+    final formatter = DateFormat(modifiedPattern);
+    result = formatter.format(dateTime);
+  } catch (e) {
+    // If modified pattern is invalid, try with original pattern and locale
+    try {
+      final formatter = DateFormat(pattern, locale);
+      result = formatter.format(dateTime);
+    } catch (_) {
+      // If that fails, try without locale
+      try {
+        final formatter = DateFormat(pattern);
+        result = formatter.format(dateTime);
+      } catch (_) {
+        // Last resort: return ISO format
+        return dateTime.toIso8601String();
+      }
+    }
+  }
+
+  // Replace placeholders with Carbon's localized values
+  replacements.forEach((placeholder, value) {
+    result = result.replaceAll(placeholder, value);
+  });
+
+  return result;
+}
+
 String _localizedMonthShortName(String locale, int month) {
-  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
+  // Primary: Use CarbonTranslator (built-in translations from PHP Carbon)
   try {
     final data = CarbonTranslator.matchLocale(locale);
-    if (data.localeCode == locale ||
-        data.localeCode.startsWith(locale.split('_')[0])) {
-      return data.monthsShort[month - 1];
-    }
-  } catch (_) {}
-  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
-  try {
-    return DateFormat('MMM', locale).format(DateTime.utc(2000, month, 1));
-  } catch (_) {
-    // Last resort: use English
-    final data = CarbonTranslator.matchLocale('en');
+    // CarbonTranslator.matchLocale always returns a match (falls back intelligently)
     return data.monthsShort[month - 1];
+  } catch (e) {
+    // Fallback: Try intl's DateFormat if CarbonTranslator fails
+    try {
+      return _createDateFormat(
+        'MMM',
+        locale,
+      ).format(DateTime.utc(2000, month, 1));
+    } catch (_) {
+      // If both Carbon and intl fail, throw a meaningful exception
+      throw CarbonRuntimeException(
+        'Unable to get localized short month name for locale "$locale". '
+        'CarbonTranslator failed with: $e. '
+        'This indicates a serious issue with Carbon\'s locale data.',
+      );
+    }
   }
 }
 
@@ -6575,6 +6922,7 @@ String _localizedMonthLongName(
   DateTime sample, {
   bool genitive = false,
 }) {
+  // Check for genitive month forms first
   if (genitive) {
     for (final candidate in CarbonBase._localeCandidates(locale)) {
       final overrides = kLocaleGenitiveMonths[candidate];
@@ -6583,43 +6931,48 @@ String _localizedMonthLongName(
       }
     }
   }
-  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
+
+  // Primary: Use CarbonTranslator (built-in translations from PHP Carbon)
   try {
     final data = CarbonTranslator.matchLocale(locale);
-    if (data.localeCode == locale ||
-        data.localeCode.startsWith(locale.split('_')[0])) {
-      return data.months[sample.month - 1];
-    }
-  } catch (_) {}
-  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
-  try {
-    return DateFormat('MMMM', locale).format(sample);
-  } catch (_) {
-    // Last resort: use English
-    final data = CarbonTranslator.matchLocale('en');
+    // CarbonTranslator.matchLocale always returns a match (falls back intelligently)
     return data.months[sample.month - 1];
+  } catch (e) {
+    // Fallback: Try intl's DateFormat if CarbonTranslator fails
+    try {
+      return _createDateFormat('MMMM', locale).format(sample);
+    } catch (_) {
+      // If both Carbon and intl fail, throw a meaningful exception
+      throw CarbonRuntimeException(
+        'Unable to get localized long month name for locale "$locale". '
+        'CarbonTranslator failed with: $e. '
+        'This indicates a serious issue with Carbon\'s locale data.',
+      );
+    }
   }
 }
 
 String _localizedWeekdayShortName(String locale, int weekday) {
-  // Try CarbonTranslator first, but fall back to DateFormat for unregistered locales
+  // Primary: Use CarbonTranslator (built-in translations from PHP Carbon)
   try {
     final data = CarbonTranslator.matchLocale(locale);
-    if (data.localeCode == locale ||
-        data.localeCode.startsWith(locale.split('_')[0])) {
-      return data.weekdaysShort[weekday % 7];
-    }
-  } catch (_) {}
-  // Fallback to DateFormat for locales in intl but not in CarbonTranslator
-  try {
-    return DateFormat(
-      'EEE',
-      locale,
-    ).format(DateTime.utc(2000, 1, 3 + ((weekday - 1) % 7)));
-  } catch (_) {
-    // Last resort: use English
-    final data = CarbonTranslator.matchLocale('en');
+    // CarbonTranslator.matchLocale always returns a match (falls back intelligently)
     return data.weekdaysShort[weekday % 7];
+  } catch (e) {
+    // Fallback: Try intl's DateFormat if CarbonTranslator fails
+    try {
+      return _createDateFormat(
+        'EEE',
+        locale,
+      ).format(DateTime.utc(2000, 1, 3 + ((weekday - 1) % 7)));
+    } catch (_) {
+      // If both Carbon and intl fail, throw a meaningful exception
+      throw CarbonRuntimeException(
+        'Unable to get localized short weekday name for locale "$locale". '
+        'CarbonTranslator failed with: $e. '
+        'This indicates a serious issue with Carbon\'s locale data.',
+      );
+    }
   }
 }
 

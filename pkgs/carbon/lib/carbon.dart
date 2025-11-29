@@ -117,11 +117,7 @@
 /// ## Localization
 ///
 /// ```dart
-/// import 'package:intl/date_symbol_data_local.dart';
-///
-/// Future<void> main() async {
-///   await initializeDateFormatting('fr');
-///
+/// void main() {
 ///   final date = Carbon.parse('2024-12-25').locale('fr_FR');
 ///
 ///   print(date.translatedFormat('l j F Y'));
@@ -129,6 +125,16 @@
 ///
 ///   print(date.diffForHumans());
 ///   // "il y a 1 an"
+/// }
+/// ```
+///
+/// If you need to pre-initialize a locale or disable auto-initialization:
+///
+/// ```dart
+/// Future<void> main() async {
+///   // Optional: pre-initialize specific locales
+///   await Carbon.ensureLocaleInitialized('fr');
+///
 /// }
 /// ```
 ///

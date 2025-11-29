@@ -1,72 +1,10 @@
 part of '../carbon.dart';
 
-/// Adapts PHP Carbon's translation strings to `timeago`'s [LookupMessages].
-class CarbonLookupMessages implements timeago.LookupMessages {
-  final Map<String, String> _messages;
-
-  CarbonLookupMessages(this._messages);
-
-  @override
-  String prefixAgo() => _getPrefix('ago');
-  @override
-  String prefixFromNow() => _getPrefix('from_now');
-  @override
-  String suffixAgo() => _getSuffix('ago');
-  @override
-  String suffixFromNow() => _getSuffix('from_now');
-
-  @override
-  String lessThanOneMinute(int seconds) => _choice('second', seconds);
-  @override
-  String aboutAMinute(int minutes) => _choice('minute', minutes);
-  @override
-  String minutes(int minutes) => _choice('minute', minutes);
-  @override
-  String aboutAnHour(int minutes) => _choice('hour', minutes);
-  @override
-  String hours(int hours) => _choice('hour', hours);
-  @override
-  String aDay(int hours) => _choice('day', hours);
-  @override
-  String days(int days) => _choice('day', days);
-  @override
-  String aboutAMonth(int days) => _choice('month', days);
-  @override
-  String months(int months) => _choice('month', months);
-
-  @override
-  String aboutAYear(int year) => _choice('year', 1);
-
-  @override
-  String years(int years) => _choice('year', years);
-
-  @override
-  String wordSeparator() => ' ';
-
-  String _getPrefix(String key) {
-    final raw = _messages[key];
-    if (raw == null) return '';
-    final index = raw.indexOf(':time');
-    if (index > 0) {
-      return raw.substring(0, index).trimRight();
-    }
-    return '';
-  }
-
-  String _getSuffix(String key) {
-    final raw = _messages[key];
-    if (raw == null) return '';
-    final index = raw.indexOf(':time');
-    if (index != -1 && index < raw.length - 5) {
-      // -5 for length of ':time'
-      return raw.substring(index + 5).trimLeft();
-    }
-    return '';
-  }
-
-  String _choice(String key, int count) {
-    return pluralize(key, count, _messages);
-  }
+/// Utility class for pluralizing Carbon translation strings.
+/// Contains static methods for handling PHP Carbon's pluralization format.
+class CarbonLookupMessages {
+  // Private constructor to prevent instantiation
+  CarbonLookupMessages._();
 
   static String pluralize(String key, int count, Map<String, String> messages) {
     // 1. Try explicit plural key first (e.g., 'a_year' vs 'year')

@@ -7,11 +7,14 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:clock/clock.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
+
+import 'third_party/intl_date_format.dart';
 
 // Import generated locales first
 import 'core/locales/generated/all_generated.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:time_machine2/time_machine2.dart' as tm;
 // Import internal API needed to load timezone data on web
 // ignore: implementation_imports
@@ -45,6 +48,7 @@ part 'core/locale_first_week_min_days.dart';
 part 'core/locale_genitive_months.dart';
 part 'core/carbon_factory.dart';
 part 'core/carbon_test_support.dart';
+part 'core/carbon_date_format_config.dart';
 part 'core/iso_format.dart';
 part 'core/carbon_translator.dart';
 part 'core/carbon_locale_data.dart';

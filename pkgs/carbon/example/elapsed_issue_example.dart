@@ -1,11 +1,9 @@
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 /// Demonstrates how mutating helpers like `startOfDay()` change
 /// the instance they are called on, which can break elapsed math
 /// when you keep a single `now` variable around.
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final capturedNow = Carbon.now();

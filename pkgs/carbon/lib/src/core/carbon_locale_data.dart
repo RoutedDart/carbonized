@@ -18,8 +18,6 @@ class CarbonLocaleData {
   /// helpers.
   final Map<String, String> timeStrings;
 
-  /// Optional `timeago` message bundle for humanized relative strings.
-  final timeago.LookupMessages? timeagoMessages;
 
   /// Raw translation strings from PHP Carbon (e.g., 'year', 'a_year').
   final Map<String, String> translationStrings;
@@ -86,7 +84,6 @@ class CarbonLocaleData {
     this.numbers = const {},
     this.altNumbers = const {},
     this.timeStrings = const {},
-    this.timeagoMessages,
     this.translationStrings = const {},
     this.formats = const {},
     this.calendar = const {},
@@ -116,7 +113,6 @@ class CarbonLocaleData {
       numbers: {...numbers, ...other.numbers},
       altNumbers: {...altNumbers, ...other.altNumbers},
       timeStrings: {...timeStrings, ...other.timeStrings},
-      timeagoMessages: other.timeagoMessages ?? timeagoMessages,
       translationStrings: {...translationStrings, ...other.translationStrings},
       formats: {...formats, ...other.formats},
       calendar: {...calendar, ...other.calendar},
@@ -173,7 +169,6 @@ class CarbonLocaleData {
     Map<String, String>? numbers,
     Map<String, String>? altNumbers,
     Map<String, String>? timeStrings,
-    timeago.LookupMessages? timeagoMessages,
     Map<String, String>? translationStrings,
     Map<String, String>? formats,
     Map<String, String>? calendar,
@@ -200,7 +195,6 @@ class CarbonLocaleData {
       numbers: numbers ?? this.numbers,
       altNumbers: altNumbers ?? this.altNumbers,
       timeStrings: timeStrings ?? this.timeStrings,
-      timeagoMessages: timeagoMessages ?? this.timeagoMessages,
       translationStrings: translationStrings ?? this.translationStrings,
       formats: formats ?? this.formats,
       calendar: calendar ?? this.calendar,

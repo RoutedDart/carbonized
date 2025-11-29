@@ -8,7 +8,6 @@ class CarbonTranslator {
       <String, CarbonLocaleData>{};
   static final Map<String, List<String>> _fallbackLocales =
       <String, List<String>>{};
-  static final Set<String> _registeredTimeagoLocales = <String>{};
   static bool _defaultsReady = false;
   static const String _defaultLocale = 'en';
 
@@ -24,11 +23,6 @@ class CarbonTranslator {
       _fallbackLocales[normalized] = fallbackLocales
           .map(_normalizeLocale)
           .toList();
-    }
-    final messages = translation.timeagoMessages;
-    if (messages != null) {
-      timeago.setLocaleMessages(normalized, messages);
-      _registeredTimeagoLocales.add(normalized);
     }
   }
 
@@ -54,7 +48,6 @@ class CarbonTranslator {
   static void resetTranslations() {
     _translations.clear();
     _fallbackLocales.clear();
-    _registeredTimeagoLocales.clear();
     _defaultsReady = false;
   }
 
@@ -270,19 +263,6 @@ class CarbonTranslator {
     return w.trim();
   }
 
-  static void ensureTimeagoLocale(String locale) {
-    _ensureDefaultsRegistered();
-    final match = matchLocale(locale);
-    if (_registeredTimeagoLocales.contains(match.localeCode)) {
-      return;
-    }
-    final messages = match.timeagoMessages;
-    if (messages != null) {
-      timeago.setLocaleMessages(match.localeCode, messages);
-    }
-    _registeredTimeagoLocales.add(match.localeCode);
-  }
-
   /// Translates [input] using the digit map registered for [locale].
   static String translateNumber(
     String input, {
@@ -353,16 +333,6 @@ class CarbonTranslator {
     if (data != null) {
       // Register the loaded locale so it's available for future lookups
       _translations[localeCode] = data;
-
-      // If timeagoMessages are not explicitly provided, try to generate them from translationStrings
-      if (data.timeagoMessages == null && data.translationStrings.isNotEmpty) {
-        timeago.setLocaleMessages(
-          localeCode,
-          CarbonLookupMessages(data.translationStrings),
-        );
-      } else if (data.timeagoMessages != null) {
-        timeago.setLocaleMessages(localeCode, data.timeagoMessages!);
-      }
     }
     return data;
   }
