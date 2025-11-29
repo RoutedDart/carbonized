@@ -4,16 +4,13 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
 const _diffUnitsSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final ottawa = Carbon.parse('2000-01-01T00:00:00', timeZone: 'America/Toronto');
@@ -71,10 +68,8 @@ Future<ExampleRun> runDiffUnitsExample() async {
 
 const _diffIntervalSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final base = Carbon.parse('2012-01-15T12:00:00Z');
@@ -152,10 +147,8 @@ Future<ExampleRun> runDiffIntervalExample() async {
 
 const _floatDiffSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final secondsStart = Carbon.parse('2000-01-01T06:01:23.252987Z');
@@ -245,10 +238,8 @@ Future<ExampleRun> runFloatDiffExample() async {
 
 const _durationDiffSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final base = Carbon.parse('2012-01-01T00:00:00Z');
   final future = base.copy()..addYears(3)..addDays(10)..addHours(12);
@@ -261,7 +252,6 @@ Future<void> main() async {
 
 /// Highlights `diff()` returning a `Duration` in Dart.
 Future<ExampleRun> runDurationDiffExample() async {
-  await initializeDateFormatting('en');
   final base = Carbon.parse('2012-01-01T00:00:00Z');
   final future = base.copy()
     ..addYears(3)
@@ -279,10 +269,8 @@ Future<ExampleRun> runDurationDiffExample() async {
 
 const _diffInUnitSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final base = Carbon.parse('2000-01-15T00:00:00Z');

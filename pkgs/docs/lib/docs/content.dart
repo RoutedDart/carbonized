@@ -135,8 +135,6 @@ const _phpSectionTitles = <String>[
   'CarbonInterval',
   'CarbonPeriod',
   'CarbonTimeZone',
-  'Migrate to Carbon 3',
-  'Migrate to Carbon 2',
 ];
 
 Future<List<DocItem>> _buildIntroduction() async {

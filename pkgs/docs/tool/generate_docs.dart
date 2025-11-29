@@ -59,8 +59,6 @@ const _phpSectionTitles = <String>[
   'CarbonInterval',
   'CarbonPeriod',
   'CarbonTimeZone',
-  'Migrate to Carbon 3',
-  'Migrate to Carbon 2',
 ];
 
 final Map<String, SectionBuilder> _sectionBuilderOverrides =
@@ -87,8 +85,6 @@ final Map<String, SectionBuilder> _sectionBuilderOverrides =
       'CarbonInterval': _buildCarbonInterval,
       'CarbonPeriod': _buildCarbonPeriod,
       'CarbonTimeZone': _buildCarbonTimeZone,
-      'Migrate to Carbon 3': _buildMigrateToCarbon3,
-      'Migrate to Carbon 2': _buildMigrateToCarbon2,
     };
 
 typedef SectionBuilder = Future<String> Function();
@@ -2222,113 +2218,4 @@ String _timezoneDifferences() => '''
   strings or the debug map instead of PHP objects.
 - `Carbon::setTestNowAndTimezone()` only affects Carbon's timezone handling and
   does not modify `DateTime.now()` globally the way PHP might when `date_default_timezone_set` is used.
-''';
-
-Future<String> _buildMigrateToCarbon3() async {
-  final sections = <String>[
-    _migrate3Overview(),
-    _migrate3PhpChanges(),
-    _migrate3DartStatus(),
-  ];
-  return sections.join('\n\n');
-}
-
-String _migrate3Overview() => '''
-# Migrate to Carbon 3
-
-The PHP docs highlight the breaking changes between Carbon 2 and 3. Dart Carbon
-already follows the Carbon 3 semantics, but this section summarizes the PHP
-changes and explains which behaviors differ (or are not implemented) in Dart.
-''';
-
-String _migrate3PhpChanges() => '''
-## Highlights from the PHP release notes
-
-- `createFromTimestamp()` defaults to UTC.
-- `diffIn*` helpers now return floats (and can be negative unless `absolute`
-  is set).
-- Comparison helpers gained strict typing; `false`/`null` are no longer valid
-  arguments.
-- `create*` helpers return `null` (instead of `false`) on invalid input.
-- Several deprecated helpers were removed (`formatLocalized`, `setUtf8`,
-  `setWeekStartsAt/EndsAt`, `minValue`/`maxValue`, etc.).
-- CarbonPeriod now mirrors PHP's `DatePeriod` immutability rules.
-- `isSame*` helpers require an explicit comparison target.
-- Timezone APIs are stricter—unknown names throw in all modes.
-''';
-
-String _migrate3DartStatus() => '''
-## Dart status and gaps
-
-- Dart Carbon already defaults `createFromTimestamp()` to UTC, so no migration
-  work is needed.
-- `diffIn*` has always returned doubles; use `diff().inSeconds` or cast to
-  `int` if you need truncated values. PHP's `floatDiffIn*` helpers are not
-  implemented.
-- Comparison helpers already require a `CarbonInterface`/`DateTime`; passing
-  booleans throws a `TypeError` at compile time.
-- `Carbon.create*` returns `null` when parsing fails (matching the Carbon 3
-  behavior). There is no `createStrict` toggle; call `Carbon.useStrictMode(true)`
-  before parsing if you need exceptions.
-- Removed PHP methods never existed in Dart (`formatLocalized`, `setUtf8`,
-  `setWeekStartsAt/EndsAt`, `minValue`/`maxValue`). Locales control week starts
-  and `isoFormat` replaces `formatLocalized`.
-- CarbonPeriod instances are immutable in Dart because the iterable is produced
-  eagerly. Use the `*_Until` helpers to rebuild another period instead of
-  mutating `start`/`end`.
-- `isSame*` helpers always require an explicit comparison object, and the
-  `isCurrent*` helpers cover the "relative to now" use case.
-- Strict timezone behavior is already enforced—unknown names throw immediately.
-- Translator-level overrides (e.g., `Translator::setTranslations`) are not
-  implemented; customizing locales still requires editing the generated tables.
-''';
-
-Future<String> _buildMigrateToCarbon2() async {
-  final sections = <String>[
-    _migrate2Overview(),
-    _migrate2PhpChanges(),
-    _migrate2DartStatus(),
-  ];
-  return sections.join('\n\n');
-}
-
-String _migrate2Overview() => '''
-# Migrate to Carbon 2
-
-For completeness, this section summarizes the Carbon 1 → Carbon 2 migration
-notes from the PHP docs and states how Dart Carbon behaves.
-''';
-
-String _migrate2PhpChanges() => '''
-## Highlights from the PHP release notes
-
-- `Carbon::create()` defaults for month/day/hour/minute/second became 1/1/0/0/0.
-- Microseconds are preserved everywhere.
-- JSON serialization switched to strings by default (`"YYYY-MM-DDTHH:mm:ssZ"`).
-- `setToStringFormat()` closures must return the final string.
-- Week start/end setters were deprecated.
-- `isSameMonth`/`isCurrentMonth` require year matches unless explicitly told
-  otherwise.
-- Various deprecated helpers were removed (`compareYearWithMonth`,
-  `useMicrosecondsFallback`, `CarbonInterval::anything()`, etc.).
-''';
-
-String _migrate2DartStatus() => '''
-## Dart status and gaps
-
-- Dart's `Carbon.create` already defaults omitted components to 1/1/0/0/0, and
-  microseconds are preserved automatically.
-- JSON serialization uses ISO-8601 strings, and `Carbon.fromJson` expects an ISO
-  payload. The PHP-style `serializeUsing()` customization hook is not available.
-- `Carbon.setToStringFormat()` accepts either a format string or a callback that
-  returns the final string (matching the Carbon 2 behavior). Instance-level
-  formatting is available via `withToStringFormat`.
-- Week boundaries follow the locale database; there are no `setWeekStartsAt`
-  setters, so switch locales or pass explicit weekdays to `startOfWeek()`.
-- Month/quarter/year comparison helpers always require explicit flags (Dart's
-  API mirrors the strict behavior).
-- Removed PHP helpers never existed in Dart, so no migration work is required.
-- CarbonInterval/CarbonPeriod macro support exists in PHP but has gaps in Dart:
-  you must register macros separately per type, and constructor callbacks are
-  not supported.
 ''';

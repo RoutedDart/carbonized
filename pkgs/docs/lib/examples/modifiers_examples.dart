@@ -4,16 +4,13 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
 const _startEndSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final dt = Carbon.parse('2012-01-31T15:32:45.654321Z');
   print('startOfMinute -> ${dt.copy().startOfMinute()}');
@@ -26,7 +23,6 @@ Future<void> main() async {
 
 /// Shows the start/end helpers for various units.
 Future<ExampleRun> runStartEndExample() async {
-  await initializeDateFormatting('en');
   final dt = Carbon.parse('2012-01-31T15:32:45.654321Z');
   final buffer = StringBuffer()
     ..writeln('startOfMinute -> ${dt.copy().startOfMinute()}')
@@ -42,10 +38,8 @@ Future<ExampleRun> runStartEndExample() async {
 
 const _navigationSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final dt = Carbon.parse('2014-05-30T00:00:00Z');
@@ -74,10 +68,8 @@ Future<ExampleRun> runNavigationExample() async {
 
 const _roundingSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final dt = Carbon.parse('2012-01-31T15:32:45.654321Z');
   print('roundSecond -> ${dt.copy().roundSecond()}');
@@ -88,7 +80,6 @@ Future<void> main() async {
 
 /// Highlights `round*` helpers.
 Future<ExampleRun> runRoundingExample() async {
-  await initializeDateFormatting('en');
   final dt = Carbon.parse('2012-01-31T15:32:45.654321Z');
   final buffer = StringBuffer()
     ..writeln('roundSecond -> ${dt.copy().roundSecond()}')

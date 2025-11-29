@@ -440,7 +440,7 @@ class Carbon extends CarbonBase {
       final pendingWarning = CarbonBase._calendarWarningForIsoString(input);
       try {
         if (format != null && format.isNotEmpty) {
-          final formatter = DateFormat(format, locale);
+          final formatter = _createDateFormat(format, locale);
           resolved = formatter.parseUtc(input);
         } else {
           final parsed = DateTime.parse(input);
@@ -764,6 +764,11 @@ class Carbon extends CarbonBase {
   }) => CarbonBase.configureTimeMachine(provider: provider, testing: testing);
 
   static void resetTimeMachineSupport() => CarbonBase.resetTimeMachine();
+
+  static Future<void> ensureLocaleInitialized(String locale) =>
+      CarbonBase.ensureLocaleInitialized(locale);
+
+  static void resetIntlInitialization() => CarbonBase.resetIntlInitialization();
 
   static void useStrictMode(bool enabled) => CarbonBase.useStrictMode(enabled);
 
@@ -2109,7 +2114,7 @@ bool _localeShortMonthUsesDigits(String locale) {
   final sample = DateTime.utc(2000, 4, 1);
   for (final candidate in CarbonBase._localeCandidates(locale)) {
     try {
-      final formatted = DateFormat('MMM', candidate).format(sample);
+      final formatted = _createDateFormat('MMM', candidate).format(sample);
       if (_digitMatcher.hasMatch(formatted)) {
         return true;
       }

@@ -9,10 +9,8 @@ import 'example_runner.dart';
 
 const _orderingSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final first = Carbon.parse('2012-09-05T23:26:11Z');
@@ -52,10 +50,8 @@ Future<ExampleRun> runOrderingExample() async {
 
 const _rangesSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final start = Carbon.parse('2012-09-05T01:00:00Z');
   final end = Carbon.parse('2012-09-05T05:00:00Z');
@@ -99,10 +95,8 @@ Future<ExampleRun> runRangeExample() async {
 
 const _predicatesSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final reference = Carbon.parse('2024-06-05T12:00:00Z');
   final birthday = Carbon.parse('1987-04-23T00:00:00Z');

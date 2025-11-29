@@ -26,27 +26,9 @@ const Map<String, String> _presetIsoTemplates = <String, String>{
   'llll': 'ddd, MMM D, YYYY h:mm A',
 };
 
-const Map<String, Map<String, String>> _localePresetIsoOverrides = {
-  'es': <String, String>{
-    'LL': 'D [de] MMMM [de] YYYY',
-    'll': 'D [de] MMM [de] YYYY',
-    'LLL': 'D [de] MMMM [de] YYYY h:mm A',
-    'lll': 'D [de] MMM [de] YYYY h:mm A',
-  },
-  'es_es': <String, String>{
-    'LL': 'D [de] MMMM [de] YYYY',
-    'll': 'D [de] MMM [de] YYYY',
-    'LLL': 'D [de] MMMM [de] YYYY h:mm A',
-    'lll': 'D [de] MMM [de] YYYY h:mm A',
-  },
-  'es_mx': <String, String>{
-    'LL': 'D [de] MMMM [de] YYYY',
-    'll': 'D [de] MMM [de] YYYY',
-  },
-};
-
 final RegExp _isoTokenRegex = RegExp(_kIsoTokenPattern);
 final RegExp _presetTokenRegex = RegExp(r'LTS|LT|L{1,4}|l{1,4}');
+const Set<String> _lowercaseIsoPresets = {'l', 'll', 'lll', 'llll'};
 
 String _expandIsoPresetTokens(String pattern, String locale) {
   final buffer = StringBuffer();
@@ -99,18 +81,10 @@ String _expandIsoPresetTokens(String pattern, String locale) {
 }
 
 String? _isoPresetExpansion(String token, String locale) {
-  // First check if the locale data has this format defined
   final localeData = CarbonTranslator.matchLocale(locale);
-  if (localeData.formats.containsKey(token)) {
-    return localeData.formats[token];
-  }
-
-  // Fallback to hardcoded overrides for specific locales
-  for (final candidate in CarbonBase._localeCandidates(locale)) {
-    final overrides = _localePresetIsoOverrides[candidate];
-    if (overrides != null && overrides.containsKey(token)) {
-      return overrides[token];
-    }
+  final localePattern = _localePresetPattern(token, locale, localeData);
+  if (localePattern != null) {
+    return localePattern;
   }
   final derived = _derivePresetIsoPattern(token, locale);
   if (derived != null) {
@@ -119,8 +93,45 @@ String? _isoPresetExpansion(String token, String locale) {
   return _presetIsoTemplates[token];
 }
 
+String? _localePresetPattern(
+  String token,
+  String locale,
+  CarbonLocaleData localeData,
+) {
+  final direct = localeData.formats[token];
+  if (direct != null) {
+    return direct;
+  }
+  return _lowercasePresetPattern(token, locale, localeData);
+}
+
+String? _lowercasePresetPattern(
+  String token,
+  String locale,
+  CarbonLocaleData localeData,
+) {
+  if (!_lowercaseIsoPresets.contains(token)) {
+    return null;
+  }
+  final upperToken = token.toUpperCase();
+  final upperPattern =
+      localeData.formats[upperToken] ??
+      _derivePresetIsoPattern(upperToken, locale);
+  if (upperPattern == null) {
+    return null;
+  }
+  return _shortenPresetPattern(upperPattern);
+}
+
+String _shortenPresetPattern(String pattern) {
+  return pattern.replaceAllMapped(
+    RegExp(r'MMMM|MM|DD|dddd'),
+    (match) => match.group(0)!.substring(1),
+  );
+}
+
 String? _derivePresetIsoPattern(String token, String locale) {
-  String? convertPattern(DateFormat formatter) {
+  String? convertPattern(CarbonDateFormat formatter) {
     try {
       final converted = _convertIntlPatternToIso(
         formatter.pattern ?? '',
@@ -134,17 +145,41 @@ String? _derivePresetIsoPattern(String token, String locale) {
   try {
     switch (token) {
       case 'LT':
-        return convertPattern(DateFormat.jm(locale));
+        try {
+          return convertPattern(CarbonDateFormat.jm(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.jm());
+        }
       case 'LTS':
-        return convertPattern(DateFormat.jms(locale));
+        try {
+          return convertPattern(CarbonDateFormat.jms(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.jms());
+        }
       case 'L':
-        return convertPattern(DateFormat.yMd(locale));
+        try {
+          return convertPattern(CarbonDateFormat.yMd(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.yMd());
+        }
       case 'l':
-        return convertPattern(DateFormat.Md(locale));
+        try {
+          return convertPattern(CarbonDateFormat.Md(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.Md());
+        }
       case 'LL':
-        return convertPattern(DateFormat.yMMMMd(locale));
+        try {
+          return convertPattern(CarbonDateFormat.yMMMMd(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.yMMMMd());
+        }
       case 'll':
-        return convertPattern(DateFormat.yMMMd(locale));
+        try {
+          return convertPattern(CarbonDateFormat.yMMMd(locale));
+        } catch (_) {
+          return convertPattern(CarbonDateFormat.yMMMd());
+        }
       case 'LLL':
         final date = _derivePresetIsoPattern('LL', locale);
         final time = _derivePresetIsoPattern('LT', locale);
@@ -160,14 +195,14 @@ String? _derivePresetIsoPattern(String token, String locale) {
         }
         return null;
       case 'LLLL':
-        final dayPattern = convertPattern(DateFormat('EEEE', locale));
+        final dayPattern = convertPattern(CarbonDateFormat('EEEE', locale));
         final rest = _derivePresetIsoPattern('LLL', locale);
         if (dayPattern != null && rest != null) {
           return '$dayPattern, $rest';
         }
         return null;
       case 'llll':
-        final dayPattern = convertPattern(DateFormat('EEE', locale));
+        final dayPattern = convertPattern(CarbonDateFormat('EEE', locale));
         final rest = _derivePresetIsoPattern('lll', locale);
         if (dayPattern != null && rest != null) {
           return '$dayPattern, $rest';
@@ -284,7 +319,11 @@ String? _intlTokenToIso(String symbol, int length) {
 }
 
 final class _IsoFormatter {
-  _IsoFormatter(this._carbon);
+  _IsoFormatter(this._carbon) {
+    // Ensure Carbon's date format layer is configured before use.
+    // ignore: unnecessary_statements
+    _carbonDateFormatAutoInit;
+  }
 
   final CarbonBase _carbon;
   int _literalStack = 0;
@@ -292,20 +331,20 @@ final class _IsoFormatter {
 
   static final Map<String, String Function(DateTime, String)>
   _presetFormatters = <String, String Function(DateTime, String)>{
-    'LT': (local, locale) => DateFormat.jm(locale).format(local),
-    'LTS': (local, locale) => DateFormat.jms(locale).format(local),
-    'L': (local, locale) => DateFormat.yMd(locale).format(local),
-    'LL': (local, locale) => DateFormat.yMMMMd(locale).format(local),
+    'LT': (local, locale) => CarbonDateFormat.jm(locale).format(local),
+    'LTS': (local, locale) => CarbonDateFormat.jms(locale).format(local),
+    'L': (local, locale) => CarbonDateFormat.yMd(locale).format(local),
+    'LL': (local, locale) => CarbonDateFormat.yMMMMd(locale).format(local),
     'LLL': (local, locale) =>
-        '${DateFormat.yMMMMd(locale).format(local)} ${DateFormat.jm(locale).format(local)}',
+        '${CarbonDateFormat.yMMMMd(locale).format(local)} ${CarbonDateFormat.jm(locale).format(local)}',
     'LLLL': (local, locale) =>
-        '${DateFormat.yMMMMEEEEd(locale).format(local)} ${DateFormat.jm(locale).format(local)}',
-    'l': (local, locale) => DateFormat.yMd(locale).format(local),
-    'll': (local, locale) => DateFormat.yMMMd(locale).format(local),
+        '${CarbonDateFormat.yMMMMEEEEd(locale).format(local)} ${CarbonDateFormat.jm(locale).format(local)}',
+    'l': (local, locale) => CarbonDateFormat.yMd(locale).format(local),
+    'll': (local, locale) => CarbonDateFormat.yMMMd(locale).format(local),
     'lll': (local, locale) =>
-        '${DateFormat.yMMMd(locale).format(local)} ${DateFormat.jm(locale).format(local)}',
+        '${CarbonDateFormat.yMMMd(locale).format(local)} ${CarbonDateFormat.jm(locale).format(local)}',
     'llll': (local, locale) =>
-        '${DateFormat.yMMMEd(locale).format(local)} ${DateFormat.jm(locale).format(local)}',
+        '${CarbonDateFormat.yMMMEd(locale).format(local)} ${CarbonDateFormat.jm(locale).format(local)}',
   };
 
   String format(String pattern) {
@@ -413,7 +452,7 @@ final class _IsoFormatter {
       case 'ddd':
         return _localizedWeekdayShortName(_carbon.localeCode, local.weekday);
       case 'dddd':
-        return DateFormat.EEEE(_carbon.localeCode).format(local);
+        return CarbonDateFormat.EEEE(_carbon.localeCode).format(local);
       case 'W':
         return _isoWeek().toString();
       case 'WW':
@@ -519,18 +558,13 @@ final class _IsoFormatter {
   }
 
   String? _formatPreset(String token) {
-    final overridePattern = _lookupLocaleOverride(token);
     final local = _carbon._localDateTimeForFormatting();
     final locale = _carbon.localeCode;
-    if (overridePattern != null) {
-      return DateFormat(overridePattern, locale).format(local);
-    }
 
-    // Check CarbonLocaleData formats
     final data = CarbonTranslator.matchLocale(locale);
-    final formatPattern = data.formats[token];
-    if (formatPattern != null) {
-      return format(formatPattern);
+    final pattern = _localePresetPattern(token, locale, data);
+    if (pattern != null) {
+      return format(pattern);
     }
 
     final formatter = _presetFormatters[token];
@@ -543,16 +577,6 @@ final class _IsoFormatter {
   String? _literalTokenValue(String token) {
     if (token.startsWith('[') && token.endsWith(']')) {
       return token.substring(1, token.length - 1);
-    }
-    return null;
-  }
-
-  String? _lookupLocaleOverride(String token) {
-    for (final candidate in CarbonBase._localeCandidates(_carbon.localeCode)) {
-      final overrides = _localePresetOverrides[candidate];
-      if (overrides != null && overrides.containsKey(token)) {
-        return overrides[token];
-      }
     }
     return null;
   }
@@ -766,25 +790,6 @@ class _TranslatedFormatConverter {
   }
 }
 
-const Map<String, Map<String, String>> _localePresetOverrides = {
-  'es': <String, String>{
-    'LL': "d 'de' MMMM 'de' y",
-    'll': "d 'de' MMM'.' 'de' y",
-    'LLL': "d 'de' MMMM 'de' y h:mm a",
-    'lll': "d 'de' MMM'.' 'de' y h:mm a",
-  },
-  'es_es': <String, String>{
-    'LL': "d 'de' MMMM 'de' y",
-    'll': "d 'de' MMM'.' 'de' y",
-    'LLL': "d 'de' MMMM 'de' y h:mm a",
-    'lll': "d 'de' MMM'.' 'de' y h:mm a",
-  },
-  'es_mx': <String, String>{
-    'LL': "d 'de' MMMM 'de' y",
-    'll': "d 'de' MMM'.' 'de' y",
-  },
-};
-
 String _ordinal(int value, String period, String locale) {
   final data = CarbonTranslator.matchLocale(locale);
   if (data.ordinal != null) {
@@ -880,7 +885,11 @@ class _IsoInputParser {
     );
     final match = regex.firstMatch(input.trim());
     if (match == null) {
-      throw ArgumentError('Value "$input" does not match format "$format".');
+      throw ArgumentError(
+        'Value "$input" does not match format "$format".\n'
+        'Generated regex pattern: ${patternBuffer.toString()}\n'
+        'Locale: $locale',
+      );
     }
     final base = reset ? DateTime.utc(1970, 1, 1) : _base;
     final components = _IsoParsedComponents(base);
@@ -1138,7 +1147,8 @@ class _IsoParsedComponents {
 }
 
 class _LocaleNameIndex {
-  _LocaleNameIndex(this.locale) {
+  _LocaleNameIndex(this.locale)
+    : _fallbackLocaleData = _resolveFallbackLocale(locale) {
     _ingestLocale(locale);
     if (_longMonthForms.isEmpty || _longWeekdayForms.isEmpty) {
       _ingestLocale('en');
@@ -1150,6 +1160,7 @@ class _LocaleNameIndex {
   }
 
   final String locale;
+  final CarbonLocaleData? _fallbackLocaleData;
   final Map<String, int> _longMonthLookup = <String, int>{};
   final Map<String, int> _shortMonthLookup = <String, int>{};
   final Map<String, int> _longWeekdayLookup = <String, int>{};
@@ -1161,7 +1172,17 @@ class _LocaleNameIndex {
   final Set<String> _shortWeekdayForms = <String>{};
 
   String get longMonthPattern => _patternFor(_longMonthForms);
-  String get shortMonthPattern => _patternFor(_shortMonthForms);
+  String get shortMonthPattern {
+    if (_shortMonthForms.isEmpty) {
+      return _patternFor(_longMonthForms);
+    }
+    if (_shortMonthFormsLikelyNumeric && _longMonthForms.isNotEmpty) {
+      final merged = <String>{..._shortMonthForms, ..._longMonthForms};
+      return _patternFor(merged);
+    }
+    return _patternFor(_shortMonthForms);
+  }
+
   String get longWeekdayPattern => _patternFor(_longWeekdayForms);
   String get shortWeekdayPattern => _patternFor(_shortWeekdayForms);
   String get meridiemPattern =>
@@ -1169,15 +1190,79 @@ class _LocaleNameIndex {
 
   int? longMonthIndex(String value) =>
       _longMonthLookup[_normalize(value)] ??
-      _shortMonthLookup[_normalize(value)];
-
-  int? shortMonthIndex(String value) =>
       _shortMonthLookup[_normalize(value)] ??
-      _longMonthLookup[_normalize(value)];
+      _fallbackLongMonthIndex(_normalize(value));
+
+  int? shortMonthIndex(String value) {
+    final normalized = _normalize(value);
+    return _shortMonthLookup[normalized] ??
+        _longMonthLookup[normalized] ??
+        _fallbackLongMonthIndex(normalized);
+  }
+
+  int? _fallbackLongMonthIndex(String normalized) {
+    if (_fallbackLocaleData == null) {
+      return null;
+    }
+    final months = _fallbackLocaleData.months;
+    for (var i = 0; i < months.length; i++) {
+      if (_normalize(months[i]) == normalized) {
+        return i + 1;
+      }
+    }
+    return null;
+  }
 
   bool? isPm(String value) => _meridiemLookup[_normalize(value)];
 
   void _ingestLocale(String target) {
+    // Primary: Try to use Carbon's CarbonTranslator (170+ locales, no initialization needed)
+    try {
+      final localeData = CarbonTranslator.matchLocale(target);
+
+      // Ingest month names from CarbonTranslator
+      _ingestList(localeData.months, _longMonthLookup, _longMonthForms);
+      _ingestList(localeData.monthsShort, _shortMonthLookup, _shortMonthForms);
+
+      // Ingest weekday names from CarbonTranslator
+      _ingestList(localeData.weekdays, _longWeekdayLookup, _longWeekdayForms);
+      _ingestList(
+        localeData.weekdaysShort,
+        _shortWeekdayLookup,
+        _shortWeekdayForms,
+      );
+
+      // Handle meridiem (AM/PM) using CarbonTranslator's meridiem function
+      if (localeData.meridiem != null) {
+        // Get AM/PM for 6:00 (morning) and 18:00 (evening)
+        try {
+          final am = localeData.meridiem!(6, 0, false);
+          final pm = localeData.meridiem!(18, 0, false);
+          _registerMeridiem(am, false);
+          _registerMeridiem(pm, true);
+        } catch (e) {
+          // Fallback to default AM/PM if meridiem function fails
+          _registerMeridiem('AM', false);
+          _registerMeridiem('PM', true);
+        }
+      } else {
+        // Default AM/PM
+        _registerMeridiem('AM', false);
+        _registerMeridiem('PM', true);
+      }
+    } catch (e, stack) {
+      // CarbonTranslator failed unexpectedly - log for debugging
+      print('WARNING: CarbonTranslator failed for locale $target: $e');
+      print('Stack: $stack');
+      // Continue with intl ingestion as fallback
+    }
+
+    // Always ingest intl DateFormat symbols (requires initializeDateFormatting)
+    _ingestIntlSymbols(target);
+  }
+
+  void _ingestIntlSymbols(String target) {
+    // Use intl's DateFormat (requires initializeDateFormatting)
     try {
       final formatter = DateFormat.yMd(target);
       final symbols = formatter.dateSymbols;
@@ -1191,15 +1276,13 @@ class _LocaleNameIndex {
       );
       final ampms = symbols.AMPMS;
       if (ampms.isNotEmpty) {
-        if (ampms.isNotEmpty) {
-          _registerMeridiem(ampms[0], false);
-        }
+        _registerMeridiem(ampms[0], false);
         if (ampms.length > 1) {
           _registerMeridiem(ampms[1], true);
         }
       }
     } catch (_) {
-      // Locale data not initialized; best-effort fallback.
+      // intl failed; rely on existing locale data
     }
   }
 
@@ -1234,6 +1317,33 @@ class _LocaleNameIndex {
     }
     final pattern = candidates.map(RegExp.escape).join('|');
     return '($pattern)';
+  }
+
+  bool get _shortMonthFormsLikelyNumeric {
+    if (_shortMonthForms.isEmpty) {
+      return false;
+    }
+    return _shortMonthForms.every((value) {
+      final trimmed = value.trim();
+      return trimmed.isNotEmpty && _leadingDigitPattern.hasMatch(trimmed);
+    });
+  }
+
+  static final RegExp _leadingDigitPattern = RegExp(r'^\d');
+
+  static CarbonLocaleData? _resolveFallbackLocale(String target) {
+    for (final candidate in CarbonBase._localeCandidates(target)) {
+      try {
+        return CarbonTranslator.matchLocale(candidate);
+      } catch (_) {
+        continue;
+      }
+    }
+    try {
+      return CarbonTranslator.matchLocale('en');
+    } catch (_) {
+      return null;
+    }
   }
 
   String _normalize(String value) =>

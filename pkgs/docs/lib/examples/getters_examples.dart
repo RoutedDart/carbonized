@@ -4,22 +4,13 @@ library;
 import 'dart:async';
 
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'example_runner.dart';
 
-Future<void> _ensureLocales(Iterable<String> locales) async {
-  for (final locale in locales) {
-    await initializeDateFormatting(locale);
-  }
-}
-
 const _componentGetterSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
 
   final dt = Carbon.parse('2012-10-05T23:26:11.123789Z');
 
@@ -42,7 +33,6 @@ Future<void> main() async {
 
 /// Outputs the most common component getters from the PHP docs snippet.
 Future<ExampleRun> runComponentGetterExample() async {
-  await _ensureLocales(const ['en']);
   final dt = Carbon.parse('2012-10-05T23:26:11.123789Z');
   final buffer = StringBuffer()
     ..writeln('year: ${dt.year}')
@@ -67,11 +57,8 @@ Future<ExampleRun> runComponentGetterExample() async {
 
 const _localizedNamesSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
-  await initializeDateFormatting('de');
 
   final dt = Carbon.parse('2012-10-05T23:26:11Z');
   print('English weekday: ${dt.locale('en').isoFormat('dddd')}');
@@ -82,7 +69,6 @@ Future<void> main() async {
 
 /// Shows how locale-aware getters rely on `isoFormat` plus `locale()`.
 Future<ExampleRun> runLocalizedNamesExample() async {
-  await _ensureLocales(const ['en', 'de']);
   final dt = Carbon.parse('2012-10-05T23:26:11Z');
   final buffer = StringBuffer()
     ..writeln('English weekday: ${dt.locale('en').isoFormat('dddd')}')
@@ -96,10 +82,8 @@ Future<ExampleRun> runLocalizedNamesExample() async {
 
 const _timezoneGetterSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   final toronto = Carbon.parse(
@@ -117,7 +101,6 @@ Future<void> main() async {
 
 /// Captures the timezone metadata exposed via `toDebugMap()`.
 Future<ExampleRun> runTimezoneGetterExample() async {
-  await _ensureLocales(const ['en']);
   await Carbon.configureTimeMachine(testing: true);
   final toronto = Carbon.parse('2022-01-24 10:45', timeZone: 'America/Toronto');
   final zoneInfo = toronto.toDebugMap()['timezone'] as Map<String, Object?>;

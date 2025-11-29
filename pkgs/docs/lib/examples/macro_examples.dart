@@ -8,10 +8,8 @@ import 'example_runner.dart';
 
 const _macroSource = r'''
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
-  await initializeDateFormatting('en');
   await Carbon.configureTimeMachine(testing: true);
 
   Carbon.resetMacros();

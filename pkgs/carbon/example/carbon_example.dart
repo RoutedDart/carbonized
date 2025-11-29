@@ -1,13 +1,10 @@
 import 'package:carbon/carbon.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 /// IMPORTANT: Call `Carbon.configureTimeMachine()` before using IANA timezone
 /// names like 'America/Vancouver', 'Europe/Paris', etc.
 /// This loads the timezone database asynchronously.
+/// Carbon handles locale initialization automatically.
 Future<void> main() async {
-  // Initialize date formatting for your locale
-  await initializeDateFormatting('en');
-
   // Configure timezone database (required for named timezones)
   await Carbon.configureTimeMachine();
 
