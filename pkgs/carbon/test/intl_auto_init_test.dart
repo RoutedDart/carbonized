@@ -52,8 +52,5 @@ void main() {
       final formatted = date.format('MMMM', locale: 'es');
       expect(formatted, isNotEmpty);
     });
-
-
   });
 }
-

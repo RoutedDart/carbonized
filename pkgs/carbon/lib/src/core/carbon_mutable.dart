@@ -768,8 +768,7 @@ class Carbon extends CarbonBase {
   static Future<void> ensureLocaleInitialized(String locale) =>
       CarbonBase.ensureLocaleInitialized(locale);
 
-  static void resetIntlInitialization() =>
-      CarbonBase.resetIntlInitialization();
+  static void resetIntlInitialization() => CarbonBase.resetIntlInitialization();
 
   static void useStrictMode(bool enabled) => CarbonBase.useStrictMode(enabled);
 

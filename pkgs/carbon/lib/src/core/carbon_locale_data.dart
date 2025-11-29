@@ -18,7 +18,6 @@ class CarbonLocaleData {
   /// helpers.
   final Map<String, String> timeStrings;
 
-
   /// Raw translation strings from PHP Carbon (e.g., 'year', 'a_year').
   final Map<String, String> translationStrings;
 

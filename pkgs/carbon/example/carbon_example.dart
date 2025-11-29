@@ -5,7 +5,6 @@ import 'package:carbon/carbon.dart';
 /// This loads the timezone database asynchronously.
 /// Carbon handles locale initialization automatically.
 Future<void> main() async {
-
   // Configure timezone database (required for named timezones)
   await Carbon.configureTimeMachine();
 

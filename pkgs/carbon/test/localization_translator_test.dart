@@ -1,6 +1,7 @@
 import 'package:carbon/carbon.dart';
 import 'package:carbon/src/carbon.dart';
 import 'package:test/test.dart';
+
 void main() {
   setUpAll(() async {
     await Carbon.configureTimeMachine(testing: true);
